@@ -1,0 +1,162 @@
+# 🚀 MattressPickupNow - Store Options Update
+
+## **🎯 MVP APPROACH: 4 STORE OPTIONS ONLY**
+
+Start simple with proof of concept. Focus on the fastest, most convenient option - store pickup with these 4 mattresses available in every store.
+
+-----
+
+## **🛏️ THE 4 STANDARD STORE OPTIONS**
+
+### **Option 1: Sealy Memory Foam Firm**
+
+- **Type**: Memory Foam
+- **Feel**: Firm support
+- **Price Range**: $400-500
+- **Available**: Every store
+- **Pickup**: Ready now, fits in back seat
+
+### **Option 2: Sealy Memory Foam Medium**
+
+- **Type**: Memory Foam
+- **Feel**: Medium comfort
+- **Price Range**: $450-550
+- **Available**: Every store
+- **Pickup**: Ready now, fits in back seat
+
+### **Option 3: Sealy Memory Foam Soft**
+
+- **Type**: Memory Foam
+- **Feel**: Soft comfort
+- **Price Range**: $450-550
+- **Available**: Every store
+- **Pickup**: Ready now, fits in back seat
+
+### **Option 4: Basic Hybrid**
+
+- **Type**: Hybrid (coils + foam)
+- **Feel**: Balanced support
+- **Price Range**: $500-600
+- **Available**: Every store
+- **Pickup**: Ready now, fits in back seat
+
+-----
+
+## **📱 SIMPLIFIED USER FLOW**
+
+### **Step 1: ZIP Code**
+
+```
+"Enter your ZIP code to find stores near you"
+[ZIP input field]
+[Find Stores Near Me button]
+```
+
+### **Step 2: Store Pickup Options**
+
+```
+"Great! These mattresses are ready for pickup at stores near you:"
+
+[4 mattress option cards]
+Each card shows:
+- Mattress name
+- Comfort level (Firm/Medium/Soft/Balanced)
+- Price range
+- "Ready now at [X] nearby stores"
+- "Try in store, pick up today"
+```
+
+### **Step 3: Contact Info**
+
+```
+After selecting mattress:
+"Perfect choice! Just need your contact info:"
+- Name
+- Phone
+- Email (optional)
+[Get Store Directions button]
+```
+
+### **Step 4: Instructions**
+
+```
+Copy/send interface with store information and pickup instructions
+```
+
+-----
+
+## **💡 MESSAGING FOR EACH OPTION**
+
+### **All Options Include:**
+
+- “Available at every Mattress Firm location”
+- “Try before you buy in store”
+- “Fits in back seat of any car”
+- “Ready for pickup today”
+- “No delivery fees”
+
+### **Value Propositions:**
+
+- **Sealy Firm**: “Great for back support”
+- **Sealy Medium**: “Most popular choice”
+- **Sealy Soft**: “Pressure point relief”
+- **Basic Hybrid**: “Best of both worlds”
+
+-----
+
+## **🚀 FUTURE EXPANSION (V2)**
+
+### **Add Later Based on Feedback:**
+
+- Warehouse pickup options (more selection)
+- Delivery options (next day, 1-2 days)
+- Premium options (Purple, etc.)
+- Haul-away services
+- Truck-required larger mattresses
+
+### **Keep It Simple For Now:**
+
+- Focus on store pickup only
+- 4 proven options available everywhere
+- Fastest, most convenient experience
+- Easy to manage and track
+
+-----
+
+## **🎯 PROOF OF CONCEPT BENEFITS**
+
+### **Why Start With Store Options:**
+
+- **Fastest pickup**: 30 minutes vs hours at warehouse
+- **Try before buy**: Customer confidence
+- **Guaranteed availability**: Every store has these
+- **Simplest logistics**: No warehouse coordination
+- **Highest conversion**: Immediate gratification
+
+### **Scale Based on Data:**
+
+- Track which options are most popular
+- See if customers ask for warehouse options
+- Monitor conversion rates
+- Add features based on actual demand
+
+-----
+
+## **📋 IMPLEMENTATION NOTES**
+
+### **For Replit:**
+
+- Display these 4 specific mattress options
+- Focus on store pickup messaging
+- Keep warehouse/delivery options for later
+- Simple, clean interface with these choices
+- Emphasize speed and convenience
+
+### **Pricing Display:**
+
+- Show price ranges, not exact prices
+- “Starting at $XXX” format
+- Let store handle exact pricing
+- Focus on value and availability
+
+This gives you a clean, simple MVP that focuses on your strongest offering - immediate store pickup with guaranteed inventory.

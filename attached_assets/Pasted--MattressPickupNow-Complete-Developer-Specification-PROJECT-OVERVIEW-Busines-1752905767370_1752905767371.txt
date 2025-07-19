@@ -1,0 +1,616 @@
+# 🚀 MattressPickupNow - Complete Developer Specification
+
+## **📋 PROJECT OVERVIEW**
+
+### **Business Model**
+
+Create an ultra-simple lead capture system that connects emergency mattress buyers directly to Mattress Firm stores through an automated Podium messaging system. The entire process takes 5 minutes from lead submission to customer action.
+
+### **Target User Experience**
+
+A person needs a mattress urgently (moving, broken mattress, guests coming). They find the website, submit 5 pieces of information, and immediately get a pre-written text message they can copy and send to get instant quotes and pickup locations.
+
+### **Revenue Model**
+
+Owner gets $17-36 commission per mattress sale. Target: 20+ leads/day converting at 65%+ rate = $300-700 daily revenue.
+
+-----
+
+## **🎯 CORE FUNCTIONALITY REQUIREMENTS**
+
+### **1. Lead Capture Form (Ultra-Simple)**
+
+- **5 fields only**: Name, Phone, Email (optional), ZIP Code, Mattress Size, Budget Range
+- **Mobile-first design**: Works perfectly on phones (80% of traffic)
+- **Instant validation**: Real-time error checking, auto-formatting
+- **One-click submission**: Large, prominent submit button
+- **Premium appearance**: Professional design that builds trust
+
+### **2. Instant Lead Processing**
+
+- **Immediate SMS to owner**: Lead details sent to owner’s phone within 5 seconds
+- **Customer gets copy/send interface**: Pre-written message ready to copy
+- **Auto-populated message**: Customer info inserted into template
+- **Direct Podium routing**: Message goes straight to store’s Podium system
+
+### **3. Copy/Send Interface (Key Innovation)**
+
+- **Pre-written message display**: Shows exactly what customer needs to send
+- **Copy button**: One-click to copy message to clipboard
+- **Send button**: Opens default SMS app with message pre-loaded and store number filled in
+- **Clear instructions**: Step-by-step guidance for customer
+
+-----
+
+## **🖥️ TECHNICAL STACK REQUIREMENTS**
+
+### **Frontend (Public-Facing)**
+
+- **HTML5/CSS3/JavaScript**: Pure vanilla JS for speed and simplicity
+- **Responsive design**: Mobile-first, works on all screen sizes
+- **No frameworks**: Keep it lightweight and fast-loading
+- **Progressive enhancement**: Works even with JS disabled
+
+### **Backend (Replit-Optimized)**
+
+- **Node.js + Express**: Simple server setup
+- **Twilio integration**: SMS notifications to owner
+- **No database required**: Store leads in memory/logs (MVP approach)
+- **Environment variables**: Secure credential storage
+
+### **External Integrations**
+
+- **Twilio SMS API**: Send notifications to owner
+- **No third-party UI frameworks**: Keep dependencies minimal
+- **Google Fonts**: Professional typography (Poppins/Inter)
+
+-----
+
+## **📱 USER INTERFACE SPECIFICATIONS**
+
+### **Visual Design Requirements**
+
+- **Premium aesthetic**: Clean, modern, trustworthy appearance
+- **Color scheme**: Professional blues/whites with urgency accents (red/orange)
+- **Typography**: Clear, readable fonts (minimum 16px on mobile)
+- **Button design**: Large, finger-friendly buttons with clear CTAs
+- **Loading states**: Visual feedback during form submission
+
+### **Mobile Optimization (Priority)**
+
+- **Touch targets**: Minimum 44px tap targets
+- **Form fields**: Large enough for easy typing on mobile
+- **Viewport**: Proper mobile viewport meta tag
+- **Performance**: Page loads in under 3 seconds on 3G
+- **Accessibility**: Works with screen readers and assistive technology
+
+### **Desktop Enhancement**
+
+- **Centered layout**: Max width 600px for optimal readability
+- **Hover states**: Subtle animations on interactive elements
+- **Keyboard navigation**: Tab order and enter key support
+- **Larger elements**: Take advantage of screen real estate
+
+-----
+
+## **📋 DETAILED FEATURE SPECIFICATIONS**
+
+### **Landing Page Components**
+
+#### **Header Section**
+
+```
+Logo/Brand: "🛏️ MattressPickupNow"
+Headline: "Need a Mattress Tonight? Pick Up in 30 Minutes!"
+Subheadline: "Try It → Buy It → Drive Home Tonight"
+Trust indicators: "No Delivery Fees • Try Before You Buy • Fits in Any Car"
+```
+
+#### **Form Section**
+
+```
+Form Fields (in order):
+1. Full Name (required, text input, placeholder: "Your name")
+2. Phone Number (required, tel input, auto-format: "(555) 123-4567")
+3. Email Address (optional, email input, placeholder: "your@email.com")
+4. ZIP Code (required, text input, 5 digits max, placeholder: "33612")
+5. Mattress Size (required, select dropdown):
+   - "Twin (39" × 75")"
+   - "Full (54" × 75")"
+   - "Queen (60" × 80")" [default/popular]
+   - "King (76" × 80")"
+6. Budget Range (required, select dropdown):
+   - "Under $300"
+   - "$300 - $500"
+   - "$500 - $700"
+   - "$700 - $800"
+
+Submit Button: "🚗 GET PICKUP INSTRUCTIONS NOW"
+```
+
+#### **Benefits Section**
+
+```
+Icon + Text pairs:
+🚗 "Fits in any car (even a Prius!)"
+⚡ "Ready for pickup in 30 minutes"
+🛏️ "Try it first in the store"
+💰 "No delivery fees or delays"
+```
+
+### **Post-Submission Interface**
+
+#### **Success Message**
+
+```
+"✅ Perfect! Your pickup instructions are ready below."
+```
+
+#### **Copy/Send Interface**
+
+```
+Section 1: Pre-written Message Display
+- Box with pre-populated message
+- Copy button: "📋 COPY MESSAGE"
+- Message format: "Hi! AJ from MattressPickupNow sent me. I need a [SIZE] mattress under $[BUDGET]. My info: [NAME], [PHONE], ZIP [ZIP]. AJ said you have quotes ready for pickup today. Lead: [LEAD_ID]"
+
+Section 2: Send Instructions
+- Store phone number display: "📱 Send to: (813) XXX-XXXX"
+- Send button: "📱 SEND NOW" (opens SMS app)
+- Backup instruction: "Or manually text the number above"
+
+Section 3: What Happens Next
+- "✅ You'll get quotes and directions within 5 minutes"
+- "✅ Visit the store to try mattresses"
+- "✅ Pick your favorite and drive home tonight!"
+```
+
+-----
+
+## **⚙️ BACKEND FUNCTIONALITY REQUIREMENTS**
+
+### **API Endpoints**
+
+#### **POST /api/lead**
+
+```
+Purpose: Process new lead submission
+Input: JSON with name, phone, email, zipCode, size, budget
+Processing:
+1. Validate all required fields
+2. Generate unique lead ID
+3. Send SMS notification to owner
+4. Return success response with lead data
+Output: JSON with success status and lead ID
+Error handling: Return appropriate error codes and messages
+```
+
+#### **GET /health**
+
+```
+Purpose: Health check for monitoring
+Output: Simple "OK" response with timestamp
+```
+
+### **SMS Notification System**
+
+#### **Owner Notification Format**
+
+```
+🚨 NEW PICKUP LEAD 🚨
+
+[NAME] - [PHONE]
+📍 ZIP: [ZIP_CODE]
+🛏️ Size: [MATTRESS_SIZE]
+💰 Budget: Under $[BUDGET]
+📧 Email: [EMAIL or "Not provided"]
+
+⏰ [TIMESTAMP]
+🔢 Lead ID: [LEAD_ID]
+
+Customer is texting Podium now!
+Expected commission: $17-36
+```
+
+#### **Delivery Requirements**
+
+- Send within 5 seconds of form submission
+- Include all customer information
+- Use consistent formatting
+- Include lead tracking ID
+- Add urgency indicators
+
+-----
+
+## **🔧 TECHNICAL IMPLEMENTATION DETAILS**
+
+### **File Structure**
+
+```
+mattress-pickup-now/
+├── package.json              # Dependencies
+├── index.js                  # Main server file
+├── .env                      # Environment variables
+├── public/
+│   ├── index.html            # Main landing page
+│   ├── styles.css            # All styling
+│   ├── script.js             # Frontend JavaScript
+│   └── favicon.ico           # Site icon
+└── README.md                 # Setup instructions
+```
+
+### **Environment Variables Required**
+
+```
+TWILIO_ACCOUNT_SID=your_twilio_sid
+TWILIO_AUTH_TOKEN=your_twilio_token
+TWILIO_PHONE_NUMBER=+15551234567
+OWNER_PHONE=+18135551234
+STORE_PODIUM_NUMBER=+18135559999
+OWNER_NAME=AJ
+```
+
+### **Dependencies (package.json)**
+
+```json
+{
+  "name": "mattress-pickup-now",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "twilio": "^4.19.0",
+    "dotenv": "^16.3.1"
+  }
+}
+```
+
+-----
+
+## **📱 MOBILE EXPERIENCE SPECIFICATIONS**
+
+### **Form Interaction**
+
+- **Auto-focus**: First field automatically focused on page load
+- **Tab order**: Logical progression through form fields
+- **Input types**: Correct keyboard types (tel for phone, numeric for ZIP)
+- **Auto-formatting**: Phone number formats as user types
+- **Validation**: Real-time feedback on field completion
+
+### **Copy/Send Functionality**
+
+- **Copy button**: Uses Clipboard API, falls back to text selection
+- **Visual feedback**: Button changes to “✅ COPIED!” for 2 seconds
+- **Send button**: Opens native SMS app with pre-filled message and number
+- **Error handling**: Graceful fallback if SMS app unavailable
+
+### **Performance Optimization**
+
+- **Minimal JavaScript**: Only essential functionality
+- **CSS optimization**: Inline critical CSS, external for non-critical
+- **Image optimization**: Use SVG icons, compress any images
+- **Caching**: Appropriate cache headers for static assets
+
+-----
+
+## **🎨 VISUAL DESIGN SPECIFICATIONS**
+
+### **Color Palette**
+
+```css
+Primary Blue: #2563eb (trust, reliability)
+Secondary Blue: #1e40af (darker accent)
+Success Green: #10b981 (positive actions)
+Urgency Red: #ef4444 (emergency, now)
+Warning Orange: #f59e0b (attention)
+Gray 900: #111827 (primary text)
+Gray 600: #4b5563 (secondary text)
+Gray 100: #f3f4f6 (backgrounds)
+White: #ffffff (cards, form backgrounds)
+```
+
+### **Typography Scale**
+
+```css
+Hero Title: 32px, bold, tight line-height
+Section Headers: 24px, semibold
+Form Labels: 16px, medium weight
+Button Text: 18px, semibold
+Body Text: 16px, regular
+Small Text: 14px, medium
+```
+
+### **Component Styling**
+
+#### **Form Fields**
+
+```css
+Input styling:
+- Padding: 16px
+- Border: 2px solid #e5e7eb
+- Border radius: 12px
+- Font size: 16px (prevents zoom on iOS)
+- Focus state: Border color changes to primary blue
+- Error state: Border color changes to red
+```
+
+#### **Buttons**
+
+```css
+Primary button:
+- Background: Linear gradient blue
+- Padding: 18px 24px
+- Border radius: 12px
+- Font weight: 600
+- Box shadow: Subtle depth
+- Hover: Slight scale transform
+- Active: Press down effect
+```
+
+#### **Cards/Containers**
+
+```css
+Main container:
+- Max width: 500px
+- Padding: 40px
+- Border radius: 20px
+- Box shadow: 0 20px 40px rgba(0,0,0,0.15)
+- Background: White
+```
+
+-----
+
+## **🔄 USER FLOW SPECIFICATIONS**
+
+### **Primary User Journey**
+
+```
+1. User arrives at landing page (0 seconds)
+   → Page loads in under 2 seconds
+   → Form is immediately visible and accessible
+
+2. User fills out form (30-60 seconds)
+   → Real-time validation provides feedback
+   → Auto-formatting helps with phone/ZIP entry
+   → Clear error messages if validation fails
+
+3. User submits form (1 second)
+   → Loading state shows immediate feedback
+   → Success message appears quickly
+   → Copy/send interface reveals
+
+4. User copies message (5 seconds)
+   → One-click copy to clipboard
+   → Visual confirmation of copy action
+   → Clear instructions for next step
+
+5. User sends message (10 seconds)
+   → SMS app opens with pre-filled content
+   → Store number is already populated
+   → User just needs to hit send
+
+6. User receives response (2-5 minutes)
+   → Store team responds via Podium
+   → User gets quotes and directions
+   → Process continues offline
+```
+
+### **Error Handling**
+
+```
+Form validation errors:
+- Inline validation with clear messaging
+- Highlight problematic fields in red
+- Specific guidance on how to fix errors
+
+Network errors:
+- Retry mechanism for failed submissions
+- Clear error messages with next steps
+- Contact information as fallback
+
+Browser compatibility:
+- Graceful degradation for older browsers
+- Progressive enhancement approach
+- Core functionality works without JavaScript
+```
+
+-----
+
+## **📊 ANALYTICS & TRACKING REQUIREMENTS**
+
+### **Events to Track**
+
+```
+Page views: Landing page visits
+Form interactions: Field focus, completion
+Form submissions: Successful and failed attempts
+Copy actions: Message copy button clicks
+Send actions: SMS app opening
+Error events: Validation failures, network errors
+```
+
+### **Data Collection**
+
+```
+Lead data storage:
+- All form submissions logged
+- Timestamps for performance analysis
+- Success/failure rates tracking
+- Basic analytics in server logs
+```
+
+-----
+
+## **🚀 DEPLOYMENT SPECIFICATIONS**
+
+### **Replit Configuration**
+
+```
+Runtime: Node.js 18
+Always-on: Enable for production
+Custom domain: mattresspickupnow.com (when purchased)
+Environment: Production
+Monitoring: Basic uptime tracking
+```
+
+### **Environment Setup**
+
+```
+1. Create new Node.js Repl
+2. Install dependencies via package.json
+3. Configure environment variables in Secrets
+4. Test Twilio integration
+5. Deploy and test full flow
+```
+
+### **Testing Checklist**
+
+```
+□ Form submission works on mobile
+□ SMS notifications send correctly
+□ Copy/paste functionality works
+□ All form validations work properly
+□ Error handling works as expected
+□ Performance meets requirements (<3s load)
+□ Cross-browser compatibility verified
+□ Mobile experience optimized
+```
+
+-----
+
+## **💰 SUCCESS METRICS**
+
+### **Primary KPIs**
+
+```
+Conversion rate: >25% (form submissions / page visits)
+Form completion rate: >80% (submitted / started)
+Copy-to-send rate: >90% (SMS sent / message copied)
+Lead-to-sale rate: >65% (based on owner's conversion)
+Page load speed: <3 seconds on 3G
+Mobile usage: >80% of traffic
+```
+
+### **Secondary Metrics**
+
+```
+Bounce rate: <40%
+Time on page: 2-5 minutes
+Form abandonment: <20%
+Error rates: <5%
+Return visitors: Track for repeat usage
+Customer satisfaction: Monitor through owner feedback
+```
+
+-----
+
+## **🔒 SECURITY & PRIVACY**
+
+### **Data Protection**
+
+```
+HTTPS: Enforce SSL/TLS encryption
+Input validation: Sanitize all form inputs
+Rate limiting: Prevent spam submissions
+Privacy: Clear privacy policy
+Data retention: Minimal storage of personal data
+PII handling: Secure transmission of customer info
+```
+
+### **Compliance**
+
+```
+GDPR: Cookie consent and data rights
+CCPA: California privacy compliance
+CAN-SPAM: SMS opt-in requirements
+Accessibility: WCAG 2.1 AA compliance
+Terms of service: Clear usage terms
+```
+
+-----
+
+## **📋 CONTENT SPECIFICATIONS**
+
+### **Copy Requirements**
+
+```
+Tone: Urgent but professional
+Language: Simple, clear, action-oriented
+Headlines: Benefit-focused and specific
+CTAs: Action verbs, urgency indicators
+Instructions: Step-by-step, numbered
+Error messages: Helpful and specific
+```
+
+### **SEO Considerations**
+
+```
+Title tag: "MattressPickupNow - Emergency Mattress Pickup Service"
+Meta description: "Need a mattress tonight? Find stores with pickup in 30 minutes. Try before you buy, fits in any car, no delivery fees."
+H1: "Need a Mattress Tonight? Pick Up in 30 Minutes!"
+Alt text: Descriptive text for all images
+Schema markup: Local business structured data
+```
+
+-----
+
+## **🎯 LAUNCH REQUIREMENTS**
+
+### **Pre-Launch Checklist**
+
+```
+□ All functionality tested and working
+□ Mobile experience optimized
+□ Twilio integration configured
+□ Error handling implemented
+□ Performance optimized
+□ Security measures in place
+□ Content proofread and polished
+□ Analytics tracking setup
+□ Domain configured (if applicable)
+□ SSL certificate active
+```
+
+### **Go-Live Process**
+
+```
+1. Deploy to Replit production
+2. Test complete user flow
+3. Verify SMS notifications work
+4. Check performance metrics
+5. Monitor for errors
+6. Document any issues
+7. Begin marketing/traffic generation
+```
+
+-----
+
+## **📞 SUPPORT & MAINTENANCE**
+
+### **Monitoring**
+
+```
+Uptime: Monitor service availability
+Error rates: Track and alert on failures
+Performance: Monitor load times
+Usage: Track conversion metrics
+SMS delivery: Monitor Twilio success rates
+```
+
+### **Updates**
+
+```
+Content updates: Easy text/copy changes
+Feature additions: New form fields or functionality
+Bug fixes: Quick resolution of issues
+Performance optimization: Ongoing improvements
+Security updates: Regular dependency updates
+```
+
+-----
+
+This specification provides everything needed to build a professional, high-converting lead capture system that automates the entire customer acquisition process for the mattress pickup business. The focus on simplicity, mobile optimization, and automated messaging creates a seamless experience that maximizes conversions while minimizing manual work.
