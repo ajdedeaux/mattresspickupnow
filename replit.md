@@ -34,13 +34,16 @@ Design preference: Premium and sleek appearance with icons only - absolutely no 
 ## Key Components
 
 ### Lead Capture System
-The application implements a comprehensive multi-step lead capture flow:
+The application implements a strategic multi-step lead capture flow focused on the "car revelation":
 
-1. **ZIP Code Entry**: Initial location validation with real-time search
-2. **Store Locator**: Displays nearby mattress stores with ratings, hours, and contact info
-3. **Mattress Selection**: Choose from 4 predefined mattress options (Sealy memory foam variants and basic hybrid)
-4. **Contact Information**: Name, phone, and optional email collection
-5. **SMS Instructions**: Premium copy/paste interface for contacting stores directly
+1. **ZIP Code Entry**: Location-based search with "car-friendly" messaging
+2. **The Car Revelation**: Critical psychological breakthrough showing mattresses fit in back seats
+3. **Mattress Selection**: Enhanced cards with prominent "fits in car" benefits and trust signals
+4. **Contact Information**: Progressive information exchange with value at each step
+5. **Store Details & Instructions**: Auto-selected closest store with pickup coordination
+
+### Core Value Proposition
+"Premium mattresses in boxes that fit on your back seat - no truck needed." This unique positioning solves the unknown problem most customers have about mattress transportation, creating a competitive moat through the revelation that quality mattresses can fit in any car.
 
 ### Store Finder Integration
 - **Google Maps Integration**: API endpoint to search for nearby mattress stores

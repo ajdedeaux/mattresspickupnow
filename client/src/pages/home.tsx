@@ -13,7 +13,7 @@ import { insertLeadSchema, findStoresSchema, type Store } from "@shared/schema";
 import { formatPhoneNumber, generateLeadMessage, openSMSApp, copyToClipboard } from "@/lib/utils";
 import { MapPin, Check, Car, Shield, Clock, Copy, MessageCircle, CheckCircle, Star, Phone, Navigation } from "lucide-react";
 
-type Step = "zip" | "mattress" | "contact" | "instructions";
+type Step = "zip" | "revelation" | "mattress" | "contact" | "instructions";
 
 const zipSchema = findStoresSchema;
 
@@ -102,10 +102,10 @@ export default function Home() {
       if (data.success && data.storesFound > 0) {
         // Auto-select the closest store
         setAutoSelectedStore(data.stores[0]);
-        setCurrentStep("mattress");
+        setCurrentStep("revelation");
         toast({
-          title: "Perfect! Found Available Mattresses",
-          description: `4 top-rated mattresses ready for pickup at ${data.stores[0].name}`,
+          title: "Found Nearby Locations!",
+          description: `Found ${data.storesFound} stores near you with available mattresses`,
         });
       } else {
         toast({
@@ -224,20 +224,20 @@ export default function Home() {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-slate-900 via-blue-900 to-primary text-white py-16 px-6">
         <div className="max-w-md mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4 leading-tight">Need a Mattress Tonight?</h2>
-          <p className="text-xl mb-8 text-slate-200">Premium mattresses available for pickup in 30 minutes</p>
+          <h2 className="text-3xl font-bold mb-4 leading-tight">Need a Mattress Tonight?<br/>It Fits in Your Car.</h2>
+          <p className="text-xl mb-8 text-slate-200">Premium mattresses in boxes that fit on your back seat - no truck needed</p>
           <div className="grid grid-cols-3 gap-4 text-sm">
+            <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+              <Car className="w-5 h-5 text-blue-400 mx-auto mb-2" />
+              <span className="block">Back Seat Fits</span>
+            </div>
             <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
               <Check className="w-5 h-5 text-green-400 mx-auto mb-2" />
               <span className="block">Try First</span>
             </div>
             <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-              <Car className="w-5 h-5 text-blue-400 mx-auto mb-2" />
-              <span className="block">Fits Any Car</span>
-            </div>
-            <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-              <Shield className="w-5 h-5 text-purple-400 mx-auto mb-2" />
-              <span className="block">No Delivery Fees</span>
+              <Clock className="w-5 h-5 text-purple-400 mx-auto mb-2" />
+              <span className="block">Same Day</span>
             </div>
           </div>
         </div>
@@ -250,8 +250,8 @@ export default function Home() {
           <Card className="animate-fade-in premium-card">
             <CardContent className="p-6">
               <div className="text-center mb-6">
-                <h3 className="section-title font-semibold text-gray-900 mb-2">Find Stores Near You</h3>
-                <p className="text-gray-600">Enter your ZIP code to see available mattresses</p>
+                <h3 className="section-title font-semibold text-gray-900 mb-2">Enter your location to find mattresses ready for pickup:</h3>
+                <p className="text-gray-600 text-sm">More precise location = closer pickup options</p>
               </div>
               
               <Form {...zipForm}>
@@ -261,11 +261,11 @@ export default function Home() {
                     name="zipCode"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-700">ZIP Code</FormLabel>
+                        <FormLabel className="text-sm font-medium text-gray-700">ZIP Code (Quick Search)</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            placeholder="33612"
+                            placeholder="Enter ZIP code (e.g., 33612)"
                             maxLength={5}
                             className="form-input"
                             onChange={(e) => {
@@ -287,12 +287,12 @@ export default function Home() {
                     {findStoresMutation.isPending ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                        Searching for stores...
+                        Finding mattresses that fit in your car...
                       </>
                     ) : (
                       <>
                         <MapPin className="w-5 h-5 mr-2" />
-                        Find Stores Near Me
+                        Find My Car-Friendly Options
                       </>
                     )}
                   </Button>
@@ -302,7 +302,61 @@ export default function Home() {
           </Card>
         )}
 
+        {/* The Revelation */}
+        {currentStep === "revelation" && autoSelectedStore && (
+          <div className="animate-slide-up space-y-6">
+            {/* Success Header */}
+            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <CheckCircle className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Found 3 Mattress Firm locations near you!</h3>
+              </CardContent>
+            </Card>
 
+            {/* The Car Revelation */}
+            <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
+              <CardContent className="p-6">
+                <h4 className="text-xl font-bold text-gray-900 mb-4 text-center">Here's what most people don't know:</h4>
+                
+                <div className="bg-white rounded-xl p-6 mb-6 border-2 border-dashed border-blue-300">
+                  <div className="flex items-center justify-center space-x-4 mb-4">
+                    <Car className="w-12 h-12 text-blue-600" />
+                    <div className="text-center">
+                      <p className="text-lg font-bold text-gray-900">These premium mattresses come in boxes</p>
+                      <p className="text-blue-600 font-medium">that fit on your back seat.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center space-y-2">
+                    <p className="text-gray-700 font-medium">No truck needed. No tying anything to your roof.</p>
+                    <p className="text-gray-600">You can try them in the store first, then drive home with one TODAY.</p>
+                  </div>
+                </div>
+
+                {/* Store Info Preview */}
+                <div className="bg-white rounded-lg p-4 mb-6 border border-gray-200">
+                  <div className="flex items-center space-x-3">
+                    <MapPin className="w-5 h-5 text-primary" />
+                    <div>
+                      <p className="font-medium text-gray-900">{autoSelectedStore.name}</p>
+                      <p className="text-sm text-gray-600">{autoSelectedStore.distance} miles away • Open until {autoSelectedStore.hours}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={() => setCurrentStep("mattress")}
+                  className="w-full btn-success-gradient py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
+                >
+                  <Car className="w-5 h-5 mr-2" />
+                  Show Me the Mattresses That Fit
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Mattress Options */}
         {currentStep === "mattress" && autoSelectedStore && (
@@ -368,6 +422,11 @@ export default function Home() {
 
                     {/* Benefits */}
                     <div className="space-y-2 mb-4">
+                      {/* Highlight Car Fit First */}
+                      <div className="flex items-center text-sm bg-blue-50 rounded-lg p-2 border border-blue-200">
+                        <Car className="w-4 h-4 text-blue-600 mr-2 flex-shrink-0" />
+                        <span className="font-medium text-blue-800">Fits on back seat of any car</span>
+                      </div>
                       {option.benefits.map((benefit, index) => (
                         <div key={index} className="flex items-center text-sm text-gray-700">
                           <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
