@@ -7,6 +7,7 @@ MattressPickupNow is a full-stack web application designed to connect emergency 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Design preference: Premium and sleek appearance with icons only - absolutely no emojis.
 
 ## System Architecture
 
@@ -33,12 +34,19 @@ Preferred communication style: Simple, everyday language.
 ## Key Components
 
 ### Lead Capture System
-The application implements a multi-step lead capture flow:
+The application implements a comprehensive multi-step lead capture flow:
 
-1. **ZIP Code Entry**: Initial location validation
-2. **Mattress Selection**: Choose from 4 predefined mattress options (Sealy memory foam variants and basic hybrid)
-3. **Contact Information**: Name, phone, and optional email collection
-4. **SMS Instructions**: Copy/paste interface for contacting stores
+1. **ZIP Code Entry**: Initial location validation with real-time search
+2. **Store Locator**: Displays nearby mattress stores with ratings, hours, and contact info
+3. **Mattress Selection**: Choose from 4 predefined mattress options (Sealy memory foam variants and basic hybrid)
+4. **Contact Information**: Name, phone, and optional email collection
+5. **SMS Instructions**: Premium copy/paste interface for contacting stores directly
+
+### Store Finder Integration
+- **Google Maps Integration**: API endpoint to search for nearby mattress stores
+- **Mock Store Data**: Development fallback with realistic store information
+- **Store Details**: Distance, ratings, hours, phone numbers, and availability status
+- **Premium Display**: Clean, professional store cards with operational status
 
 ### Form Validation
 - Real-time validation using Zod schemas
@@ -69,6 +77,7 @@ The application implements a multi-step lead capture flow:
 
 ### API Endpoints
 - `GET /api/health`: Health check endpoint
+- `POST /api/find-stores`: Find nearby mattress stores by ZIP code
 - `POST /api/leads`: Create new lead with validation
 
 ## External Dependencies

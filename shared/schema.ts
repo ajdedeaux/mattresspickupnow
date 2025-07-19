@@ -43,3 +43,22 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+// Store types for Google Maps integration
+export const storeSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  address: z.string(),
+  distance: z.number(),
+  rating: z.number().optional(),
+  isOpen: z.boolean(),
+  hours: z.string(),
+  phone: z.string().optional(),
+});
+
+export const findStoresSchema = z.object({
+  zipCode: z.string().regex(/^\d{5}$/, "ZIP code must be 5 digits"),
+});
+
+export type Store = z.infer<typeof storeSchema>;
+export type FindStoresRequest = z.infer<typeof findStoresSchema>;

@@ -6,19 +6,16 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { insertLeadSchema } from "@shared/schema";
+import { insertLeadSchema, findStoresSchema, type Store } from "@shared/schema";
 import { formatPhoneNumber, generateLeadMessage, openSMSApp, copyToClipboard } from "@/lib/utils";
-import { MapPin, Check, Car, Shield, Clock, Copy, MessageCircle, CheckCircle } from "lucide-react";
+import { MapPin, Check, Car, Shield, Clock, Copy, MessageCircle, CheckCircle, Star, Phone, Navigation } from "lucide-react";
 
-type Step = "zip" | "mattress" | "contact" | "instructions";
+type Step = "zip" | "stores" | "mattress" | "contact" | "instructions";
 
-const zipSchema = z.object({
-  zipCode: z.string().regex(/^\d{5}$/, "ZIP code must be 5 digits"),
-});
+const zipSchema = findStoresSchema;
 
 const mattressOptions = [
   {
@@ -58,6 +55,7 @@ const mattressOptions = [
 export default function Home() {
   const [currentStep, setCurrentStep] = useState<Step>("zip");
   const [userZip, setUserZip] = useState("");
+  const [nearbyStores, setNearbyStores] = useState<Store[]>([]);
   const [selectedMattress, setSelectedMattress] = useState("");
   const [leadData, setLeadData] = useState<any>(null);
   const [copySuccess, setCopySuccess] = useState(false);
@@ -79,6 +77,36 @@ export default function Home() {
     },
   });
 
+  const findStoresMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof zipSchema>) => {
+      const response = await apiRequest("POST", "/api/find-stores", data);
+      return await response.json();
+    },
+    onSuccess: (data) => {
+      if (data.success && data.storesFound > 0) {
+        setNearbyStores(data.stores);
+        setCurrentStep("stores");
+        toast({
+          title: "Locations Found",
+          description: `Found ${data.storesFound} stores near you with mattresses ready for pickup.`,
+        });
+      } else {
+        toast({
+          title: "No Stores Found",
+          description: "No locations found in your area. Please try a different ZIP code.",
+          variant: "destructive",
+        });
+      }
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Search Error",
+        description: error.message || "Unable to search for stores. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const createLeadMutation = useMutation({
     mutationFn: async (data: z.infer<typeof insertLeadSchema>) => {
       const response = await apiRequest("POST", "/api/leads", data);
@@ -88,7 +116,7 @@ export default function Home() {
       setLeadData(data);
       setCurrentStep("instructions");
       toast({
-        title: "Success!",
+        title: "Instructions Ready",
         description: "Your pickup instructions are ready below.",
       });
     },
@@ -103,6 +131,10 @@ export default function Home() {
 
   const handleZipSubmit = (data: z.infer<typeof zipSchema>) => {
     setUserZip(data.zipCode);
+    findStoresMutation.mutate(data);
+  };
+
+  const handleStoresConfirm = () => {
     setCurrentStep("mattress");
   };
 
@@ -162,32 +194,35 @@ export default function Home() {
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-100">
         <div className="max-w-md mx-auto px-6 py-4">
-          <div className="flex items-center justify-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Shield className="w-5 h-5 text-white" />
+          <div className="flex items-center justify-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Shield className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-xl font-bold text-gray-900">MattressPickupNow</h1>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">MattressPickupNow</h1>
+              <p className="text-xs text-gray-500">Premium Sleep Solutions</p>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary to-blue-700 text-white py-12 px-6">
+      <section className="bg-gradient-to-br from-slate-900 via-blue-900 to-primary text-white py-16 px-6">
         <div className="max-w-md mx-auto text-center">
-          <h2 className="hero-title font-bold mb-4">Need a Mattress Tonight?</h2>
-          <p className="text-xl mb-6 text-blue-100">Pickup in 30 minutes from stores near you</p>
-          <div className="flex items-center justify-center space-x-6 text-sm">
-            <div className="flex items-center space-x-2">
-              <Check className="w-5 h-5 text-green-400" />
-              <span>Try First</span>
+          <h2 className="text-3xl font-bold mb-4 leading-tight">Need a Mattress Tonight?</h2>
+          <p className="text-xl mb-8 text-slate-200">Premium mattresses available for pickup in 30 minutes</p>
+          <div className="grid grid-cols-3 gap-4 text-sm">
+            <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+              <Check className="w-5 h-5 text-green-400 mx-auto mb-2" />
+              <span className="block">Try First</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <Check className="w-5 h-5 text-green-400" />
-              <span>No Delivery Fees</span>
+            <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+              <Car className="w-5 h-5 text-blue-400 mx-auto mb-2" />
+              <span className="block">Fits Any Car</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <Check className="w-5 h-5 text-green-400" />
-              <span>Fits Any Car</span>
+            <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+              <Shield className="w-5 h-5 text-purple-400 mx-auto mb-2" />
+              <span className="block">No Delivery Fees</span>
             </div>
           </div>
         </div>
@@ -232,15 +267,89 @@ export default function Home() {
                   <Button 
                     type="submit"
                     className="w-full btn-primary-gradient py-4 text-lg font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200"
-                    disabled={zipForm.watch("zipCode")?.length !== 5}
+                    disabled={zipForm.watch("zipCode")?.length !== 5 || findStoresMutation.isPending}
                   >
-                    <MapPin className="w-5 h-5 mr-2" />
-                    Find Stores Near Me
+                    {findStoresMutation.isPending ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                        Searching for stores...
+                      </>
+                    ) : (
+                      <>
+                        <MapPin className="w-5 h-5 mr-2" />
+                        Find Stores Near Me
+                      </>
+                    )}
                   </Button>
                 </form>
               </Form>
             </CardContent>
           </Card>
+        )}
+
+        {/* Store Locations */}
+        {currentStep === "stores" && (
+          <div className="animate-slide-up">
+            <div className="text-center mb-6">
+              <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
+              <h3 className="section-title font-semibold text-gray-900 mb-2">Locations Found</h3>
+              <p className="text-gray-600">
+                Great! We found {nearbyStores.length} stores near <span className="font-medium text-primary">{userZip}</span> with mattresses ready for pickup.
+              </p>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              {nearbyStores.map((store) => (
+                <Card key={store.id} className="border border-gray-200">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900">{store.name}</h4>
+                        <p className="text-sm text-gray-600 flex items-center mt-1">
+                          <Navigation className="w-4 h-4 mr-1" />
+                          {store.distance} miles away
+                        </p>
+                        <p className="text-sm text-gray-600">{store.address}</p>
+                      </div>
+                      <div className="text-right">
+                        <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
+                          store.isOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                          <Clock className="w-3 h-3 mr-1" />
+                          {store.hours}
+                        </div>
+                        {store.rating && (
+                          <div className="flex items-center mt-1">
+                            <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                            <span className="text-sm text-gray-600 ml-1">{store.rating}</span>
+                          </div>
+                        )}
+                        {store.phone && (
+                          <p className="text-xs text-gray-500 mt-1 flex items-center">
+                            <Phone className="w-3 h-3 mr-1" />
+                            {store.phone}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="bg-blue-50 rounded-lg p-3">
+                      <p className="text-sm text-blue-800 font-medium">
+                        All 4 mattress options available for immediate pickup
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <Button
+              onClick={handleStoresConfirm}
+              className="w-full btn-success-gradient py-4 text-lg font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200"
+            >
+              <CheckCircle className="w-5 h-5 mr-2" />
+              Continue with These Locations
+            </Button>
+          </div>
         )}
 
         {/* Mattress Options */}
@@ -381,19 +490,29 @@ export default function Home() {
 
         {/* Instructions */}
         {currentStep === "instructions" && leadData && (
-          <Card className="animate-slide-up">
-            <CardContent className="p-6">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="animate-slide-up space-y-6">
+            {/* Success Header */}
+            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <CheckCircle className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="section-title font-semibold text-gray-900 mb-2">Perfect! Your pickup instructions are ready</h3>
-              </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Instructions Ready</h3>
+                <p className="text-gray-700">Your personalized pickup message is ready to send</p>
+              </CardContent>
+            </Card>
 
-              {/* Message Display */}
-              <div className="bg-gray-50 rounded-xl p-4 mb-6">
-                <h4 className="text-sm font-medium text-gray-700 mb-3">Copy this message to send:</h4>
-                <div className="bg-white border-2 border-gray-200 rounded-lg p-4 text-sm leading-relaxed select-all">
+            {/* Message Card */}
+            <Card className="border-2 border-slate-200 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-lg font-semibold text-gray-900">Your Message</h4>
+                  <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full">
+                    Lead ID: {leadData.leadId}
+                  </span>
+                </div>
+                
+                <div className="bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-4 mb-4 font-mono text-sm leading-relaxed select-all">
                   {generateLeadMessage({
                     mattressType: selectedMattress,
                     name: contactForm.getValues("name"),
@@ -402,79 +521,100 @@ export default function Home() {
                     leadId: leadData.leadId,
                   })}
                 </div>
+
                 <Button 
                   onClick={handleCopyMessage}
-                  className={`w-full py-3 mt-3 font-medium rounded-lg transition-colors ${
+                  className={`w-full py-4 text-lg font-semibold rounded-xl shadow-md transition-all duration-200 ${
                     copySuccess 
-                      ? 'bg-green-500 hover:bg-green-600' 
-                      : 'bg-primary hover:bg-blue-700'
+                      ? 'bg-green-500 hover:bg-green-600 text-white' 
+                      : 'btn-primary-gradient hover:shadow-lg hover:scale-105'
                   }`}
                 >
                   {copySuccess ? (
                     <>
                       <CheckCircle className="w-5 h-5 mr-2" />
-                      Copied!
+                      Message Copied
                     </>
                   ) : (
                     <>
                       <Copy className="w-5 h-5 mr-2" />
-                      Copy Message
+                      Copy to Clipboard
                     </>
                   )}
                 </Button>
-              </div>
+              </CardContent>
+            </Card>
 
-              {/* Send Instructions */}
-              <div className="bg-blue-50 rounded-xl p-4 mb-6">
-                <h4 className="text-sm font-medium text-gray-700 mb-3">Send to this store number:</h4>
-                <div className="flex items-center justify-between bg-white rounded-lg p-4 border-2 border-blue-200">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                      <MessageCircle className="w-5 h-5 text-white" />
+            {/* Store Contact Card */}
+            <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
+              <CardContent className="p-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">Send Your Message To</h4>
+                
+                <div className="bg-white border-2 border-blue-200 rounded-xl p-4 mb-4 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center">
+                        <Phone className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-xl font-bold text-gray-900">(813) 555-9999</p>
+                        <p className="text-sm text-gray-600">Store Representative</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-lg font-bold text-gray-900">(813) 555-9999</p>
-                      <p className="text-sm text-gray-600">Mattress Firm Store</p>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-green-700">Available Now</p>
+                      <p className="text-xs text-gray-500">Typical response: 2-5 min</p>
                     </div>
                   </div>
                 </div>
+
                 <Button 
                   onClick={handleSendMessage}
-                  className="w-full btn-success-gradient py-3 mt-3 font-medium rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-200"
+                  className="w-full btn-success-gradient py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
                 >
                   <MessageCircle className="w-5 h-5 mr-2" />
-                  Send Message Now
+                  Open Messaging App
                 </Button>
-              </div>
+              </CardContent>
+            </Card>
 
-              {/* What Happens Next */}
-              <div className="space-y-3">
-                <h4 className="text-lg font-semibold text-gray-900">What happens next:</h4>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+            {/* Process Steps */}
+            <Card className="bg-gradient-to-br from-slate-50 to-gray-50 border-slate-200">
+              <CardContent className="p-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">What Happens Next</h4>
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
                       <span className="text-white text-sm font-bold">1</span>
                     </div>
-                    <p className="text-gray-700">You'll get quotes and directions within 5 minutes</p>
+                    <div>
+                      <p className="font-medium text-gray-900">Get Instant Response</p>
+                      <p className="text-sm text-gray-600">Store team responds within 2-5 minutes with quotes and directions</p>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
                       <span className="text-white text-sm font-bold">2</span>
                     </div>
-                    <p className="text-gray-700">Visit the store to try mattresses</p>
+                    <div>
+                      <p className="font-medium text-gray-900">Try Before You Buy</p>
+                      <p className="text-sm text-gray-600">Visit the store to test comfort levels and make your selection</p>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
                       <span className="text-white text-sm font-bold">3</span>
                     </div>
-                    <p className="text-gray-700">Pick your favorite and drive home tonight!</p>
+                    <div>
+                      <p className="font-medium text-gray-900">Drive Home Tonight</p>
+                      <p className="text-sm text-gray-600">Complete your purchase and take your new mattress home immediately</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         )}
-
       </main>
     </div>
   );
