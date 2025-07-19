@@ -13,49 +13,65 @@ import { insertLeadSchema, findStoresSchema, type Store } from "@shared/schema";
 import { formatPhoneNumber, generateLeadMessage, openSMSApp, copyToClipboard } from "@/lib/utils";
 import { MapPin, Check, Car, Shield, Clock, Copy, MessageCircle, CheckCircle, Star, Phone, Navigation } from "lucide-react";
 
-type Step = "zip" | "stores" | "mattress" | "contact" | "instructions";
+type Step = "zip" | "mattress" | "contact" | "instructions";
 
 const zipSchema = findStoresSchema;
 
 const mattressOptions = [
   {
     id: "sealy-firm",
-    name: "Sealy Memory Foam",
-    comfort: "Firm Support",
-    price: "$400-500",
-    description: "Great for back support and spinal alignment",
+    name: "Sealy Memory Foam Firm",
+    comfort: "Perfect for back & stomach sleepers",
+    price: "$299",
+    originalPrice: "$699",
+    rating: 4.7,
+    reviews: 1834,
+    description: "Premium spinal alignment and support",
     popular: false,
+    benefits: ["Brand new with full warranty", "Try in store before you buy", "Fits in any car"],
   },
   {
     id: "sealy-medium", 
-    name: "Sealy Memory Foam",
-    comfort: "Medium Comfort",
-    price: "$450-550",
+    name: "Sealy Memory Foam Medium",
+    comfort: "Our most popular choice - works for everyone",
+    price: "$349",
+    originalPrice: "$749",
+    rating: 4.8,
+    reviews: 2847,
     description: "Perfect balance of comfort and support",
     popular: true,
+    benefits: ["Best seller - most popular choice", "Same mattress others wait weeks for", "Guaranteed to fit in your car"],
   },
   {
     id: "sealy-soft",
-    name: "Sealy Memory Foam", 
-    comfort: "Soft Comfort",
-    price: "$450-550",
+    name: "Sealy Memory Foam Soft", 
+    comfort: "Ideal for side sleepers",
+    price: "$349",
+    originalPrice: "$749",
+    rating: 4.6,
+    reviews: 1592,
     description: "Superior pressure point relief and comfort",
     popular: false,
+    benefits: ["Perfect for side sleepers", "Pressure point relief", "Try it first, then decide"],
   },
   {
     id: "basic-hybrid",
     name: "Basic Hybrid",
-    comfort: "Balanced Support", 
-    price: "$500-600",
-    description: "Best of both worlds - coils and memory foam",
+    comfort: "Best of both worlds - coil support + foam comfort", 
+    price: "$399",
+    originalPrice: "$899",
+    rating: 4.5,
+    reviews: 978,
+    description: "Traditional coil support with memory foam comfort",
     popular: false,
+    benefits: ["Coil support + memory foam", "Great for hot sleepers", "Full manufacturer warranty"],
   },
 ];
 
 export default function Home() {
   const [currentStep, setCurrentStep] = useState<Step>("zip");
   const [userZip, setUserZip] = useState("");
-  const [nearbyStores, setNearbyStores] = useState<Store[]>([]);
+  const [autoSelectedStore, setAutoSelectedStore] = useState<Store | null>(null);
   const [selectedMattress, setSelectedMattress] = useState("");
   const [leadData, setLeadData] = useState<any>(null);
   const [copySuccess, setCopySuccess] = useState(false);
@@ -84,11 +100,12 @@ export default function Home() {
     },
     onSuccess: (data) => {
       if (data.success && data.storesFound > 0) {
-        setNearbyStores(data.stores);
-        setCurrentStep("stores");
+        // Auto-select the closest store
+        setAutoSelectedStore(data.stores[0]);
+        setCurrentStep("mattress");
         toast({
-          title: "Locations Found",
-          description: `Found ${data.storesFound} stores near you with mattresses ready for pickup.`,
+          title: "Perfect! Found Available Mattresses",
+          description: `4 top-rated mattresses ready for pickup at ${data.stores[0].name}`,
         });
       } else {
         toast({
@@ -134,9 +151,7 @@ export default function Home() {
     findStoresMutation.mutate(data);
   };
 
-  const handleStoresConfirm = () => {
-    setCurrentStep("mattress");
-  };
+
 
   const handleMattressSelect = (mattressId: string) => {
     setSelectedMattress(mattressId);
@@ -287,124 +302,100 @@ export default function Home() {
           </Card>
         )}
 
-        {/* Store Locations */}
-        {currentStep === "stores" && (
-          <div className="animate-slide-up">
-            <div className="text-center mb-6">
-              <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-              <h3 className="section-title font-semibold text-gray-900 mb-2">Locations Found</h3>
-              <p className="text-gray-600">
-                Great! We found {nearbyStores.length} stores near <span className="font-medium text-primary">{userZip}</span> with mattresses ready for pickup.
-              </p>
-            </div>
 
-            <div className="space-y-4 mb-6">
-              {nearbyStores.map((store) => (
-                <Card key={store.id} className="border border-gray-200">
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">{store.name}</h4>
-                        <p className="text-sm text-gray-600 flex items-center mt-1">
-                          <Navigation className="w-4 h-4 mr-1" />
-                          {store.distance} miles away
-                        </p>
-                        <p className="text-sm text-gray-600">{store.address}</p>
-                      </div>
-                      <div className="text-right">
-                        <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
-                          store.isOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                          <Clock className="w-3 h-3 mr-1" />
-                          {store.hours}
-                        </div>
-                        {store.rating && (
-                          <div className="flex items-center mt-1">
-                            <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                            <span className="text-sm text-gray-600 ml-1">{store.rating}</span>
-                          </div>
-                        )}
-                        {store.phone && (
-                          <p className="text-xs text-gray-500 mt-1 flex items-center">
-                            <Phone className="w-3 h-3 mr-1" />
-                            {store.phone}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="bg-blue-50 rounded-lg p-3">
-                      <p className="text-sm text-blue-800 font-medium">
-                        All 4 mattress options available for immediate pickup
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            <Button
-              onClick={handleStoresConfirm}
-              className="w-full btn-success-gradient py-4 text-lg font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200"
-            >
-              <CheckCircle className="w-5 h-5 mr-2" />
-              Continue with These Locations
-            </Button>
-          </div>
-        )}
 
         {/* Mattress Options */}
-        {currentStep === "mattress" && (
-          <div className="animate-slide-up">
-            <div className="text-center mb-6">
-              <h3 className="section-title font-semibold text-gray-900 mb-2">Ready for Pickup Today</h3>
-              <p className="text-gray-600">These mattresses are available at stores near <span className="font-medium text-primary">{userZip}</span></p>
+        {currentStep === "mattress" && autoSelectedStore && (
+          <div className="animate-slide-up space-y-6">
+            {/* Header */}
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Perfect! These 4 premium mattresses are ready for pickup near {userZip}</h3>
+              <div className="bg-blue-50 rounded-lg p-3 mb-4">
+                <p className="text-sm text-blue-800">
+                  Available at <span className="font-medium">{autoSelectedStore.name}</span> • {autoSelectedStore.distance} miles • Open until {autoSelectedStore.hours}
+                </p>
+              </div>
             </div>
 
+            {/* Enhanced Mattress Cards */}
             <div className="space-y-4">
               {mattressOptions.map((option) => (
                 <Card
                   key={option.id}
-                  className={`premium-card cursor-pointer border-2 transition-all duration-200 ${
+                  className={`cursor-pointer border-2 transition-all duration-200 hover:shadow-xl relative overflow-hidden ${
                     selectedMattress === option.id 
-                      ? 'border-primary bg-blue-50' 
-                      : 'border-gray-100 hover:border-primary hover:shadow-lg'
+                      ? 'border-primary bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg' 
+                      : 'border-gray-200 hover:border-primary'
                   }`}
                   onClick={() => handleMattressSelect(option.id)}
                 >
+                  {option.popular && (
+                    <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
+                      BEST SELLER
+                    </div>
+                  )}
+                  
                   <CardContent className="p-6">
+                    {/* Header Row */}
                     <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h4 className="text-lg font-semibold text-gray-900">{option.name}</h4>
-                        <p className="text-primary font-medium">{option.comfort}</p>
-                        {option.popular && (
-                          <span className="inline-block bg-orange-500 text-white text-xs px-2 py-1 rounded-full mt-1">
-                            Most Popular
-                          </span>
-                        )}
+                      <div className="flex-1">
+                        <h4 className="text-xl font-bold text-gray-900 mb-1">{option.name}</h4>
+                        <p className="text-gray-700 font-medium text-sm">{option.comfort}</p>
+                        
+                        {/* Rating */}
+                        <div className="flex items-center mt-2 space-x-2">
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className={`w-4 h-4 ${i < Math.floor(option.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
+                            ))}
+                          </div>
+                          <span className="text-sm font-medium text-gray-900">{option.rating}/5</span>
+                          <span className="text-sm text-gray-500">({option.reviews.toLocaleString()} reviews)</span>
+                        </div>
                       </div>
+                      
                       <div className="text-right">
-                        <p className="text-xl font-bold text-gray-900">{option.price}</p>
-                        <p className="text-sm text-green-600">Ready Now</p>
+                        <div className="flex items-baseline space-x-2">
+                          <span className="text-2xl font-bold text-gray-900">{option.price}</span>
+                          <span className="text-sm text-gray-500 line-through">{option.originalPrice}</span>
+                        </div>
+                        <p className="text-sm font-medium text-green-600 mt-1">Ready for pickup now</p>
                       </div>
                     </div>
+
+                    {/* Description */}
                     <p className="text-gray-600 text-sm mb-4">{option.description}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <span className="flex items-center">
-                          <Check className="w-4 h-4 mr-1" />
-                          Try in store
-                        </span>
-                        <span className="flex items-center">
-                          <Car className="w-4 h-4 mr-1" />
-                          Fits any car
-                        </span>
-                      </div>
-                      <div className={`selection-indicator ${selectedMattress === option.id ? 'selected' : ''}`}>
-                        {selectedMattress === option.id && (
-                          <Check className="w-3 h-3 text-white m-auto" />
-                        )}
-                      </div>
+
+                    {/* Benefits */}
+                    <div className="space-y-2 mb-4">
+                      {option.benefits.map((benefit, index) => (
+                        <div key={index} className="flex items-center text-sm text-gray-700">
+                          <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
+                          <span>{benefit}</span>
+                        </div>
+                      ))}
                     </div>
+
+                    {/* Action Button */}
+                    <Button
+                      className={`w-full py-3 font-semibold rounded-lg transition-all duration-200 ${
+                        selectedMattress === option.id
+                          ? 'btn-success-gradient text-white shadow-lg'
+                          : 'border-2 border-primary text-primary bg-white hover:bg-primary hover:text-white'
+                      }`}
+                    >
+                      {selectedMattress === option.id ? (
+                        <>
+                          <CheckCircle className="w-5 h-5 mr-2" />
+                          Selected - Continue
+                        </>
+                      ) : (
+                        <>
+                          <Shield className="w-5 h-5 mr-2" />
+                          Select This Mattress
+                        </>
+                      )}
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -545,38 +536,66 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            {/* Store Contact Card */}
-            <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
-              <CardContent className="p-6">
-                <h4 className="text-lg font-semibold text-gray-900 mb-4">Send Your Message To</h4>
-                
-                <div className="bg-white border-2 border-blue-200 rounded-xl p-4 mb-4 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center">
-                        <Phone className="w-6 h-6 text-white" />
+            {/* Store Details Card */}
+            {autoSelectedStore && (
+              <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
+                <CardContent className="p-6">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Your Pickup Location</h4>
+                  
+                  {/* Store Info */}
+                  <div className="bg-white border-2 border-blue-200 rounded-xl p-4 mb-4 shadow-sm">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center">
+                          <MapPin className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-lg font-bold text-gray-900">{autoSelectedStore.name}</p>
+                          <p className="text-sm text-gray-600">{autoSelectedStore.address}</p>
+                          <p className="text-sm text-gray-600">{autoSelectedStore.distance} miles away</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-xl font-bold text-gray-900">(813) 555-9999</p>
-                        <p className="text-sm text-gray-600">Store Representative</p>
+                      <div className="text-right">
+                        <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
+                          autoSelectedStore.isOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                          <Clock className="w-3 h-3 mr-1" />
+                          {autoSelectedStore.hours}
+                        </div>
+                        {autoSelectedStore.rating && (
+                          <div className="flex items-center mt-1">
+                            <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                            <span className="text-sm text-gray-600 ml-1">{autoSelectedStore.rating}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-green-700">Available Now</p>
-                      <p className="text-xs text-gray-500">Typical response: 2-5 min</p>
+                    
+                    {/* Contact Info */}
+                    <div className="border-t pt-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Phone className="w-5 h-5 text-primary" />
+                          <span className="text-lg font-bold text-gray-900">{autoSelectedStore.phone || "(813) 555-9999"}</span>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-medium text-green-700">Available Now</p>
+                          <p className="text-xs text-gray-500">Typical response: 2-5 min</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <Button 
-                  onClick={handleSendMessage}
-                  className="w-full btn-success-gradient py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
-                >
-                  <MessageCircle className="w-5 h-5 mr-2" />
-                  Open Messaging App
-                </Button>
-              </CardContent>
-            </Card>
+                  <Button 
+                    onClick={handleSendMessage}
+                    className="w-full btn-success-gradient py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
+                  >
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    Open Messaging App
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Process Steps */}
             <Card className="bg-gradient-to-br from-slate-50 to-gray-50 border-slate-200">
