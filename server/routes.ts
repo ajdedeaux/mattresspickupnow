@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertLeadSchema, findStoresSchema, type Store } from "@shared/schema";
+import { triggerSMSAutomation, generateOwnerAlert } from "./sms-automation";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -50,17 +51,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create lead in storage
       const lead = await storage.createLead(validatedData);
       
-      // Send SMS notification to owner (mock for now - would use Twilio in production)
-      const ownerNotification = formatOwnerNotification(lead);
-      console.log("SMS Notification to Owner:", ownerNotification);
+      // Get store information (using mock data for now)
+      const mockStore = {
+        name: "Mattress Firm Tampa",
+        address: "5678 Oak Ave, Tampa FL 33612", 
+        distance: "2.1",
+        phone: "(813) 555-0124",
+        hours: "9 PM"
+      };
       
-      // In production, would send actual SMS:
-      // await sendTwilioSMS(process.env.OWNER_PHONE, ownerNotification);
+      // Trigger SMS automation sequence
+      await triggerSMSAutomation(lead, mockStore);
       
       res.status(201).json({
         success: true,
         leadId: lead.leadId,
-        message: "Lead created successfully"
+        message: "Lead created and SMS automation triggered"
       });
       
     } catch (error) {
@@ -80,30 +86,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // SMS Automation Management Endpoints
+  
+  // Mark lead as picked up (stops automation)
+  app.post("/api/leads/:leadId/pickup", async (req, res) => {
+    try {
+      const { leadId } = req.params;
+      const lead = await storage.getLeadByLeadId(leadId);
+      
+      if (!lead) {
+        return res.status(404).json({
+          success: false,
+          message: "Lead not found"
+        });
+      }
+      
+      // Update lead status
+      // In production, this would update the database
+      console.log(`Lead ${leadId} marked as picked up - automation stopped`);
+      
+      res.json({
+        success: true,
+        message: "Lead marked as picked up"
+      });
+      
+    } catch (error) {
+      console.error("Error marking pickup:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error"
+      });
+    }
+  });
+
+  // Manual SMS sending endpoint
+  app.post("/api/leads/:leadId/sms", async (req, res) => {
+    try {
+      const { leadId } = req.params;
+      const { messageType, customMessage } = req.body;
+      
+      const lead = await storage.getLeadByLeadId(leadId);
+      if (!lead) {
+        return res.status(404).json({
+          success: false,
+          message: "Lead not found"
+        });
+      }
+      
+      // Send custom SMS (would use Twilio in production)
+      console.log(`Manual SMS sent to lead ${leadId}: ${customMessage || messageType}`);
+      
+      res.json({
+        success: true,
+        message: "SMS sent successfully"
+      });
+      
+    } catch (error) {
+      console.error("Error sending SMS:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error"
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
-}
-
-function formatOwnerNotification(lead: any): string {
-  const mattressNames: Record<string, string> = {
-    'sealy-firm': 'Sealy Memory Foam Firm',
-    'sealy-medium': 'Sealy Memory Foam Medium', 
-    'sealy-soft': 'Sealy Memory Foam Soft',
-    'basic-hybrid': 'Basic Hybrid'
-  };
-
-  return `NEW PICKUP LEAD
-
-${lead.name} - ${lead.phone}
-ZIP: ${lead.zipCode}
-Mattress: ${mattressNames[lead.mattressType] || lead.mattressType}
-Email: ${lead.email || "Not provided"}
-
-${new Date().toLocaleString()}
-Lead ID: ${lead.leadId}
-
-Customer is texting Podium now!
-Expected commission: $17-36`;
 }
 
 // Store finder using Google Places API (or fallback mock data for development)

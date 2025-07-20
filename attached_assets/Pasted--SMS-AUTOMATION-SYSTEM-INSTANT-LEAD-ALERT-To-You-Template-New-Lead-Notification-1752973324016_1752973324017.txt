@@ -1,0 +1,292 @@
+# 📱 SMS AUTOMATION SYSTEM
+
+## **🚨 INSTANT LEAD ALERT (To You)**
+
+**Template: New Lead Notification**
+
+```
+🚨 HOT LEAD - MATTRESS PICKUP 🚨
+
+{{NAME}} - {{PHONE}}
+📍 {{LOCATION}} | 🛏️ {{SIZE}} {{MATTRESS_TYPE}} | 💰 {{PRICE}}
+⏰ Pickup: {{PICKUP_TIME}} | Comfort: {{COMFORT_PREF}}
+
+NEAREST STORE:
+📞 {{STORE_NAME}} - {{DISTANCE}} - {{STORE_PHONE}}
+📍 {{STORE_ADDRESS}}
+
+ACTION NEEDED:
+1. Check inventory at {{STORE_NAME}}
+2. Call store to prep {{SIZE}} {{MATTRESS_TYPE}}
+3. Follow up with customer if needed
+
+Lead ID: {{TIMESTAMP}}
+```
+
+**Example:**
+
+```
+🚨 HOT LEAD - MATTRESS PICKUP 🚨
+
+Sarah Johnson - (813) 555-0123
+📍 Tampa, FL 33612 | 🛏️ Queen Firm | 💰 $299.99
+⏰ Pickup: Today | Comfort: Firm
+
+NEAREST STORE:
+📞 Mattress Firm Tampa - 2.1 mi - (813) 555-0124
+📍 5678 Oak Ave, Tampa FL 33612
+
+ACTION NEEDED:
+1. Check inventory at Mattress Firm Tampa
+2. Call store to prep Queen Firm
+3. Follow up with customer if needed
+
+Lead ID: 2025-07-19-14:30:22
+```
+
+-----
+
+## **📲 CUSTOMER SMS SEQUENCE**
+
+### **SMS 1: IMMEDIATE CONFIRMATION (Sent instantly)**
+
+```
+🎉 You're all set, {{NAME}}!
+
+Your {{SIZE}} {{MATTRESS_TYPE}} is reserved at {{STORE_NAME}}:
+
+📍 {{STORE_ADDRESS}}
+📞 {{STORE_PHONE}}
+⏰ Open until {{STORE_HOURS}}
+
+🚗 Just {{DISTANCE}} away - it fits on your back seat!
+
+💰 Your locked price: {{PRICE}}
+
+Need directions? Reply DIRECTIONS
+Questions? Reply HELP
+
+Drive safe! 🛏️✨
+```
+
+### **SMS 2: 30-MINUTE CHECK-IN (If no pickup detected)**
+
+```
+Hi {{NAME}}! 👋
+
+Just checking - are you on your way to pick up your {{SIZE}} {{MATTRESS_TYPE}}?
+
+{{STORE_NAME}} has it ready for you to test first.
+
+If you're running late or need to reschedule, just reply and let us know!
+
+Your price is still locked: {{PRICE}} ✅
+
+Reply DIRECTIONS for GPS link
+Reply POSTPONE to reschedule
+```
+
+### **SMS 3: 2-HOUR FOLLOW-UP (If still no pickup)**
+
+```
+Hey {{NAME}},
+
+We want to make sure you get your mattress deal! Your {{SIZE}} {{MATTRESS_TYPE}} is still reserved.
+
+Common questions:
+❓ "Does it really fit in my car?" - YES! Comes in a box
+❓ "Can I test it first?" - YES! Try before you buy
+❓ "Is the price still good?" - YES! {{PRICE}} locked in
+
+Need help? Call/text: {{YOUR_PHONE}}
+Store direct: {{STORE_PHONE}}
+
+Ready when you are! 🛏️
+```
+
+### **SMS 4: NEXT DAY FOLLOW-UP (If no pickup after 24 hours)**
+
+```
+{{NAME}}, your mattress deal expires soon! ⏰
+
+We held your {{SIZE}} {{MATTRESS_TYPE}} for 24 hours at the exclusive price of {{PRICE}}.
+
+✅ Still available at {{STORE_NAME}}
+✅ Still fits in your car
+✅ Still try before you buy
+
+Want to keep your reservation? Reply YES
+Need different timing? Reply RESCHEDULE
+Have questions? Reply HELP
+
+Don't miss out on saving ${{SAVINGS}}! 💰
+```
+
+-----
+
+## **🤖 AUTOMATION TRIGGERS**
+
+### **Trigger 1: Form Submission**
+
+- **Action:** Send instant lead alert SMS to you
+- **Action:** Send SMS 1 to customer
+- **Timer:** Set 30-minute follow-up
+
+### **Trigger 2: 30 Minutes No Pickup**
+
+- **Check:** Has customer been marked as “picked up”?
+- **If NO:** Send SMS 2
+- **Timer:** Set 2-hour follow-up
+
+### **Trigger 3: 2 Hours No Pickup**
+
+- **Check:** Still no pickup confirmation?
+- **If NO:** Send SMS 3
+- **Timer:** Set 24-hour follow-up
+
+### **Trigger 4: 24 Hours No Pickup**
+
+- **Check:** Still no pickup confirmation?
+- **If NO:** Send SMS 4
+- **Action:** Mark lead as “needs manual follow-up”
+
+### **Trigger 5: Customer Replies**
+
+- **DIRECTIONS:** Send Google Maps link to store
+- **HELP:** Forward to you for manual response
+- **POSTPONE/RESCHEDULE:** Mark for manual follow-up
+- **YES:** Reset timer, continue sequence
+
+-----
+
+## **📊 AUTOMATION DASHBOARD FEATURES**
+
+### **Real-Time Lead Status:**
+
+```
+🔴 HOT (needs immediate action)
+🟡 WARM (in progress) 
+🟢 CONTACTED (store called)
+🔵 CONVERTED (picked up)
+⚫ EXPIRED (24+ hours no pickup)
+```
+
+### **Automated Actions:**
+
+- ✅ Instant SMS alerts to you
+- ✅ Customer nurture sequence
+- ✅ Store inventory checks
+- ✅ Lead scoring & prioritization
+- ✅ Follow-up reminders
+
+### **Manual Override Options:**
+
+- 📞 One-click call customer
+- 📞 One-click call store
+- 📍 Send directions to customer
+- ✏️ Add custom notes
+- 🔄 Reset automation sequence
+- ❌ Mark as converted/lost
+
+-----
+
+## **🎯 RESPONSE TEMPLATES (For Manual Replies)**
+
+### **Customer Asks About Car Fit:**
+
+```
+Great question! Your {{SIZE}} {{MATTRESS_TYPE}} comes compressed in a box that's about the size of a large suitcase. It easily fits on the back seat of any car - even small cars like Honda Civics! 🚗
+
+Once you get it home, cut the plastic and it expands to full size in a few hours. Magic! ✨
+```
+
+### **Customer Wants to Reschedule:**
+
+```
+No problem, {{NAME}}! We can hold your {{SIZE}} {{MATTRESS_TYPE}} and your {{PRICE}} price for up to 48 more hours.
+
+When works better for you?
+• Today after 5pm?
+• Tomorrow morning?
+• This weekend?
+
+Just let me know and I'll update {{STORE_NAME}} 👍
+```
+
+### **Customer Has Budget Concerns:**
+
+```
+I totally understand, {{NAME}}! Here's the thing - this {{SIZE}} {{MATTRESS_TYPE}} normally costs {{ORIGINAL_PRICE}}, but you're getting it for {{PRICE}}.
+
+That's a savings of ${{SAVINGS}}! These prices are from our special pickup program and won't last.
+
+Plus, you can test it in the store first - no risk! 🛏️
+```
+
+-----
+
+## **📈 SUCCESS METRICS TO TRACK**
+
+### **Lead Quality:**
+
+- Conversion rate by mattress type
+- Time from lead to pickup
+- Average order value
+- Customer satisfaction scores
+
+### **Automation Performance:**
+
+- SMS open rates
+- Response rates by message
+- Conversion by follow-up sequence
+- Manual intervention needed
+
+### **Store Coordination:**
+
+- Average inventory prep time
+- Store-specific conversion rates
+- Customer wait times
+- Pickup completion rates
+
+-----
+
+## **🔧 TECHNICAL IMPLEMENTATION**
+
+### **SMS Platform Integration:**
+
+- **Twilio** for SMS sending/receiving
+- **Webhooks** for real-time lead alerts
+- **CRM Integration** for lead tracking
+- **Store POS Integration** for inventory checks
+
+### **Automation Logic:**
+
+```javascript
+// Pseudo-code for automation flow
+function handleNewLead(leadData) {
+  // 1. Send immediate alert to business owner
+  sendSMS(OWNER_PHONE, generateLeadAlert(leadData));
+  
+  // 2. Send confirmation to customer
+  sendSMS(leadData.phone, generateCustomerConfirmation(leadData));
+  
+  // 3. Schedule follow-up sequence
+  scheduleFollowUp(leadData.id, 30); // 30 minutes
+}
+
+function handleFollowUp(leadId, stage) {
+  const lead = getLead(leadId);
+  
+  if (!lead.pickedUp) {
+    const message = generateFollowUpMessage(lead, stage);
+    sendSMS(lead.phone, message);
+    
+    // Schedule next follow-up
+    if (stage < 4) {
+      scheduleFollowUp(leadId, getNextStage(stage));
+    }
+  }
+}
+```
+
+This automation system ensures no leads fall through the cracks while maintaining the personal touch that converts browsers into buyers! 🎯

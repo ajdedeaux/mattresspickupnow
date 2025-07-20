@@ -222,7 +222,13 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-slate-900 via-blue-900 to-primary text-white py-16 px-6">
+      <section className="bg-gradient-to-br from-slate-900 via-blue-900 to-primary text-white py-16 px-6 relative">
+        <a 
+          href="/dashboard" 
+          className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/30 transition-all"
+        >
+          Dashboard
+        </a>
         <div className="max-w-md mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4 leading-tight">Need a Mattress Tonight?<br/>It Fits in Your Car.</h2>
           <p className="text-xl mb-8 text-slate-200">Premium mattresses in boxes that fit on your back seat - no truck needed</p>

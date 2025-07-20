@@ -47,6 +47,18 @@ export class MemStorage implements IStorage {
       leadId,
       createdAt: new Date(),
       email: insertLead.email || null,
+      status: "hot",
+      pickedUp: false,
+      storeId: null,
+      storeName: null,
+      storePhone: null,
+      storeAddress: null,
+      price: null,
+      mattressSize: "Queen",
+      comfortLevel: null,
+      pickupTime: null,
+      followUpStage: 0,
+      lastContactAt: null,
     };
     this.leads.set(id, lead);
     return lead;
