@@ -390,7 +390,7 @@ export default function Home() {
                 <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <CheckCircle className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Found 3 Mattress Firm locations near you!</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Found 3 pickup locations near you!</h3>
               </CardContent>
             </Card>
 
@@ -419,7 +419,7 @@ export default function Home() {
                   <div className="flex items-center space-x-3">
                     <MapPin className="w-5 h-5 text-primary" />
                     <div>
-                      <p className="font-medium text-gray-900">{autoSelectedStore.name}</p>
+                      <p className="font-medium text-gray-900">Closest pickup location</p>
                       <p className="text-sm text-gray-600">{autoSelectedStore.distance} miles away • Open until {autoSelectedStore.hours}</p>
                     </div>
                   </div>
@@ -445,7 +445,7 @@ export default function Home() {
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Perfect! These 4 premium mattresses are ready for pickup near {userZip}</h3>
               <div className="bg-blue-50 rounded-lg p-3 mb-4">
                 <p className="text-sm text-blue-800">
-                  Available at <span className="font-medium">{autoSelectedStore.name}</span> • {autoSelectedStore.distance} miles • Open until {autoSelectedStore.hours}
+                  Available for pickup • {autoSelectedStore.distance} miles away • Open until {autoSelectedStore.hours}
                 </p>
               </div>
             </div>
@@ -548,7 +548,7 @@ export default function Home() {
             <CardContent className="p-6">
               <div className="text-center mb-6">
                 <h3 className="section-title font-semibold text-gray-900 mb-2">Almost Done!</h3>
-                <p className="text-gray-600">Just need your contact info to get store directions</p>
+                <p className="text-gray-600">Just need your contact info to lock in your exclusive pricing</p>
               </div>
 
               <Form {...contactForm}>
@@ -609,8 +609,8 @@ export default function Home() {
                     className="w-full btn-success-gradient py-4 text-lg font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200"
                     disabled={createLeadMutation.isPending}
                   >
-                    <MapPin className="w-5 h-5 mr-2" />
-                    {createLeadMutation.isPending ? "Getting Directions..." : "Get Store Directions Now"}
+                    <CheckCircle className="w-5 h-5 mr-2" />
+                    {createLeadMutation.isPending ? "Locking in your pricing..." : "LOCK IN MY PRICING"}
                   </Button>
                 </form>
               </Form>
@@ -627,8 +627,8 @@ export default function Home() {
                 <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <CheckCircle className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Instructions Ready</h3>
-                <p className="text-gray-700">Your personalized pickup message is ready to send</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">You're all set! Here's your pickup plan:</h3>
+                <p className="text-gray-700">We've locked in exclusive pricing and coordinated with your nearest location</p>
               </CardContent>
             </Card>
 
@@ -681,6 +681,19 @@ export default function Home() {
                 <CardContent className="p-6">
                   <h4 className="text-lg font-semibold text-gray-900 mb-4">Your Pickup Location</h4>
                   
+                  {/* Exclusive Pricing Banner */}
+                  <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 mb-4">
+                    <div className="text-center">
+                      <p className="text-sm text-green-800 font-semibold mb-2">
+                        <strong>Good news:</strong> This is at Mattress Firm! We've negotiated exclusive pricing and they have your mattress ready for testing.
+                      </p>
+                      <div className="bg-white rounded-lg p-3 border border-green-300">
+                        <p className="text-lg font-bold text-green-800">YOUR EXCLUSIVE PRICE: ${mattressOptions.find(m => m.id === selectedMattress)?.price || "299"}</p>
+                        <p className="text-sm text-green-600">(Locked in - no surprises at pickup)</p>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Store Info */}
                   <div className="bg-white border-2 border-blue-200 rounded-xl p-4 mb-4 shadow-sm">
                     <div className="flex items-start justify-between mb-3">
