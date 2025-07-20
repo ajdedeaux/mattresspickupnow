@@ -243,6 +243,43 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Progress Indicator */}
+      {currentStep !== "zip" && (
+        <div className="max-w-md mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            {[
+              { step: "zip", label: "Location", completed: currentStep !== "zip" },
+              { step: "revelation", label: "Options", completed: ["mattress", "contact", "instructions"].includes(currentStep) },
+              { step: "mattress", label: "Select", completed: ["contact", "instructions"].includes(currentStep) },
+              { step: "contact", label: "Details", completed: currentStep === "instructions" }
+            ].map((item, index) => (
+              <div key={item.step} className="flex items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+                  item.step === currentStep 
+                    ? 'bg-blue-600 text-white shadow-lg scale-110' 
+                    : item.completed 
+                      ? 'bg-green-600 text-white' 
+                      : 'bg-gray-200 text-gray-500'
+                }`}>
+                  {item.completed ? <CheckCircle className="w-4 h-4" /> : index + 1}
+                </div>
+                {index < 3 && (
+                  <div className={`w-12 h-1 mx-1 transition-all duration-300 ${
+                    item.completed ? 'bg-green-600' : 'bg-gray-200'
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-between text-xs text-gray-600 mt-2">
+            <span>Location</span>
+            <span>Options</span>
+            <span>Select</span>
+            <span>Details</span>
+          </div>
+        </div>
+      )}
+
       <main className="max-w-md mx-auto px-6 py-8 space-y-8">
         
         {/* ZIP Code Entry */}
@@ -254,6 +291,49 @@ export default function Home() {
                 <p className="text-gray-600 text-sm">More precise location = closer pickup options</p>
               </div>
               
+              {/* Location Options */}
+              <div className="space-y-4 mb-6">
+                <button 
+                  className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all flex items-center justify-between group"
+                  onClick={() => {
+                    // For demo, use a default ZIP code
+                    zipForm.setValue("zipCode", "33612");
+                    handleZipSubmit({ zipCode: "33612" });
+                  }}
+                >
+                  <div className="flex items-center">
+                    <Navigation className="w-6 h-6 text-blue-600 mr-3" />
+                    <div className="text-left">
+                      <div className="font-semibold text-gray-900">Current location (GPS)</div>
+                      <div className="text-sm text-gray-600">Find nearest options right now</div>
+                    </div>
+                  </div>
+                  <div className="text-blue-600 group-hover:translate-x-1 transition-transform">→</div>
+                </button>
+
+                <button 
+                  className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all flex items-center justify-between group"
+                  onClick={() => {
+                    // For demo, use a default ZIP code
+                    zipForm.setValue("zipCode", "33612");
+                    handleZipSubmit({ zipCode: "33612" });
+                  }}
+                >
+                  <div className="flex items-center">
+                    <MapPin className="w-6 h-6 text-blue-600 mr-3" />
+                    <div className="text-left">
+                      <div className="font-semibold text-gray-900">Full address</div>
+                      <div className="text-sm text-gray-600">Get precise pickup locations</div>
+                    </div>
+                  </div>
+                  <div className="text-blue-600 group-hover:translate-x-1 transition-transform">→</div>
+                </button>
+              </div>
+              
+              <div className="relative mb-4">
+                <div className="text-center text-sm text-gray-500 mb-4">Or enter ZIP code for quick search:</div>
+              </div>
+
               <Form {...zipForm}>
                 <form onSubmit={zipForm.handleSubmit(handleZipSubmit)} className="space-y-4">
                   <FormField
@@ -261,13 +341,12 @@ export default function Home() {
                     name="zipCode"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-700">ZIP Code (Quick Search)</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
                             placeholder="Enter ZIP code (e.g., 33612)"
                             maxLength={5}
-                            className="form-input"
+                            className="form-input text-center text-lg"
                             onChange={(e) => {
                               const value = e.target.value.replace(/\D/g, '');
                               field.onChange(value.slice(0, 5));
@@ -292,7 +371,7 @@ export default function Home() {
                     ) : (
                       <>
                         <MapPin className="w-5 h-5 mr-2" />
-                        Find My Car-Friendly Options
+                        FIND MY OPTIONS
                       </>
                     )}
                   </Button>
@@ -437,21 +516,22 @@ export default function Home() {
 
                     {/* Action Button */}
                     <Button
-                      className={`w-full py-3 font-semibold rounded-lg transition-all duration-200 ${
+                      onClick={() => handleMattressSelect(option.id)}
+                      className={`w-full py-3 font-semibold rounded-lg transition-all duration-200 hover:scale-105 ${
                         selectedMattress === option.id
-                          ? 'btn-success-gradient text-white shadow-lg'
-                          : 'border-2 border-primary text-primary bg-white hover:bg-primary hover:text-white'
+                          ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg'
+                          : 'btn-primary-gradient text-white hover:shadow-lg'
                       }`}
                     >
                       {selectedMattress === option.id ? (
                         <>
                           <CheckCircle className="w-5 h-5 mr-2" />
-                          Selected - Continue
+                          SELECTED
                         </>
                       ) : (
                         <>
-                          <Shield className="w-5 h-5 mr-2" />
-                          Select This Mattress
+                          <Car className="w-5 h-5 mr-2" />
+                          TRY THIS ONE
                         </>
                       )}
                     </Button>
@@ -645,13 +725,33 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <Button 
-                    onClick={handleSendMessage}
-                    className="w-full btn-success-gradient py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
-                  >
-                    <MessageCircle className="w-5 h-5 mr-2" />
-                    Open Messaging App
-                  </Button>
+                  {/* Action Buttons */}
+                  <div className="grid grid-cols-1 gap-3">
+                    <Button 
+                      onClick={handleSendMessage}
+                      className="w-full btn-success-gradient py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
+                    >
+                      <MessageCircle className="w-5 h-5 mr-2" />
+                      TEXT STORE NOW
+                    </Button>
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                      <Button 
+                        onClick={() => window.open(`tel:${autoSelectedStore.phone || "8135559999"}`, "_self")}
+                        className="bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                      >
+                        <Phone className="w-4 h-4 mr-2" />
+                        CALL
+                      </Button>
+                      <Button 
+                        onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(autoSelectedStore.address || "1234 Main St, Tampa FL")}`, "_blank")}
+                        className="bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                      >
+                        <Navigation className="w-4 h-4 mr-2" />
+                        DIRECTIONS
+                      </Button>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             )}

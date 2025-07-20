@@ -36,11 +36,18 @@ Design preference: Premium and sleek appearance with icons only - absolutely no 
 ### Lead Capture System
 The application implements a strategic multi-step lead capture flow focused on the "car revelation":
 
-1. **ZIP Code Entry**: Location-based search with "car-friendly" messaging
+1. **ZIP Code Entry**: Multiple location options (GPS, address, ZIP) with "car-friendly" messaging
 2. **The Car Revelation**: Critical psychological breakthrough showing mattresses fit in back seats
-3. **Mattress Selection**: Enhanced cards with prominent "fits in car" benefits and trust signals
+3. **Mattress Selection**: Enhanced cards with prominent "fits in car" benefits and "TRY THIS ONE" CTAs
 4. **Contact Information**: Progressive information exchange with value at each step
-5. **Store Details & Instructions**: Auto-selected closest store with pickup coordination
+5. **Store Details & Instructions**: Auto-selected closest store with pickup coordination and action buttons
+
+### Enhanced UX Features
+- **Progress Indicator**: Visual step tracker showing Location → Options → Select → Details
+- **Multiple Location Options**: GPS current location, full address, or quick ZIP search
+- **Strong Call-to-Actions**: "TRY THIS ONE" buttons with car icons on mattress cards
+- **Action-Oriented Final Step**: TEXT STORE NOW, CALL, and DIRECTIONS buttons
+- **Car Revelation Emphasis**: Highlighted "fits on back seat" messaging throughout
 
 ### Core Value Proposition
 "Premium mattresses in boxes that fit on your back seat - no truck needed." This unique positioning solves the unknown problem most customers have about mattress transportation, creating a competitive moat through the revelation that quality mattresses can fit in any car.
