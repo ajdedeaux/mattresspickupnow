@@ -4,8 +4,12 @@ import { storage } from "./storage";
 import { insertLeadSchema, findStoresSchema, type Store } from "@shared/schema";
 import { triggerSMSAutomation, generateOwnerAlert } from "./sms-automation";
 import { z } from "zod";
+import express from "express";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  // Serve attached assets (videos, images, etc.)
+  app.use('/attached_assets', express.static('attached_assets'));
   
   // Health check endpoint
   app.get("/api/health", async (req, res) => {
