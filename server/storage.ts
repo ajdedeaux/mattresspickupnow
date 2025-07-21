@@ -41,6 +41,12 @@ export class MemStorage implements IStorage {
   async createLead(insertLead: InsertLead): Promise<Lead> {
     const id = this.currentLeadId++;
     const leadId = `MPN${Date.now().toString().slice(-5)}`;
+    
+    // Determine priority based on budget
+    let priority = "standard";
+    if (insertLead.budgetRange === "800_plus") priority = "high";
+    if (insertLead.budgetRange === "under_400") priority = "basic";
+    
     const lead: Lead = {
       ...insertLead,
       id,
@@ -48,15 +54,13 @@ export class MemStorage implements IStorage {
       createdAt: new Date(),
       email: insertLead.email || null,
       status: "hot",
+      priority: priority as any,
       pickedUp: false,
       storeId: null,
       storeName: null,
       storePhone: null,
       storeAddress: null,
       price: null,
-      mattressSize: "Queen",
-      comfortLevel: null,
-      pickupTime: null,
       followUpStage: 0,
       lastContactAt: null,
     };

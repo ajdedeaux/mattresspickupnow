@@ -1,0 +1,284 @@
+# Mattress Pickup Now - Pure Urgency Execution System
+
+## Mission Statement
+
+**“Click, click, click, set. Sleep on it tonight.”**
+
+This is a lead generation funnel optimized for pure urgency execution. While everyone else makes customers wait weeks and overwhelms them with endless options, we get them sleeping on a new mattress TONIGHT with 4 proven choices.
+
+**Core Differentiator**: URGENCY. We solve the problem today, not next week.
+
+## The Simple Promise
+
+**“Need a mattress? Pick one of these 4 options. Pick it up today. Sleep on it tonight. Done.”**
+
+### Why This Works
+
+- Customer has urgent need
+- Sees 4 simple, proven options
+- Answers 6 quick questions
+- Gets location to pick up today
+- Drives there, loads it, sleeps on it tonight
+
+**Zero thinking required. Maximum speed. Problem solved.**
+
+## The 4 Proven Options
+
+**“Four simple choices. All proven. All available today.”**
+
+|**F**    |**M**     |**S**    |**H**     |
+|---------|----------|---------|----------|
+|**Firm** |**Medium**|**Soft** |**Hybrid**|
+|8 inches |10 inches |12 inches|10 inches |
+|$199-$369|$249-$469 |$549-$799|$399-$599 |
+
+### Size Pricing (Ready Now)
+
+```
+         F      M      S      H
+Twin   $199   $249   $549   $399
+Full   $269   $359   $649   $449  
+Queen  $299   $399   $697   $499
+King   $369   $469   $799   $599
+```
+
+**The Hook**: “Don’t believe it fits in your car? WATCH THIS” → [Prius video]
+
+## The Frictionless Data Capture
+
+**6 Questions. 30 seconds. Done.**
+
+1. **“What size do you need?”** → Twin/Full/Queen/King
+1. **“What comfort level?”** → Firm/Medium/Soft/Hybrid
+1. **“What’s your ZIP code?”** → Location for inventory
+1. **“What’s your budget range?”** → Under $400 / $400-$799 / $800+
+1. **“How soon do you need this?”** → Today/This week
+1. **“Best number to reach you?”** → Contact info
+
+**Customer Experience**: Feels helpful, not intrusive. They’re getting service, not being sold.
+
+## The Lead Pipeline System
+
+### Automatic Routing by Value
+
+#### 🚨 HIGH PRIORITY: $800+ Budget
+
+**Instant alert to your phone**:
+
+```
+🚨 HIGH VALUE LEAD 🚨
+[Name] - [Phone]
+Budget: $800+
+Need: [Size] [Comfort] 
+Location: [ZIP]
+Urgency: [Timeline]
+```
+
+**Action**: You call them directly within 15 minutes
+
+#### 💰 STANDARD: $400-$799 Budget
+
+**Standard lead notification**:
+
+```
+💰 QUALIFIED LEAD
+[Same info format]
+```
+
+**Action**: Automated quotes + your follow-up if needed
+
+#### 📋 BASIC: Under $400 Budget
+
+**Self-service route**:
+
+- Automated quotes
+- Store directions
+- Simple pickup instructions
+
+### The Complexity Escape Hatch
+
+**If customer hesitates or gets stuck anywhere**:
+
+**Auto-popup**: “Need to talk to someone? Get all your questions answered in one quick call.”
+**Instant routing**: Directly to your phone
+**Your advantage**: You love solving complex problems and can do it faster than anyone
+
+## The Customer Experience Flow
+
+### Step 1: Instant Problem Recognition
+
+**Landing page hook**:
+“Need a mattress TODAY? Pick one, pick it up, sleep on it tonight.”
+
+**Immediate proof**: Prius video showing it actually fits in any car
+
+### Step 2: Zero-Friction Choice
+
+**The 4 options displayed simply**:
+
+- Clear pricing by size
+- “All available for pickup today”
+- “Try it in store first”
+
+### Step 3: Quick Data Collection
+
+**Framed as service**: “Let’s find the closest location with your preference in stock”
+
+**6 questions that feel helpful, not sales-y**
+
+### Step 4: Instant Gratification
+
+**Immediate response based on budget tier**:
+
+- High value: “Calling you in 15 minutes with options”
+- Standard: “Here are your quotes and nearest locations”
+- Basic: “Here’s where to go and what to ask for”
+
+## Store Fulfillment System
+
+### What Stores Receive
+
+**Pre-qualified customer profile**:
+
+- Name and timeline
+- Exact product preference
+- Budget tier and urgency level
+- “Customer expects to try [preference] first”
+
+### Store Process (5 minutes max)
+
+1. **Greet**: “Hi [Name], here for the [size] [comfort]?”
+1. **Show**: Pre-selected option first
+1. **Try**: Let them test it quickly
+1. **Buy**: Quick transaction if satisfied
+1. **Load**: Help get it in their car
+1. **Done**: Customer leaves with mattress
+
+### The Proof Point
+
+**“Fits in a Prius back seat”** = fits in ANY car
+**Customer drives away thinking**: “That was exactly what they promised”
+
+## Success Metrics
+
+### Primary KPIs
+
+- **Speed to pickup**: Same day conversion rate
+- **Pipeline velocity**: Lead to purchase time
+- **Customer satisfaction**: “Exactly what I needed” feedback
+- **Lead quality**: Percentage who actually pick up
+
+### Lead Generation Metrics
+
+- **High-value capture**: $800+ customers reaching you directly
+- **Conversion by tier**: Purchase rates by budget level
+- **Urgency validation**: “Need today” vs actual pickup timing
+- **Referral rate**: Word-of-mouth from satisfied urgent customers
+
+## Technology Requirements
+
+### Essential Features
+
+1. **Mobile-first landing page**: Instant load, video proof, clear options
+1. **6-question data capture**: Fast, feels helpful, no friction
+1. **Real-time inventory check**: “Available for pickup today” validation
+1. **Instant alert system**: Phone/SMS notifications for high-value leads
+1. **Store communication**: Customer profile and preferences pre-loaded
+
+### The Technical Flow
+
+```
+Customer lands → Sees 4 options → Watches proof video → 
+Answers 6 questions → Gets instant response → 
+You get alert (if high-value) → Store gets profile → 
+Customer picks up same day → Sleeps on it tonight
+```
+
+## Implementation Priorities
+
+### Phase 1: Core Execution (Week 1-2)
+
+- Landing page with 4 options and Prius video
+- 6-question data capture with instant routing
+- Basic alert system to your phone for $800+ leads
+- Simple store notification system
+
+### Phase 2: Optimization (Week 3-4)
+
+- Real-time inventory integration
+- Automated quote generation by tier
+- Enhanced store communication system
+- Basic analytics and conversion tracking
+
+### Phase 3: Scale (Week 5-8)
+
+- Multi-location expansion
+- Advanced routing algorithms
+- Predictive lead scoring
+- Customer follow-up automation
+
+## Team Execution
+
+### Your Role
+
+- **High-value leads**: Personal consultation for $800+ customers
+- **Complex situations**: Phone calls for stuck customers
+- **Relationship building**: Turn urgent customers into repeat advocates
+- **System feedback**: Continuous improvement based on customer interactions
+
+### Store Team Role
+
+- **Pre-qualified service**: Customer arrives knowing exactly what they want
+- **Quick execution**: Try, buy, load, done in 5 minutes
+- **Proof delivery**: Confirm the “fits in your car” promise
+- **Experience validation**: “Exactly what we promised” outcome
+
+## The Competitive Advantage
+
+### What Everyone Else Does
+
+- Weeks of delivery waiting
+- Hundreds of confusing options
+- Complex buying processes
+- No try-before-buy confidence
+
+### What You Do
+
+- **Same day pickup**
+- **4 proven choices**
+- **Zero friction process**
+- **Try it first guarantee**
+
+**Result**: While competitors make customers wait and think, you get them sleeping on a new mattress tonight.
+
+## Success Validation
+
+**You know it’s working when**:
+
+### Customer Behavior
+
+- High same-day pickup rates (85%+)
+- “Exactly what I needed” feedback
+- Quick decision-making (no analysis paralysis)
+- Word-of-mouth referrals to friends with urgent needs
+
+### Business Results
+
+- Consistent high-value lead flow to your phone
+- Store teams report smooth, fast transactions
+- Customer acquisition costs decreasing
+- Lead-to-purchase conversion rates increasing
+
+### The Ultimate Proof
+
+**Customers saying**: “I needed a mattress today, found you guys, picked it up, sleeping on it tonight. Exactly like you promised.”
+
+-----
+
+## Core Philosophy
+
+**“Speed beats perfection when urgency is real.”**
+
+The entire system is designed around one truth: when someone needs a mattress TODAY, they don’t want 100 options and complex decisions. They want 4 proven choices, instant availability, and the confidence that it will work.
+
+Everything else is noise. This system cuts through all the noise and delivers on one simple promise: **“Sleep on it tonight.”**

@@ -1,60 +1,76 @@
 import type { Lead } from "@shared/schema";
 
-// SMS message templates based on the provided specification
+// SMS message templates - Pure Urgency System
 export function generateOwnerAlert(lead: Lead, store: any): string {
   const mattressOption = getMattressDetails(lead.mattressType);
+  const price = getPrice(lead.mattressType, lead.mattressSize);
   
-  return `🚨 HOT LEAD - MATTRESS PICKUP 🚨
-
+  // High priority leads get immediate attention
+  if (lead.priority === "high") {
+    return `🚨 HIGH VALUE LEAD 🚨
 ${lead.name} - ${lead.phone}
-📍 ${lead.zipCode} | 🛏️ ${lead.mattressSize || 'Queen'} ${mattressOption.name} | 💰 ${mattressOption.price}
-⏰ Pickup: ${lead.pickupTime || 'Today'} | Comfort: ${mattressOption.comfort}
+Budget: $800+ | Need: ${lead.mattressSize} ${mattressOption.name}
+Location: ${lead.zipCode} | Urgency: ${lead.urgency}
+Price Point: ${price}
+
+⚡ CALL WITHIN 15 MINUTES ⚡
 
 NEAREST STORE:
-📞 ${store?.name || 'Mattress Firm Tampa'} - ${store?.distance || '2.1'} mi - ${store?.phone || '(813) 555-0124'}
+📞 ${store?.name || 'Mattress Firm Tampa'} - ${store?.distance || '2.1'} mi
 📍 ${store?.address || '5678 Oak Ave, Tampa FL 33612'}
 
-ACTION NEEDED:
-1. Check inventory at ${store?.name || 'Mattress Firm Tampa'}
-2. Call store to prep ${lead.mattressSize || 'Queen'} ${mattressOption.name}
-3. Follow up with customer if needed
+Lead ID: ${lead.leadId}`;
+  }
+  
+  // Standard/Basic leads
+  return `💰 ${lead.priority === 'standard' ? 'QUALIFIED' : 'BASIC'} LEAD
+${lead.name} - ${lead.phone}
+Need: ${lead.mattressSize} ${mattressOption.name} (${price})
+Budget: ${getBudgetLabel(lead.budgetRange)} | ZIP: ${lead.zipCode}
+Urgency: ${lead.urgency}
+
+ACTION: ${lead.priority === 'standard' ? 'Follow up if needed' : 'Self-service route'}
 
 Lead ID: ${lead.leadId}`;
 }
 
 export function generateCustomerConfirmation(lead: Lead, store: any): string {
   const mattressOption = getMattressDetails(lead.mattressType);
+  const price = getPrice(lead.mattressType, lead.mattressSize);
   
-  return `🎉 You're all set, ${lead.name}!
+  return `You're all set, ${lead.name}!
 
-Your ${lead.mattressSize || 'Queen'} ${mattressOption.name} is reserved at ${store?.name || 'Mattress Firm'}:
+Your ${lead.mattressSize} ${mattressOption.name} is ready for pickup:
 
-📍 ${store?.address || '5678 Oak Ave, Tampa FL 33612'}
+📍 ${store?.name || 'Mattress Firm Tampa'}
+${store?.address || '5678 Oak Ave, Tampa FL 33612'}
 📞 ${store?.phone || '(813) 555-0124'}
 ⏰ Open until ${store?.hours || '9 PM'}
 
-🚗 Just ${store?.distance || '2.1'} miles away - it fits on your back seat!
+🚗 Just ${store?.distance || '2.1'} miles away - fits in your back seat!
 
-💰 Your locked price: ${mattressOption.price}
+💰 Your price: ${price}
+✅ Try it first, then decide
 
 Need directions? Reply DIRECTIONS
 Questions? Reply HELP
 
-Drive safe! 🛏️✨`;
+Click, click, click, set. Sleep on it tonight.`;
 }
 
 export function generateFollowUp30Min(lead: Lead, store: any): string {
   const mattressOption = getMattressDetails(lead.mattressType);
+  const price = getPrice(lead.mattressType, lead.mattressSize);
   
-  return `Hi ${lead.name}! 👋
+  return `Hi ${lead.name}!
 
-Just checking - are you on your way to pick up your ${lead.mattressSize || 'Queen'} ${mattressOption.name}?
+Just checking - are you on your way to pick up your ${lead.mattressSize} ${mattressOption.name}?
 
-${store?.name || 'Mattress Firm'} has it ready for you to test first.
+${store?.name || 'Mattress Firm Tampa'} has it ready for you to test first.
 
 If you're running late or need to reschedule, just reply and let us know!
 
-Your price is still locked: ${mattressOption.price} ✅
+Your price is still locked: ${price}
 
 Reply DIRECTIONS for GPS link
 Reply POSTPONE to reschedule`;
@@ -62,111 +78,115 @@ Reply POSTPONE to reschedule`;
 
 export function generateFollowUp2Hour(lead: Lead, store: any): string {
   const mattressOption = getMattressDetails(lead.mattressType);
+  const price = getPrice(lead.mattressType, lead.mattressSize);
   
   return `Hey ${lead.name},
 
-We want to make sure you get your mattress deal! Your ${lead.mattressSize || 'Queen'} ${mattressOption.name} is still reserved.
+We want to make sure you get your mattress deal! Your ${lead.mattressSize} ${mattressOption.name} is still reserved.
 
 Common questions:
 ❓ "Does it really fit in my car?" - YES! Comes in a box
-❓ "Can I test it first?" - YES! Try before you buy
-❓ "Is the price still good?" - YES! ${mattressOption.price} locked in
+❓ "Can I test it first?" - YES! Try before you buy  
+❓ "Is the price still good?" - YES! ${price} locked in
 
 Need help? Call/text: (813) 555-9999
 Store direct: ${store?.phone || '(813) 555-0124'}
 
-Ready when you are! 🛏️`;
+Ready when you are!`;
 }
 
 export function generateFollowUp24Hour(lead: Lead, store: any): string {
   const mattressOption = getMattressDetails(lead.mattressType);
-  const savings = calculateSavings(mattressOption.price, mattressOption.originalPrice);
+  const price = getPrice(lead.mattressType, lead.mattressSize);
   
-  return `${lead.name}, your mattress deal expires soon! ⏰
+  return `${lead.name}, your mattress deal expires soon!
 
-We held your ${lead.mattressSize || 'Queen'} ${mattressOption.name} for 24 hours at the exclusive price of ${mattressOption.price}.
+We held your ${lead.mattressSize} ${mattressOption.name} for 24 hours at ${price}.
 
-✅ Still available at ${store?.name || 'Mattress Firm'}
-✅ Still fits in your car
+✅ Still available at ${store?.name || 'Mattress Firm Tampa'}
+✅ Still fits in your car  
 ✅ Still try before you buy
 
 Want to keep your reservation? Reply YES
 Need different timing? Reply RESCHEDULE
 Have questions? Reply HELP
 
-Don't miss out on saving $${savings}! 💰`;
+Click, click, click, set. Don't wait another night.`;
 }
 
-// Response templates for manual replies
+// Response templates for manual replies - Pure Urgency System
 export function generateCarFitResponse(lead: Lead): string {
-  const mattressOption = getMattressDetails(lead.mattressType);
-  
-  return `Great question! Your ${lead.mattressSize || 'Queen'} ${mattressOption.name} comes compressed in a box that's about the size of a large suitcase. It easily fits on the back seat of any car - even small cars like Honda Civics! 🚗
+  return `Great question! Your ${lead.mattressSize} mattress comes compressed in a box that fits on the back seat of any car - even a Prius!
 
-Once you get it home, cut the plastic and it expands to full size in a few hours. Magic! ✨`;
+Once you get it home, cut the plastic and it expands to full size. Simple!
+
+Ready to pick up today?`;
 }
 
 export function generateRescheduleResponse(lead: Lead, store: any): string {
   const mattressOption = getMattressDetails(lead.mattressType);
+  const price = getPrice(lead.mattressType, lead.mattressSize);
   
-  return `No problem, ${lead.name}! We can hold your ${lead.mattressSize || 'Queen'} ${mattressOption.name} and your ${mattressOption.price} price for up to 48 more hours.
+  return `No problem, ${lead.name}! We can hold your ${lead.mattressSize} ${mattressOption.name} and your ${price} price for up to 48 more hours.
 
 When works better for you?
 • Today after 5pm?
-• Tomorrow morning?
+• Tomorrow morning?  
 • This weekend?
 
-Just let me know and I'll update ${store?.name || 'Mattress Firm'} 👍`;
+Just let me know and I'll update ${store?.name || 'Mattress Firm Tampa'}`;
 }
 
-export function generateBudgetConcernResponse(lead: Lead): string {
-  const mattressOption = getMattressDetails(lead.mattressType);
-  const savings = calculateSavings(mattressOption.price, mattressOption.originalPrice);
-  
-  return `I totally understand, ${lead.name}! Here's the thing - this ${lead.mattressSize || 'Queen'} ${mattressOption.name} normally costs ${mattressOption.originalPrice}, but you're getting it for ${mattressOption.price}.
-
-That's a savings of $${savings}! These prices are from our special pickup program and won't last.
-
-Plus, you can test it in the store first - no risk! 🛏️`;
-}
-
-// Helper functions
+// Helper functions for Pure Urgency System
 function getMattressDetails(mattressType: string) {
   const mattressOptions = {
-    "sealy-firm": {
-      name: "Sealy Memory Foam Firm",
-      comfort: "Firm",
-      price: "$299",
-      originalPrice: "$699"
+    "F": {
+      name: "Firm",
+      comfort: "8 inches - Back & stomach sleepers",
+      description: "Firm support"
     },
-    "sealy-medium": {
-      name: "Sealy Memory Foam Medium", 
-      comfort: "Medium",
-      price: "$349",
-      originalPrice: "$749"
+    "M": {
+      name: "Medium", 
+      comfort: "10 inches - Most popular",
+      description: "Balanced comfort"
     },
-    "sealy-soft": {
-      name: "Sealy Memory Foam Soft",
-      comfort: "Soft", 
-      price: "$399",
-      originalPrice: "$799"
+    "S": {
+      name: "Soft",
+      comfort: "12 inches - Side sleepers", 
+      description: "Pressure relief"
     },
-    "basic-hybrid": {
-      name: "Basic Hybrid Mattress",
-      comfort: "Medium",
-      price: "$249",
-      originalPrice: "$549"
+    "H": {
+      name: "Hybrid",
+      comfort: "10 inches - Coil + foam",
+      description: "Best of both worlds"
     }
   };
   
-  return mattressOptions[mattressType as keyof typeof mattressOptions] || mattressOptions["sealy-medium"];
+  return mattressOptions[mattressType as keyof typeof mattressOptions] || mattressOptions["M"];
 }
 
-function calculateSavings(currentPrice: string, originalPrice: string): string {
-  const current = parseInt(currentPrice.replace('$', ''));
-  const original = parseInt(originalPrice.replace('$', ''));
-  return (original - current).toString();
+function getPrice(mattressType: string, mattressSize: string) {
+  const pricing = {
+    "F": { "Twin": "$199", "Full": "$269", "Queen": "$299", "King": "$369" },
+    "M": { "Twin": "$249", "Full": "$359", "Queen": "$399", "King": "$469" },
+    "S": { "Twin": "$549", "Full": "$649", "Queen": "$697", "King": "$799" },
+    "H": { "Twin": "$399", "Full": "$449", "Queen": "$499", "King": "$599" }
+  };
+  
+  const typeMap = pricing[mattressType as keyof typeof pricing];
+  return typeMap?.[mattressSize as keyof typeof typeMap] || "$399";
 }
+
+function getBudgetLabel(budgetRange: string) {
+  const labels = {
+    "under_400": "Under $400",
+    "400_799": "$400-$799", 
+    "800_plus": "$800+"
+  };
+  return labels[budgetRange as keyof typeof labels] || "Standard";
+}
+
+// Remove unused function - Pure Urgency focuses on speed, not complex savings calculations
 
 // SMS automation logic
 export async function triggerSMSAutomation(lead: Lead, store: any) {

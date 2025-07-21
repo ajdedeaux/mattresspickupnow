@@ -9,17 +9,18 @@ export const leads = pgTable("leads", {
   phone: text("phone").notNull(),
   email: text("email"),
   zipCode: text("zip_code").notNull(),
-  mattressType: text("mattress_type").notNull(),
+  mattressSize: text("mattress_size").notNull(), // Twin, Full, Queen, King
+  mattressType: text("mattress_type").notNull(), // F, M, S, H (Firm, Medium, Soft, Hybrid)
+  budgetRange: text("budget_range").notNull(), // under_400, 400_799, 800_plus
+  urgency: text("urgency").notNull(), // today, this_week
   status: text("status").notNull().default("hot"), // hot, warm, contacted, converted, expired
+  priority: text("priority").notNull().default("standard"), // high, standard, basic
   pickedUp: boolean("picked_up").default(false),
   storeId: text("store_id"),
   storeName: text("store_name"),
   storePhone: text("store_phone"),
   storeAddress: text("store_address"),
   price: text("price"),
-  mattressSize: text("mattress_size").default("Queen"),
-  comfortLevel: text("comfort_level"),
-  pickupTime: text("pickup_time"),
   followUpStage: integer("follow_up_stage").default(0), // 0=initial, 1=30min, 2=2hr, 3=24hr
   lastContactAt: timestamp("last_contact_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -29,13 +30,32 @@ export const insertLeadSchema = createInsertSchema(leads).omit({
   id: true,
   leadId: true,
   createdAt: true,
+  priority: true,
+  status: true,
+  pickedUp: true,
+  storeId: true,
+  storeName: true,
+  storePhone: true,
+  storeAddress: true,
+  price: true,
+  followUpStage: true,
+  lastContactAt: true,
 }).extend({
   name: z.string().min(1, "Name is required"),
   phone: z.string().regex(/^\(\d{3}\) \d{3}-\d{4}$/, "Invalid phone format"),
   email: z.string().email("Invalid email").optional().or(z.literal("")),
   zipCode: z.string().regex(/^\d{5}$/, "ZIP code must be 5 digits"),
-  mattressType: z.enum(["sealy-firm", "sealy-medium", "sealy-soft", "basic-hybrid"], {
+  mattressSize: z.enum(["Twin", "Full", "Queen", "King"], {
+    required_error: "Please select a mattress size"
+  }),
+  mattressType: z.enum(["F", "M", "S", "H"], {
     required_error: "Please select a mattress type"
+  }),
+  budgetRange: z.enum(["under_400", "400_799", "800_plus"], {
+    required_error: "Please select a budget range"
+  }),
+  urgency: z.enum(["today", "this_week"], {
+    required_error: "Please select urgency"
   }),
 });
 

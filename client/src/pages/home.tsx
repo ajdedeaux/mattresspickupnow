@@ -7,584 +7,269 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { insertLeadSchema, findStoresSchema, type Store } from "@shared/schema";
-import { formatPhoneNumber, generateLeadMessage, openSMSApp, copyToClipboard } from "@/lib/utils";
-import { MapPin, Check, Car, Shield, Clock, Copy, MessageCircle, CheckCircle, Star, Phone, Navigation } from "lucide-react";
+import { insertLeadSchema } from "@shared/schema";
+import { formatPhoneNumber } from "@/lib/utils";
+import { Car, Clock, Check, Star, Phone, AlertTriangle } from "lucide-react";
 
-type Step = "zip" | "revelation" | "mattress" | "contact" | "instructions";
-
-const zipSchema = findStoresSchema;
-
+// The 4 Proven Options - Pure Urgency System
 const mattressOptions = [
   {
-    id: "sealy-firm",
-    name: "Sealy Memory Foam Firm",
-    comfort: "Perfect for back & stomach sleepers",
-    price: "$299",
-    originalPrice: "$699",
-    rating: 4.7,
-    reviews: 1834,
-    description: "Premium spinal alignment and support",
-    popular: false,
-    benefits: ["Brand new with full warranty", "Try in store before you buy", "Fits in any car"],
+    id: "F",
+    name: "Firm",
+    description: "8 inches",
+    sizes: {
+      "Twin": "$199",
+      "Full": "$269", 
+      "Queen": "$299",
+      "King": "$369"
+    },
+    comfort: "Back & stomach sleepers",
+    available: true
   },
   {
-    id: "sealy-medium", 
-    name: "Sealy Memory Foam Medium",
-    comfort: "Our most popular choice - works for everyone",
-    price: "$349",
-    originalPrice: "$749",
-    rating: 4.8,
-    reviews: 2847,
-    description: "Perfect balance of comfort and support",
-    popular: true,
-    benefits: ["Best seller - most popular choice", "Same mattress others wait weeks for", "Guaranteed to fit in your car"],
+    id: "M",
+    name: "Medium",
+    description: "10 inches",
+    sizes: {
+      "Twin": "$249",
+      "Full": "$359",
+      "Queen": "$399", 
+      "King": "$469"
+    },
+    comfort: "Most popular - works for everyone",
+    available: true,
+    popular: true
   },
   {
-    id: "sealy-soft",
-    name: "Sealy Memory Foam Soft", 
-    comfort: "Ideal for side sleepers",
-    price: "$349",
-    originalPrice: "$749",
-    rating: 4.6,
-    reviews: 1592,
-    description: "Superior pressure point relief and comfort",
-    popular: false,
-    benefits: ["Perfect for side sleepers", "Pressure point relief", "Try it first, then decide"],
+    id: "S", 
+    name: "Soft",
+    description: "12 inches",
+    sizes: {
+      "Twin": "$549",
+      "Full": "$649",
+      "Queen": "$697",
+      "King": "$799"
+    },
+    comfort: "Side sleepers & pressure relief",
+    available: true
   },
   {
-    id: "basic-hybrid",
-    name: "Basic Hybrid",
-    comfort: "Best of both worlds - coil support + foam comfort", 
-    price: "$399",
-    originalPrice: "$899",
-    rating: 4.5,
-    reviews: 978,
-    description: "Traditional coil support with memory foam comfort",
-    popular: false,
-    benefits: ["Coil support + memory foam", "Great for hot sleepers", "Full manufacturer warranty"],
-  },
+    id: "H",
+    name: "Hybrid",
+    description: "10 inches",
+    sizes: {
+      "Twin": "$399",
+      "Full": "$449",
+      "Queen": "$499",
+      "King": "$599"
+    },
+    comfort: "Coil support + memory foam",
+    available: true
+  }
+];
+
+const budgetRanges = [
+  { id: "under_400", label: "Under $400", color: "bg-green-100 text-green-800" },
+  { id: "400_799", label: "$400 - $799", color: "bg-yellow-100 text-yellow-800" },
+  { id: "800_plus", label: "$800+", color: "bg-red-100 text-red-800" }
 ];
 
 export default function Home() {
-  const [currentStep, setCurrentStep] = useState<Step>("zip");
-  const [userZip, setUserZip] = useState("");
-  const [autoSelectedStore, setAutoSelectedStore] = useState<Store | null>(null);
-  const [selectedMattress, setSelectedMattress] = useState("");
-  const [leadData, setLeadData] = useState<any>(null);
-  const [copySuccess, setCopySuccess] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState(1);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedComfort, setSelectedComfort] = useState("");
+  const [selectedBudget, setSelectedBudget] = useState("");
+  const [selectedUrgency, setSelectedUrgency] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [leadCreated, setLeadCreated] = useState(false);
   const { toast } = useToast();
 
-  const zipForm = useForm<z.infer<typeof zipSchema>>({
-    resolver: zodResolver(zipSchema),
-    defaultValues: { zipCode: "" },
-  });
-
-  const contactForm = useForm<z.infer<typeof insertLeadSchema>>({
+  const form = useForm<z.infer<typeof insertLeadSchema>>({
     resolver: zodResolver(insertLeadSchema),
     defaultValues: {
       name: "",
       phone: "",
       email: "",
-      zipCode: userZip,
-      mattressType: selectedMattress as any,
-    },
-  });
-
-  const findStoresMutation = useMutation({
-    mutationFn: async (data: z.infer<typeof zipSchema>) => {
-      const response = await apiRequest("POST", "/api/find-stores", data);
-      return await response.json();
-    },
-    onSuccess: (data) => {
-      if (data.success && data.storesFound > 0) {
-        // Auto-select the closest store
-        setAutoSelectedStore(data.stores[0]);
-        setCurrentStep("revelation");
-        toast({
-          title: "Found Nearby Locations!",
-          description: `Found ${data.storesFound} stores near you with available mattresses`,
-        });
-      } else {
-        toast({
-          title: "No Stores Found",
-          description: "No locations found in your area. Please try a different ZIP code.",
-          variant: "destructive",
-        });
-      }
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Search Error",
-        description: error.message || "Unable to search for stores. Please try again.",
-        variant: "destructive",
-      });
+      zipCode: "",
+      mattressSize: selectedSize as any,
+      mattressType: selectedComfort as any,
+      budgetRange: selectedBudget as any,
+      urgency: selectedUrgency as any,
     },
   });
 
   const createLeadMutation = useMutation({
     mutationFn: async (data: z.infer<typeof insertLeadSchema>) => {
-      const response = await apiRequest("POST", "/api/leads", data);
-      return await response.json();
+      return apiRequest.post("/api/leads", data);
     },
-    onSuccess: (data) => {
-      setLeadData(data);
-      setCurrentStep("instructions");
+    onSuccess: () => {
+      setLeadCreated(true);
       toast({
-        title: "Instructions Ready",
-        description: "Your pickup instructions are ready below.",
+        title: "Lead Captured Successfully!",
+        description: "You'll hear from us within 15 minutes.",
       });
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast({
-        title: "Error",
-        description: error.message || "Something went wrong. Please try again.",
+        title: "Something went wrong",
+        description: "Please try again or call us directly.",
         variant: "destructive",
       });
     },
   });
 
-  const handleZipSubmit = (data: z.infer<typeof zipSchema>) => {
-    setUserZip(data.zipCode);
-    findStoresMutation.mutate(data);
+  const handleQuestionAnswer = (answer: string, nextQuestion: number) => {
+    if (currentQuestion === 1) setSelectedSize(answer);
+    if (currentQuestion === 2) setSelectedComfort(answer);
+    if (currentQuestion === 4) setSelectedBudget(answer);
+    if (currentQuestion === 5) setSelectedUrgency(answer);
+    
+    if (nextQuestion <= 5) {
+      setCurrentQuestion(nextQuestion);
+    } else {
+      // Update form with selections
+      form.setValue("mattressSize", selectedSize as any);
+      form.setValue("mattressType", selectedComfort as any);
+      form.setValue("budgetRange", selectedBudget as any);
+      form.setValue("urgency", selectedUrgency as any);
+      setShowForm(true);
+    }
   };
 
-
-
-  const handleMattressSelect = (mattressId: string) => {
-    setSelectedMattress(mattressId);
-    setCurrentStep("contact");
-  };
-
-  const handleContactSubmit = (data: z.infer<typeof insertLeadSchema>) => {
+  const onSubmit = (data: z.infer<typeof insertLeadSchema>) => {
+    // Format phone number
     const formattedData = {
       ...data,
-      zipCode: userZip,
-      mattressType: selectedMattress as any,
+      phone: formatPhoneNumber(data.phone),
+      mattressSize: selectedSize as any,
+      mattressType: selectedComfort as any,
+      budgetRange: selectedBudget as any,
+      urgency: selectedUrgency as any,
     };
     createLeadMutation.mutate(formattedData);
   };
 
-  const handleCopyMessage = async () => {
-    if (!leadData) return;
-    
-    const selectedMattressData = mattressOptions.find(m => m.id === selectedMattress);
-    const message = generateLeadMessage({
-      mattressType: selectedMattress,
-      name: contactForm.getValues("name"),
-      phone: contactForm.getValues("phone"),
-      zipCode: userZip,
-      leadId: leadData.leadId,
-    });
-
-    const success = await copyToClipboard(message);
-    if (success) {
-      setCopySuccess(true);
-      toast({
-        title: "Copied!",
-        description: "Message copied to clipboard",
-      });
-      setTimeout(() => setCopySuccess(false), 2000);
-    }
+  const getPriceForSelection = () => {
+    if (!selectedSize || !selectedComfort) return "";
+    const option = mattressOptions.find(opt => opt.id === selectedComfort);
+    return option?.sizes[selectedSize as keyof typeof option.sizes] || "";
   };
 
-  const handleSendMessage = () => {
-    if (!leadData) return;
-    
-    const message = generateLeadMessage({
-      mattressType: selectedMattress,
-      name: contactForm.getValues("name"),
-      phone: contactForm.getValues("phone"),
-      zipCode: userZip,
-      leadId: leadData.leadId,
-    });
-
-    openSMSApp("8135559999", message);
+  const getBudgetPriority = (budget: string) => {
+    if (budget === "800_plus") return "high";
+    if (budget === "400_799") return "standard";
+    return "basic";
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-100">
-        <div className="max-w-md mx-auto px-6 py-4">
-          <div className="flex items-center justify-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Shield className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">MattressPickupNow</h1>
-              <p className="text-xs text-gray-500">Premium Sleep Solutions</p>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-slate-900 via-blue-900 to-primary text-white py-16 px-6 relative">
-        <a 
-          href="/dashboard" 
-          className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/30 transition-all"
-        >
-          Dashboard
-        </a>
-        <div className="max-w-md mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4 leading-tight">Need a Mattress Tonight?<br/>It Fits in Your Car.</h2>
-          <p className="text-xl mb-8 text-slate-200">Premium mattresses in boxes that fit on your back seat - no truck needed</p>
-          <div className="grid grid-cols-3 gap-4 text-sm">
-            <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-              <Car className="w-5 h-5 text-blue-400 mx-auto mb-2" />
-              <span className="block">Back Seat Fits</span>
-            </div>
-            <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-              <Check className="w-5 h-5 text-green-400 mx-auto mb-2" />
-              <span className="block">Try First</span>
-            </div>
-            <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-              <Clock className="w-5 h-5 text-purple-400 mx-auto mb-2" />
-              <span className="block">Same Day</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Progress Indicator */}
-      {currentStep !== "zip" && (
-        <div className="max-w-md mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            {[
-              { step: "zip", label: "Location", completed: currentStep !== "zip" },
-              { step: "revelation", label: "Options", completed: ["mattress", "contact", "instructions"].includes(currentStep) },
-              { step: "mattress", label: "Select", completed: ["contact", "instructions"].includes(currentStep) },
-              { step: "contact", label: "Details", completed: currentStep === "instructions" }
-            ].map((item, index) => (
-              <div key={item.step} className="flex items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-                  item.step === currentStep 
-                    ? 'bg-blue-600 text-white shadow-lg scale-110' 
-                    : item.completed 
-                      ? 'bg-green-600 text-white' 
-                      : 'bg-gray-200 text-gray-500'
-                }`}>
-                  {item.completed ? <CheckCircle className="w-4 h-4" /> : index + 1}
-                </div>
-                {index < 3 && (
-                  <div className={`w-12 h-1 mx-1 transition-all duration-300 ${
-                    item.completed ? 'bg-green-600' : 'bg-gray-200'
-                  }`} />
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-between text-xs text-gray-600 mt-2">
-            <span>Location</span>
-            <span>Options</span>
-            <span>Select</span>
-            <span>Details</span>
-          </div>
-        </div>
-      )}
-
-      <main className="max-w-md mx-auto px-6 py-8 space-y-8">
-        
-        {/* ZIP Code Entry */}
-        {currentStep === "zip" && (
-          <Card className="animate-fade-in premium-card">
-            <CardContent className="p-6">
-              <div className="text-center mb-6">
-                <h3 className="section-title font-semibold text-gray-900 mb-2">Enter your location to find mattresses ready for pickup:</h3>
-                <p className="text-gray-600 text-sm">More precise location = closer pickup options</p>
+  if (leadCreated) {
+    const priority = getBudgetPriority(selectedBudget);
+    const price = getPriceForSelection();
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100">
+        <div className="max-w-lg mx-auto px-6 py-12">
+          <Card className="border-green-200 shadow-xl">
+            <CardContent className="p-8 text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Check className="w-8 h-8 text-green-600" />
               </div>
               
-              {/* Location Options */}
-              <div className="space-y-4 mb-6">
-                <button 
-                  className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all flex items-center justify-between group"
-                  onClick={() => {
-                    // For demo, use a default ZIP code
-                    zipForm.setValue("zipCode", "33612");
-                    handleZipSubmit({ zipCode: "33612" });
-                  }}
-                >
-                  <div className="flex items-center">
-                    <Navigation className="w-6 h-6 text-blue-600 mr-3" />
-                    <div className="text-left">
-                      <div className="font-semibold text-gray-900">Current location (GPS)</div>
-                      <div className="text-sm text-gray-600">Find nearest options right now</div>
-                    </div>
-                  </div>
-                  <div className="text-blue-600 group-hover:translate-x-1 transition-transform">→</div>
-                </button>
-
-                <button 
-                  className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all flex items-center justify-between group"
-                  onClick={() => {
-                    // For demo, use a default ZIP code
-                    zipForm.setValue("zipCode", "33612");
-                    handleZipSubmit({ zipCode: "33612" });
-                  }}
-                >
-                  <div className="flex items-center">
-                    <MapPin className="w-6 h-6 text-blue-600 mr-3" />
-                    <div className="text-left">
-                      <div className="font-semibold text-gray-900">Full address</div>
-                      <div className="text-sm text-gray-600">Get precise pickup locations</div>
-                    </div>
-                  </div>
-                  <div className="text-blue-600 group-hover:translate-x-1 transition-transform">→</div>
-                </button>
-              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">You're All Set!</h2>
               
-              <div className="relative mb-4">
-                <div className="text-center text-sm text-gray-500 mb-4">Or enter ZIP code for quick search:</div>
+              {priority === "high" && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                  <div className="flex items-center justify-center text-red-700 font-semibold">
+                    <AlertTriangle className="w-5 h-5 mr-2" />
+                    HIGH PRIORITY LEAD
+                  </div>
+                  <p className="text-sm text-red-600 mt-2">
+                    We'll call you within 15 minutes with your options and nearest store location.
+                  </p>
+                </div>
+              )}
+              
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <h3 className="font-semibold text-gray-900 mb-2">Your Selection:</h3>
+                <p className="text-lg">{selectedSize} {mattressOptions.find(opt => opt.id === selectedComfort)?.name}</p>
+                <p className="text-2xl font-bold text-green-600">{price}</p>
+                <p className="text-sm text-gray-600">Available for pickup today</p>
               </div>
 
-              <Form {...zipForm}>
-                <form onSubmit={zipForm.handleSubmit(handleZipSubmit)} className="space-y-4">
-                  <FormField
-                    control={zipForm.control}
-                    name="zipCode"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="Enter ZIP code (e.g., 33612)"
-                            maxLength={5}
-                            className="form-input text-center text-lg"
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/\D/g, '');
-                              field.onChange(value.slice(0, 5));
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <Button 
-                    type="submit"
-                    className="w-full btn-primary-gradient py-4 text-lg font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200"
-                    disabled={zipForm.watch("zipCode")?.length !== 5 || findStoresMutation.isPending}
-                  >
-                    {findStoresMutation.isPending ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                        Finding mattresses that fit in your car...
-                      </>
-                    ) : (
-                      <>
-                        <MapPin className="w-5 h-5 mr-2" />
-                        FIND MY OPTIONS
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* The Revelation */}
-        {currentStep === "revelation" && autoSelectedStore && (
-          <div className="animate-slide-up space-y-6">
-            {/* Success Header */}
-            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <CheckCircle className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Found 3 pickup locations near you!</h3>
-              </CardContent>
-            </Card>
-
-            {/* The Car Revelation */}
-            <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
-              <CardContent className="p-6">
-                <h4 className="text-xl font-bold text-gray-900 mb-4 text-center">Here's what most people don't know:</h4>
-                
-                <div className="bg-white rounded-xl p-6 mb-6 border-2 border-dashed border-blue-300">
-                  <div className="flex items-center justify-center space-x-4 mb-4">
-                    <Car className="w-12 h-12 text-blue-600" />
-                    <div className="text-center">
-                      <p className="text-lg font-bold text-gray-900">These premium mattresses come in boxes</p>
-                      <p className="text-blue-600 font-medium">that fit on your back seat.</p>
+              {priority !== "high" && (
+                <div className="space-y-4">
+                  <p className="text-gray-700">
+                    We're finding the closest location with your mattress in stock.
+                  </p>
+                  <div className="flex items-center justify-center space-x-6 text-sm text-gray-600">
+                    <div className="flex items-center">
+                      <Car className="w-4 h-4 mr-2" />
+                      Fits in any car
                     </div>
-                  </div>
-                  
-                  <div className="text-center space-y-2">
-                    <p className="text-gray-700 font-medium">No truck needed. No tying anything to your roof.</p>
-                    <p className="text-gray-600">You can try them in the store first, then drive home with one TODAY.</p>
-                  </div>
-                </div>
-
-                {/* Store Info Preview */}
-                <div className="bg-white rounded-lg p-4 mb-6 border border-gray-200">
-                  <div className="flex items-center space-x-3">
-                    <MapPin className="w-5 h-5 text-primary" />
-                    <div>
-                      <p className="font-medium text-gray-900">Closest pickup location</p>
-                      <p className="text-sm text-gray-600">{autoSelectedStore.distance} miles away • Open until {autoSelectedStore.hours}</p>
+                    <div className="flex items-center">
+                      <Clock className="w-4 h-4 mr-2" />
+                      Try it first
                     </div>
                   </div>
                 </div>
+              )}
 
-                <Button
-                  onClick={() => setCurrentStep("mattress")}
-                  className="w-full btn-success-gradient py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
-                >
-                  <Car className="w-5 h-5 mr-2" />
-                  Show Me the Mattresses That Fit
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Mattress Options */}
-        {currentStep === "mattress" && autoSelectedStore && (
-          <div className="animate-slide-up space-y-6">
-            {/* Header */}
-            <div className="text-center">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Perfect! These 4 premium mattresses are ready for pickup near {userZip}</h3>
-              <div className="bg-blue-50 rounded-lg p-3 mb-4">
-                <p className="text-sm text-blue-800">
-                  Available for pickup • {autoSelectedStore.distance} miles away • Open until {autoSelectedStore.hours}
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <p className="text-sm text-gray-500">
+                  Questions? Call us: <span className="font-semibold">(813) 555-9999</span>
                 </p>
               </div>
-            </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
-            {/* Enhanced Mattress Cards */}
-            <div className="space-y-4">
-              {mattressOptions.map((option) => (
-                <Card
-                  key={option.id}
-                  className={`cursor-pointer border-2 transition-all duration-200 hover:shadow-xl relative overflow-hidden ${
-                    selectedMattress === option.id 
-                      ? 'border-primary bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg' 
-                      : 'border-gray-200 hover:border-primary'
-                  }`}
-                  onClick={() => handleMattressSelect(option.id)}
-                >
-                  {option.popular && (
-                    <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
-                      BEST SELLER
-                    </div>
-                  )}
-                  
-                  <CardContent className="p-6">
-                    {/* Header Row */}
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex-1">
-                        <h4 className="text-xl font-bold text-gray-900 mb-1">{option.name}</h4>
-                        <p className="text-gray-700 font-medium text-sm">{option.comfort}</p>
-                        
-                        {/* Rating */}
-                        <div className="flex items-center mt-2 space-x-2">
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`w-4 h-4 ${i < Math.floor(option.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
-                            ))}
-                          </div>
-                          <span className="text-sm font-medium text-gray-900">{option.rating}/5</span>
-                          <span className="text-sm text-gray-500">({option.reviews.toLocaleString()} reviews)</span>
-                        </div>
-                      </div>
-                      
-                      <div className="text-right">
-                        <div className="flex items-baseline space-x-2">
-                          <span className="text-2xl font-bold text-gray-900">{option.price}</span>
-                          <span className="text-sm text-gray-500 line-through">{option.originalPrice}</span>
-                        </div>
-                        <p className="text-sm font-medium text-green-600 mt-1">Ready for pickup now</p>
-                      </div>
-                    </div>
-
-                    {/* Description */}
-                    <p className="text-gray-600 text-sm mb-4">{option.description}</p>
-
-                    {/* Benefits */}
-                    <div className="space-y-2 mb-4">
-                      {/* Highlight Car Fit First */}
-                      <div className="flex items-center text-sm bg-blue-50 rounded-lg p-2 border border-blue-200">
-                        <Car className="w-4 h-4 text-blue-600 mr-2 flex-shrink-0" />
-                        <span className="font-medium text-blue-800">Fits on back seat of any car</span>
-                      </div>
-                      {option.benefits.map((benefit, index) => (
-                        <div key={index} className="flex items-center text-sm text-gray-700">
-                          <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
-                          <span>{benefit}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Action Button */}
-                    <Button
-                      onClick={() => handleMattressSelect(option.id)}
-                      className={`w-full py-3 font-semibold rounded-lg transition-all duration-200 hover:scale-105 ${
-                        selectedMattress === option.id
-                          ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg'
-                          : 'btn-primary-gradient text-white hover:shadow-lg'
-                      }`}
-                    >
-                      {selectedMattress === option.id ? (
-                        <>
-                          <CheckCircle className="w-5 h-5 mr-2" />
-                          SELECTED
-                        </>
-                      ) : (
-                        <>
-                          <Car className="w-5 h-5 mr-2" />
-                          TRY THIS ONE
-                        </>
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Contact Form */}
-        {currentStep === "contact" && (
-          <Card className="animate-slide-up">
-            <CardContent className="p-6">
+  if (showForm) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-md mx-auto px-6 py-12">
+          <Card className="shadow-lg">
+            <CardContent className="p-8">
               <div className="text-center mb-6">
-                <h3 className="section-title font-semibold text-gray-900 mb-2">Almost Done!</h3>
-                <p className="text-gray-600">Just need your contact info to lock in your exclusive pricing</p>
+                <h2 className="text-xl font-bold text-gray-900 mb-2">Almost Done!</h2>
+                <p className="text-gray-600 text-sm">
+                  Just need your contact info to find the closest store with your {selectedSize} {mattressOptions.find(opt => opt.id === selectedComfort)?.name} in stock.
+                </p>
+                <div className="text-lg font-semibold text-green-600 mt-2">
+                  {getPriceForSelection()}
+                </div>
               </div>
 
-              <Form {...contactForm}>
-                <form onSubmit={contactForm.handleSubmit(handleContactSubmit)} className="space-y-4">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                   <FormField
-                    control={contactForm.control}
+                    control={form.control}
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-700">Full Name *</FormLabel>
+                        <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="Your name" className="form-input" />
+                          <Input placeholder="Your name" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-
+                  
                   <FormField
-                    control={contactForm.control}
+                    control={form.control}
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-700">Phone Number *</FormLabel>
+                        <FormLabel>Phone Number</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input 
+                            placeholder="(813) 555-0123" 
                             {...field}
-                            type="tel"
-                            placeholder="(555) 123-4567"
-                            className="form-input"
                             onChange={(e) => {
                               const formatted = formatPhoneNumber(e.target.value);
                               field.onChange(formatted);
@@ -597,13 +282,13 @@ export default function Home() {
                   />
 
                   <FormField
-                    control={contactForm.control}
-                    name="email"
+                    control={form.control}
+                    name="zipCode"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-700">Email (Optional)</FormLabel>
+                        <FormLabel>ZIP Code</FormLabel>
                         <FormControl>
-                          <Input {...field} type="email" placeholder="your@email.com" className="form-input" />
+                          <Input placeholder="33612" maxLength={5} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -611,206 +296,226 @@ export default function Home() {
                   />
 
                   <Button 
-                    type="submit"
-                    className="w-full btn-success-gradient py-4 text-lg font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200"
+                    type="submit" 
+                    className="w-full bg-green-600 hover:bg-green-700" 
                     disabled={createLeadMutation.isPending}
                   >
-                    <CheckCircle className="w-5 h-5 mr-2" />
-                    {createLeadMutation.isPending ? "Locking in your pricing..." : "LOCK IN MY PRICING"}
+                    {createLeadMutation.isPending ? "Finding Your Store..." : "Find My Store & Pickup Time"}
                   </Button>
                 </form>
               </Form>
             </CardContent>
           </Card>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="border-b border-gray-100">
+        <div className="max-w-md mx-auto px-6 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-bold text-gray-900">MattressPickupNow</h1>
+            <p className="text-xs text-gray-500">Sleep on it tonight</p>
+          </div>
+          <a 
+            href="/dashboard" 
+            className="text-sm text-gray-600 hover:text-gray-900"
+          >
+            Dashboard
+          </a>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <section className="bg-gradient-to-br from-blue-900 to-purple-900 text-white py-16 px-6">
+        <div className="max-w-md mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-4">Need a mattress TODAY?</h2>
+          <p className="text-xl mb-6">Pick one, pick it up, sleep on it tonight.</p>
+          
+          <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 mb-8">
+            <div className="text-sm font-semibold mb-2">Don't believe it fits in your car?</div>
+            <div className="bg-white/30 rounded px-3 py-2 text-sm">
+              [WATCH: Fits in a Prius back seat] 🎥
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3 text-sm">
+            <div className="bg-white/10 rounded-lg p-3">
+              <Car className="w-5 h-5 mx-auto mb-2 text-blue-400" />
+              <span>Any Car</span>
+            </div>
+            <div className="bg-white/10 rounded-lg p-3">
+              <Check className="w-5 h-5 mx-auto mb-2 text-green-400" />
+              <span>Try First</span>
+            </div>
+            <div className="bg-white/10 rounded-lg p-3">
+              <Clock className="w-5 h-5 mx-auto mb-2 text-purple-400" />
+              <span>Tonight</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6 Questions System */}
+      <main className="max-w-md mx-auto px-6 py-8">
+        <div className="text-center mb-8">
+          <div className="text-sm text-gray-500 mb-2">Question {currentQuestion} of 5</div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-600 h-2 rounded-full transition-all duration-500" 
+              style={{ width: `${(currentQuestion / 5) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Question 1: Size */}
+        {currentQuestion === 1 && (
+          <Card className="shadow-lg">
+            <CardContent className="p-6">
+              <h3 className="text-xl font-semibold text-center mb-6">What size do you need?</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {["Twin", "Full", "Queen", "King"].map((size) => (
+                  <button
+                    key={size}
+                    className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all"
+                    onClick={() => handleQuestionAnswer(size, 2)}
+                  >
+                    <div className="text-lg font-semibold">{size}</div>
+                  </button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         )}
 
-        {/* Instructions */}
-        {currentStep === "instructions" && leadData && (
-          <div className="animate-slide-up space-y-6">
-            {/* Success Header */}
-            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <CheckCircle className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">You're all set! Here's your pickup plan:</h3>
-                <p className="text-gray-700">We've locked in exclusive pricing and coordinated with your nearest location</p>
-              </CardContent>
-            </Card>
+        {/* Question 2: Comfort */}
+        {currentQuestion === 2 && (
+          <Card className="shadow-lg">
+            <CardContent className="p-6">
+              <h3 className="text-xl font-semibold text-center mb-6">What comfort level?</h3>
+              <div className="space-y-4">
+                {mattressOptions.map((option) => (
+                  <button
+                    key={option.id}
+                    className={`w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left ${
+                      option.popular ? 'border-green-500 bg-green-50' : ''
+                    }`}
+                    onClick={() => handleQuestionAnswer(option.id, 3)}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="font-semibold text-lg">{option.name}</div>
+                        <div className="text-sm text-gray-600 mb-1">{option.description}</div>
+                        <div className="text-sm text-gray-800">{option.comfort}</div>
+                        <div className="text-lg font-bold text-green-600 mt-1">
+                          {selectedSize ? option.sizes[selectedSize as keyof typeof option.sizes] : "from $199"}
+                        </div>
+                      </div>
+                      {option.popular && (
+                        <div className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                          Most Popular
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-            {/* Message Card */}
-            <Card className="border-2 border-slate-200 shadow-lg">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-lg font-semibold text-gray-900">Your Message</h4>
-                  <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full">
-                    Lead ID: {leadData.leadId}
-                  </span>
-                </div>
-                
-                <div className="bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-4 mb-4 font-mono text-sm leading-relaxed select-all">
-                  {generateLeadMessage({
-                    mattressType: selectedMattress,
-                    name: contactForm.getValues("name"),
-                    phone: contactForm.getValues("phone"),
-                    zipCode: userZip,
-                    leadId: leadData.leadId,
-                  })}
-                </div>
-
+        {/* Question 3: ZIP Code */}
+        {currentQuestion === 3 && (
+          <Card className="shadow-lg">
+            <CardContent className="p-6">
+              <h3 className="text-xl font-semibold text-center mb-6">What's your ZIP code?</h3>
+              <p className="text-center text-gray-600 mb-6 text-sm">
+                We'll find the closest location with your {selectedSize} {mattressOptions.find(opt => opt.id === selectedComfort)?.name} in stock.
+              </p>
+              <div className="space-y-4">
+                <Input 
+                  placeholder="Enter ZIP code (e.g. 33612)"
+                  maxLength={5}
+                  className="text-center text-lg"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && e.currentTarget.value.length === 5) {
+                      handleQuestionAnswer(e.currentTarget.value, 4);
+                    }
+                  }}
+                />
                 <Button 
-                  onClick={handleCopyMessage}
-                  className={`w-full py-4 text-lg font-semibold rounded-xl shadow-md transition-all duration-200 ${
-                    copySuccess 
-                      ? 'bg-green-500 hover:bg-green-600 text-white' 
-                      : 'btn-primary-gradient hover:shadow-lg hover:scale-105'
-                  }`}
+                  className="w-full"
+                  onClick={(e) => {
+                    const input = e.currentTarget.parentNode?.querySelector('input') as HTMLInputElement;
+                    if (input?.value.length === 5) {
+                      handleQuestionAnswer(input.value, 4);
+                    }
+                  }}
                 >
-                  {copySuccess ? (
-                    <>
-                      <CheckCircle className="w-5 h-5 mr-2" />
-                      Message Copied
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-5 h-5 mr-2" />
-                      Copy to Clipboard
-                    </>
-                  )}
+                  Find Stores Near Me
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-            {/* Store Details Card */}
-            {autoSelectedStore && (
-              <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
-                <CardContent className="p-6">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Your Pickup Location</h4>
-                  
-                  {/* Exclusive Pricing Banner */}
-                  <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 mb-4">
-                    <div className="text-center">
-                      <p className="text-sm text-green-800 font-semibold mb-2">
-                        <strong>Good news:</strong> This is at Mattress Firm! We've negotiated exclusive pricing and they have your mattress ready for testing.
-                      </p>
-                      <div className="bg-white rounded-lg p-3 border border-green-300">
-                        <p className="text-lg font-bold text-green-800">YOUR EXCLUSIVE PRICE: ${mattressOptions.find(m => m.id === selectedMattress)?.price || "299"}</p>
-                        <p className="text-sm text-green-600">(Locked in - no surprises at pickup)</p>
-                      </div>
+        {/* Question 4: Budget */}
+        {currentQuestion === 4 && (
+          <Card className="shadow-lg">
+            <CardContent className="p-6">
+              <h3 className="text-xl font-semibold text-center mb-6">What's your budget range?</h3>
+              <div className="space-y-4">
+                {budgetRanges.map((range) => (
+                  <button
+                    key={range.id}
+                    className={`w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all ${
+                      range.id === 'under_400' ? 'border-green-500 bg-green-50' : ''
+                    }`}
+                    onClick={() => handleQuestionAnswer(range.id, 5)}
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold">{range.label}</span>
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${range.color}`}>
+                        {range.id === '800_plus' ? 'Premium' : range.id === '400_799' ? 'Standard' : 'Value'}
+                      </span>
                     </div>
-                  </div>
+                  </button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-                  {/* Store Info */}
-                  <div className="bg-white border-2 border-blue-200 rounded-xl p-4 mb-4 shadow-sm">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-start space-x-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center">
-                          <MapPin className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                          <p className="text-lg font-bold text-gray-900">{autoSelectedStore.name}</p>
-                          <p className="text-sm text-gray-600">{autoSelectedStore.address}</p>
-                          <p className="text-sm text-gray-600">{autoSelectedStore.distance} miles away</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
-                          autoSelectedStore.isOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                          <Clock className="w-3 h-3 mr-1" />
-                          {autoSelectedStore.hours}
-                        </div>
-                        {autoSelectedStore.rating && (
-                          <div className="flex items-center mt-1">
-                            <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                            <span className="text-sm text-gray-600 ml-1">{autoSelectedStore.rating}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* Contact Info */}
-                    <div className="border-t pt-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <Phone className="w-5 h-5 text-primary" />
-                          <span className="text-lg font-bold text-gray-900">{autoSelectedStore.phone || "(813) 555-9999"}</span>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-medium text-green-700">Available Now</p>
-                          <p className="text-xs text-gray-500">Typical response: 2-5 min</p>
-                        </div>
-                      </div>
-                    </div>
+        {/* Question 5: Urgency */}
+        {currentQuestion === 5 && (
+          <Card className="shadow-lg">
+            <CardContent className="p-6">
+              <h3 className="text-xl font-semibold text-center mb-6">How soon do you need this?</h3>
+              <div className="space-y-4">
+                <button
+                  className="w-full p-4 border-2 border-red-500 bg-red-50 rounded-lg hover:bg-red-100 transition-all"
+                  onClick={() => handleQuestionAnswer("today", 6)}
+                >
+                  <div className="flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-red-600 mr-2" />
+                    <span className="text-lg font-semibold text-red-800">TODAY (Same Day)</span>
                   </div>
-
-                  {/* Action Buttons */}
-                  <div className="grid grid-cols-1 gap-3">
-                    <Button 
-                      onClick={handleSendMessage}
-                      className="w-full btn-success-gradient py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
-                    >
-                      <MessageCircle className="w-5 h-5 mr-2" />
-                      TEXT STORE NOW
-                    </Button>
-                    
-                    <div className="grid grid-cols-2 gap-3">
-                      <Button 
-                        onClick={() => window.open(`tel:${autoSelectedStore.phone || "8135559999"}`, "_self")}
-                        className="bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition-colors"
-                      >
-                        <Phone className="w-4 h-4 mr-2" />
-                        CALL
-                      </Button>
-                      <Button 
-                        onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(autoSelectedStore.address || "1234 Main St, Tampa FL")}`, "_blank")}
-                        className="bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-                      >
-                        <Navigation className="w-4 h-4 mr-2" />
-                        DIRECTIONS
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Process Steps */}
-            <Card className="bg-gradient-to-br from-slate-50 to-gray-50 border-slate-200">
-              <CardContent className="p-6">
-                <h4 className="text-lg font-semibold text-gray-900 mb-4">What Happens Next</h4>
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-4">
-                    <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
-                      <span className="text-white text-sm font-bold">1</span>
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Get Instant Response</p>
-                      <p className="text-sm text-gray-600">Store team responds within 2-5 minutes with quotes and directions</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-4">
-                    <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
-                      <span className="text-white text-sm font-bold">2</span>
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Try Before You Buy</p>
-                      <p className="text-sm text-gray-600">Visit the store to test comfort levels and make your selection</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-4">
-                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
-                      <span className="text-white text-sm font-bold">3</span>
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Drive Home Tonight</p>
-                      <p className="text-sm text-gray-600">Complete your purchase and take your new mattress home immediately</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                  <div className="text-sm text-red-600 mt-1">Need to sleep on it tonight</div>
+                </button>
+                
+                <button
+                  className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all"
+                  onClick={() => handleQuestionAnswer("this_week", 6)}
+                >
+                  <div className="text-lg font-semibold">This Week</div>
+                  <div className="text-sm text-gray-600">Within the next few days</div>
+                </button>
+              </div>
+            </CardContent>
+          </Card>
         )}
       </main>
     </div>

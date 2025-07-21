@@ -2,7 +2,9 @@
 
 ## Overview
 
-MattressPickupNow is a full-stack web application designed to connect emergency mattress buyers with Mattress Firm stores through an automated lead capture and messaging system. The application provides a simple, mobile-first interface for customers to submit their information and receive pre-written messages for contacting stores directly via SMS.
+MattressPickupNow is a Pure Urgency Execution System designed to solve the "Sleep on it tonight" problem. The system implements a 6-question lead capture flow that routes customers through one of 4 proven mattress options (Firm/Medium/Soft/Hybrid) with instant budget-based prioritization and automated SMS sequences.
+
+**Core Mission**: "Click, click, click, set. Sleep on it tonight."
 
 ## User Preferences
 
@@ -33,24 +35,25 @@ Design preference: Premium and sleek appearance with icons only - absolutely no 
 
 ## Key Components
 
-### Lead Capture System
-The application implements a strategic multi-step lead capture flow focused on the "car revelation":
+### Pure Urgency Lead Capture System
+The application implements a streamlined 6-question system designed for maximum speed and conversion:
 
-1. **ZIP Code Entry**: Multiple location options (GPS, address, ZIP) with "car-friendly" messaging
-2. **The Car Revelation**: Critical psychological breakthrough showing mattresses fit in back seats
-3. **Mattress Selection**: Enhanced cards with prominent "fits in car" benefits and "TRY THIS ONE" CTAs
-4. **Contact Information**: Progressive information exchange with value at each step
-5. **Store Details & Instructions**: Auto-selected closest store with pickup coordination and action buttons
+1. **Size Selection**: Twin/Full/Queen/King with instant pricing display
+2. **Comfort Type**: F/M/S/H (Firm/Medium/Soft/Hybrid) - 4 proven options only
+3. **ZIP Code**: Instant location-based inventory checking
+4. **Budget Range**: Under $400/400-799/$800+ for automatic priority routing
+5. **Urgency Level**: Today/This Week for immediate vs scheduled follow-up
+6. **Contact Form**: Minimal friction data capture with instant lead processing
 
-### Enhanced UX Features
-- **Progress Indicator**: Visual step tracker showing Location → Options → Select → Details
-- **Multiple Location Options**: GPS current location, full address, or quick ZIP search
-- **Strong Call-to-Actions**: "TRY THIS ONE" buttons with car icons on mattress cards
-- **Action-Oriented Final Step**: TEXT STORE NOW, CALL, and DIRECTIONS buttons
-- **Car Revelation Emphasis**: Highlighted "fits on back seat" messaging throughout
+### Automatic Priority Routing System
+- **High Priority ($800+ Budget)**: Instant phone alert to owner with 15-minute callback guarantee
+- **Standard Priority ($400-799)**: Automated quotes with optional manual follow-up
+- **Basic Priority (Under $400)**: Self-service route with store directions and pickup instructions
+- **Today Urgency**: Immediate processing and same-day pickup coordination
+- **Progress Tracking**: Visual 5-step progress bar with instant question-by-question flow
 
 ### Core Value Proposition
-"Premium mattresses in boxes that fit on your back seat - no truck needed." This unique positioning solves the unknown problem most customers have about mattress transportation, creating a competitive moat through the revelation that quality mattresses can fit in any car.
+"Need a mattress TODAY? Pick one, pick it up, sleep on it tonight." The 4-option system (F/M/S/H) eliminates decision paralysis while the "fits in a Prius" proof point solves transportation concerns. Zero thinking required, maximum speed execution.
 
 ### Store Finder Integration
 - **Google Maps Integration**: API endpoint to search for nearby mattress stores
@@ -88,7 +91,9 @@ The application implements a strategic multi-step lead capture flow focused on t
 ### API Endpoints
 - `GET /api/health`: Health check endpoint
 - `POST /api/find-stores`: Find nearby mattress stores by ZIP code
-- `POST /api/leads`: Create new lead with validation
+- `POST /api/leads`: Create new lead with automatic priority assignment and SMS automation trigger
+- `POST /api/leads/:leadId/pickup`: Mark lead as picked up (stops automation sequence)  
+- `POST /api/leads/:leadId/sms`: Send manual SMS to lead
 
 ## External Dependencies
 
