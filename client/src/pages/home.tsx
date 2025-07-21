@@ -340,24 +340,18 @@ export default function Home() {
           <h2 className="text-3xl font-bold mb-4">Need a mattress TODAY?</h2>
           <p className="text-xl mb-6">Pick one, pick it up, sleep on it tonight.</p>
           
-          <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 mb-8 cursor-pointer hover:bg-white/30 transition-all">
+          <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 mb-8">
             <div className="text-sm font-semibold mb-2">Don't believe it fits in your car? WATCH THIS</div>
-            <div className="relative">
-              <video 
-                className="w-full rounded-lg border-2 border-white/30"
-                controls
-                preload="metadata"
-                style={{ maxHeight: '180px' }}
-              >
-                <source src="/attached_assets/v15044gf0000cr14gknog65kacvj5b6g_1753135800098.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-              <div className="absolute inset-0 bg-black/20 rounded-lg pointer-events-none flex items-center justify-center">
-                <div className="bg-white/90 rounded-full p-3">
-                  <div className="w-8 h-8 border-l-4 border-l-blue-600 border-t-2 border-t-transparent border-b-2 border-b-transparent ml-1"></div>
-                </div>
-              </div>
-            </div>
+            <video 
+              className="w-full rounded-lg border-2 border-white/30"
+              controls
+              preload="metadata"
+              style={{ maxHeight: '180px' }}
+              onError={(e) => console.error('Video error:', e)}
+            >
+              <source src="/attached_assets/v15044gf0000cr14gknog65kacvj5b6g_1753135800098.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
             <div className="text-xs text-white/90 mt-2 text-center font-medium">
               PROOF: Queen mattress fits in Prius back seat
             </div>

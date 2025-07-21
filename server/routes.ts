@@ -8,8 +8,18 @@ import express from "express";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Serve attached assets (videos, images, etc.)
-  app.use('/attached_assets', express.static('attached_assets'));
+  // Serve attached assets (videos, images, etc.) with proper MIME types
+  app.use('/attached_assets', express.static('attached_assets', {
+    setHeaders: (res, path) => {
+      if (path.endsWith('.mp4')) {
+        res.setHeader('Content-Type', 'video/mp4');
+      } else if (path.endsWith('.webm')) {
+        res.setHeader('Content-Type', 'video/webm');
+      } else if (path.endsWith('.mov')) {
+        res.setHeader('Content-Type', 'video/quicktime');
+      }
+    }
+  }));
   
   // Health check endpoint
   app.get("/api/health", async (req, res) => {
