@@ -121,6 +121,8 @@ export default function Home() {
   const [locationsFound, setLocationsFound] = useState<number | null>(null);
   const [storeData, setStoreData] = useState<any>(null);
   const [zipInput, setZipInput] = useState("");
+  const [addressInput, setAddressInput] = useState("");
+  const [showAddressInput, setShowAddressInput] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof insertLeadSchema>>({
@@ -201,6 +203,8 @@ export default function Home() {
     setLocationsFound(null);
     setStoreData(null);
     setZipInput("");
+    setAddressInput("");
+    setShowAddressInput(false);
     form.reset();
   };
 
@@ -242,8 +246,11 @@ export default function Home() {
     }
   };
 
-  const handleGPSLocation = () => {
+  const handleGPSLocation = async () => {
+    console.log('🎯 GPS button clicked - checking geolocation support');
+    
     if (!navigator.geolocation) {
+      console.error('❌ Geolocation not supported by browser');
       toast({
         title: "Location not supported",
         description: "Your browser doesn't support location services",
@@ -252,14 +259,22 @@ export default function Home() {
       return;
     }
 
+    console.log('✅ Geolocation supported - requesting permission');
     setLocationDetecting(true);
+
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 30000
+    };
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
+        console.log(`📍 Got GPS coordinates: ${latitude}, ${longitude}`);
         
         try {
-          // Call our new API to find nearby stores
+          console.log('🔄 Calling /api/nearby-stores with GPS coordinates');
           const storesResponse = await fetch('/api/nearby-stores', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -267,23 +282,25 @@ export default function Home() {
           });
 
           const result = await storesResponse.json();
+          console.log('📊 Store search result:', result);
           
-          if (result.success) {
-            setLocationsFound(result.count);
-            setSelectedZip(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+          if (result.success && result.stores) {
+            setLocationsFound(result.stores.length);
+            setSelectedZip(`GPS: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
             setStoreData(result);
             
             toast({
               title: "Location detected",
-              description: `Found ${result.count} Mattress Firm stores near you`
+              description: `Found ${result.stores.length} Mattress Firm stores near you`
             });
             
+            console.log('🎉 GPS location successful - proceeding to next question');
             setCurrentQuestion(2);
           } else {
-            throw new Error('Failed to find stores');
+            throw new Error(`API returned: ${JSON.stringify(result)}`);
           }
         } catch (error) {
-          console.error('GPS location error:', error);
+          console.error('❌ GPS location API error:', error);
           toast({
             title: "Location search failed", 
             description: "Please try entering your ZIP code instead",
@@ -294,42 +311,118 @@ export default function Home() {
         }
       },
       (error) => {
+        console.error('❌ Geolocation error:', error);
         setLocationDetecting(false);
+        
         let message = "Unable to get your location";
+        let title = "Location Error";
         
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            message = "Location access denied. Please enable location services.";
+            message = "Location access denied. Please enable location services and try again.";
+            title = "Permission Denied";
+            console.log('🚫 User denied location permission');
             break;
           case error.POSITION_UNAVAILABLE:
-            message = "Location information unavailable.";
+            message = "Location information unavailable. Please try entering your ZIP code.";
+            console.log('📍 Position unavailable');
             break;
           case error.TIMEOUT:
-            message = "Location request timed out.";
+            message = "Location request timed out. Please try again or use ZIP code.";
+            console.log('⏱️ Location request timeout');
             break;
         }
 
         toast({
-          title: "Location Error",
+          title: title,
           description: message,
           variant: "destructive"
         });
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000
-      }
+      options
     );
   };
 
   const handleAddressInput = () => {
-    // For now, prompt user to enter full address in ZIP field
+    console.log('🏠 Address button clicked - showing address input');
+    setShowAddressInput(true);
     setZipInput("");
-    const input = document.querySelector('input[placeholder*="ZIP code"]') as HTMLInputElement;
-    if (input) {
-      input.focus();
-      input.placeholder = "Enter your full address or ZIP code";
+    
+    // Focus on address input after state update
+    setTimeout(() => {
+      const input = document.querySelector('input[placeholder*="address"]') as HTMLInputElement;
+      if (input) {
+        input.focus();
+      }
+    }, 100);
+  };
+
+  const handleAddressSubmit = async () => {
+    if (!addressInput.trim()) {
+      toast({
+        title: "Address required",
+        description: "Please enter a valid address",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    console.log('🏠 Submitting address:', addressInput);
+    setLocationDetecting(true);
+
+    try {
+      // Use Google Geocoding API to convert address to coordinates
+      console.log('🔄 Calling /api/resolve-location with address');
+      const geocodeResponse = await fetch('/api/resolve-location', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ location: addressInput.trim() }),
+      });
+
+      const geocodeResult = await geocodeResponse.json();
+      console.log('📍 Geocoding result:', geocodeResult);
+
+      if (geocodeResult.success && geocodeResult.coordinates) {
+        const { lat, lng } = geocodeResult.coordinates;
+        
+        // Now find nearby stores
+        console.log('🔄 Finding nearby stores for address coordinates');
+        const storesResponse = await fetch('/api/nearby-stores', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lat, lng }),
+        });
+
+        const storesResult = await storesResponse.json();
+        console.log('🏪 Store search result:', storesResult);
+
+        if (storesResult.success && storesResult.stores) {
+          setLocationsFound(storesResult.stores.length);
+          setSelectedZip(addressInput);
+          setStoreData(storesResult);
+          
+          toast({
+            title: "Address located",
+            description: `Found ${storesResult.stores.length} Mattress Firm stores near ${addressInput}`
+          });
+          
+          console.log('🎉 Address location successful - proceeding to next question');
+          setCurrentQuestion(2);
+        } else {
+          throw new Error('No stores found near this address');
+        }
+      } else {
+        throw new Error('Could not find coordinates for this address');
+      }
+    } catch (error) {
+      console.error('❌ Address location error:', error);
+      toast({
+        title: "Address not found",
+        description: "Please check the address and try again, or use ZIP code",
+        variant: "destructive"
+      });
+    } finally {
+      setLocationDetecting(false);
     }
   };
 
@@ -343,6 +436,7 @@ export default function Home() {
       return;
     }
 
+    console.log('📫 Submitting ZIP code:', zipInput);
     setSelectedZip(zipInput);
     await detectLocation(zipInput);
     setCurrentQuestion(2);
@@ -680,13 +774,53 @@ export default function Home() {
                       </div>
                       <div>
                         <div className="font-semibold text-gray-900">Full address</div>
-                        <div className="text-sm text-gray-600">Enter your complete address</div>
+                        <div className="text-sm text-gray-600">Most precise pickup locations</div>
                       </div>
                       <svg className="w-5 h-5 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
                   </button>
+                  
+                  {showAddressInput && (
+                    <div className="space-y-3">
+                      <input 
+                        type="text" 
+                        placeholder="123 Main St, Tampa, FL"
+                        className="w-full p-3 border border-gray-300 rounded-lg text-lg focus:border-blue-500 focus:outline-none"
+                        value={addressInput}
+                        onChange={(e) => setAddressInput(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            handleAddressSubmit();
+                          }
+                        }}
+                        disabled={locationDetecting}
+                      />
+                      <div className="text-xs text-gray-500 text-center px-2">
+                        Enter the address near where you'd like to pick up your mattress (e.g., your home or work).
+                      </div>
+                      <Button 
+                        className="w-full bg-gray-600 hover:bg-gray-700 text-white py-3"
+                        disabled={locationDetecting || !addressInput.trim()}
+                        onClick={handleAddressSubmit}
+                      >
+                        {locationDetecting ? (
+                          <>
+                            <div className="w-5 h-5 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            Finding stores near address...
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                            </svg>
+                            FIND STORES NEAR ADDRESS
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  )}
                   
                   <div className="text-center text-gray-500 text-sm">Or enter ZIP code for quick search:</div>
                   <input 

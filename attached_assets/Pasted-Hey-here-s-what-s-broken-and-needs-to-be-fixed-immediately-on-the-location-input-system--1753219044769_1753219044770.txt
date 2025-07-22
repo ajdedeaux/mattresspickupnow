@@ -1,0 +1,54 @@
+Hey, here’s what’s broken and needs to be fixed immediately on the location input system:
+
+---
+
+📍 **1. “Use My Location (GPS)” Button Not Working**
+
+- ❌ When tapped, the button just spins.
+- 🚫 It doesn’t trigger the browser’s geolocation permission prompt.
+- ✅ Expected behavior:
+  - Should call `navigator.geolocation.getCurrentPosition(...)`
+  - Should request permission and retrieve coordinates
+  - Should send coordinates to the backend to fetch nearby Mattress Firm stores
+- 🛠️ Fix:
+  - Add proper event listener to the button
+  - Handle permission success + error gracefully
+  - Pass `lat/lng` to backend (via `/api/nearby-stores` or similar)
+  - Console log any permission or API failures
+
+---
+
+🏠 **2. “Full Address” Field is Buggy and Confusing**
+
+- ❌ Placeholder says “Enter your complete address” — but doesn’t clarify what it’s used for
+- ❌ When tapped, placeholder text overlaps with the user’s input
+- ❌ Input only allows **numbers** — it should accept **full addresses** (letters, commas, etc.)
+- ✅ Expected behavior:
+  - Input accepts any valid address format (e.g., `123 Main St, Tampa, FL`)
+  - Placeholder should disappear on focus
+  - Add helpful copy below the input:  
+    _“Enter the address near where you’d like to pick up your mattress (e.g., your home or work).”_
+
+---
+
+📫 **3. ZIP Code Input Works, But Needs Improvements**
+
+- ✅ This is the only functional option right now
+- 🧠 Please reuse this logic for both the full address and GPS flow:
+  - For full address, use the **Geocoding API** to get lat/lng
+  - For GPS, use `navigator.geolocation` directly
+  - Send `lat/lng` to backend → use **Google Places API** to fetch nearby Mattress Firm stores
+
+---
+
+🧪 **4. Final Test Case:**
+
+- Enter ZIP: `33607`
+- Expected response:
+  - Real Mattress Firm stores near Tampa
+  - Includes: store name, address, phone number, hours, distance
+- ✅ Should be displayed in dropdown or results list
+
+Please fix all 3 inputs, wire them to real backend API calls (no simulation), and verify frontend behavior with console logs.
+
+Let me know once it's live so I can test.
