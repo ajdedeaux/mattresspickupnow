@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { insertLeadSchema } from "@shared/schema";
 import { formatPhoneNumber } from "@/lib/utils";
-import { Car, Clock, Check, Star, Phone, AlertTriangle } from "lucide-react";
+import { Car, Clock, Check, Star, Phone, AlertTriangle, ArrowLeft, RotateCcw } from "lucide-react";
 
 // Persona-specific messaging per master spec
 const getPersonaMessaging = (persona?: string) => {
@@ -172,6 +172,28 @@ export default function Home() {
     }
   };
 
+  const goBack = () => {
+    if (showForm) {
+      setShowForm(false);
+      return;
+    }
+    if (currentQuestion > 1) {
+      setCurrentQuestion(currentQuestion - 1);
+    }
+  };
+
+  const restartFlow = () => {
+    setCurrentQuestion(1);
+    setSelectedSize("");
+    setSelectedComfort("");
+    setSelectedBudget("");
+    setSelectedUrgency("");
+    setShowForm(false);
+    setLeadCreated(false);
+    setLeadResponse(null);
+    form.reset();
+  };
+
   const onSubmit = (data: z.infer<typeof insertLeadSchema>) => {
     // Format phone number
     const formattedData = {
@@ -283,8 +305,16 @@ export default function Home() {
                 </div>
               )}
 
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <p className="text-sm text-gray-500">
+              <div className="mt-8 pt-6 border-t border-gray-200 space-y-4">
+                <Button 
+                  onClick={restartFlow} 
+                  variant="outline" 
+                  className="w-full flex items-center gap-2"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  Start Over with Different Options
+                </Button>
+                <p className="text-sm text-gray-500 text-center">
                   Questions? Call us: <span className="font-semibold">(813) 555-9999</span>
                 </p>
               </div>
@@ -362,13 +392,36 @@ export default function Home() {
                     )}
                   />
 
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-green-600 hover:bg-green-700" 
-                    disabled={createLeadMutation.isPending}
-                  >
-                    {createLeadMutation.isPending ? "Finding Your Store..." : "Find My Store & Pickup Time"}
-                  </Button>
+                  <div className="space-y-3">
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-green-600 hover:bg-green-700" 
+                      disabled={createLeadMutation.isPending}
+                    >
+                      {createLeadMutation.isPending ? "Finding Your Store..." : "Find My Store & Pickup Time"}
+                    </Button>
+                    
+                    <div className="flex gap-2">
+                      <Button
+                        type="button" 
+                        onClick={goBack}
+                        variant="outline" 
+                        className="flex-1 flex items-center gap-2"
+                      >
+                        <ArrowLeft className="w-4 h-4" />
+                        Back
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={restartFlow}
+                        variant="outline" 
+                        className="flex-1 flex items-center gap-2"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        Start Over
+                      </Button>
+                    </div>
+                  </div>
                 </form>
               </Form>
             </CardContent>
@@ -439,6 +492,30 @@ export default function Home() {
       {/* 6 Questions System */}
       <main className="max-w-md mx-auto px-6 py-8">
         <div className="text-center mb-8">
+          <div className="flex items-center justify-between mb-4">
+            {currentQuestion > 1 && (
+              <Button
+                onClick={goBack}
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </Button>
+            )}
+            <div className="flex-1"></div>
+            <Button
+              onClick={restartFlow}
+              variant="ghost" 
+              size="sm"
+              className="flex items-center gap-2 text-gray-500 hover:text-gray-700"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Start Over
+            </Button>
+          </div>
+          
           <div className="text-sm text-gray-500 mb-2">Question {currentQuestion} of 5</div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div 
