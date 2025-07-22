@@ -120,6 +120,7 @@ export default function Home() {
   const [locationDetecting, setLocationDetecting] = useState(false);
   const [locationsFound, setLocationsFound] = useState<number | null>(null);
   const [storeData, setStoreData] = useState<any>(null);
+  const [zipInput, setZipInput] = useState("");
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof insertLeadSchema>>({
@@ -199,6 +200,7 @@ export default function Home() {
     setLocationDetecting(false);
     setLocationsFound(null);
     setStoreData(null);
+    setZipInput("");
     form.reset();
   };
 
@@ -238,6 +240,106 @@ export default function Home() {
     } finally {
       setLocationDetecting(false);
     }
+  };
+
+  const handleGPSLocation = () => {
+    if (!navigator.geolocation) {
+      toast({
+        title: "Location not supported",
+        description: "Your browser doesn't support location services",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLocationDetecting(true);
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        
+        try {
+          // Call our new API to find nearby stores
+          const storesResponse = await fetch('/api/nearby-stores', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lat: latitude, lng: longitude }),
+          });
+
+          const result = await storesResponse.json();
+          
+          if (result.success) {
+            setLocationsFound(result.count);
+            setSelectedZip(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+            
+            toast({
+              title: "Location detected",
+              description: `Found ${result.count} Mattress Firm stores near you`
+            });
+            
+            setCurrentQuestion(2);
+          }
+        } catch (error) {
+          console.error('GPS location error:', error);
+          toast({
+            title: "Location search failed", 
+            description: "Please try entering your ZIP code instead",
+            variant: "destructive"
+          });
+        } finally {
+          setLocationDetecting(false);
+        }
+      },
+      (error) => {
+        setLocationDetecting(false);
+        let message = "Unable to get your location";
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            message = "Location access denied. Please enable location services.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            message = "Location information unavailable.";
+            break;
+          case error.TIMEOUT:
+            message = "Location request timed out.";
+            break;
+        }
+
+        toast({
+          title: "Location Error",
+          description: message,
+          variant: "destructive"
+        });
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    );
+  };
+
+  const handleAddressInput = () => {
+    toast({
+      title: "Address Input",
+      description: "Please use the ZIP code field below for now",
+    });
+  };
+
+  const handleZipSubmit = async () => {
+    if (!zipInput || zipInput.length !== 5) {
+      toast({
+        title: "Invalid ZIP code",
+        description: "Please enter a valid 5-digit ZIP code",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setSelectedZip(zipInput);
+    await detectLocation(zipInput);
+    setCurrentQuestion(2);
   };
 
   const onSubmit = (data: z.infer<typeof insertLeadSchema>) => {
@@ -533,15 +635,25 @@ export default function Home() {
                 </p>
                 
                 <div className="space-y-4">
-                  <button className="w-full bg-blue-50 border border-blue-200 rounded-lg p-4 text-left hover:bg-blue-100 transition-all">
+                  <button 
+                    className="w-full bg-blue-50 border border-blue-200 rounded-lg p-4 text-left hover:bg-blue-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleGPSLocation}
+                    disabled={locationDetecting}
+                  >
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mr-3">
-                        <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                        </svg>
+                        {locationDetecting ? (
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                          </svg>
+                        )}
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">Current location (GPS)</div>
+                        <div className="font-semibold text-gray-900">
+                          {locationDetecting ? "Getting your location..." : "Current location (GPS)"}
+                        </div>
                         <div className="text-sm text-gray-600">Find nearest options right now</div>
                       </div>
                       <svg className="w-5 h-5 text-blue-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -550,7 +662,10 @@ export default function Home() {
                     </div>
                   </button>
                   
-                  <button className="w-full bg-gray-50 border border-gray-200 rounded-lg p-4 text-left hover:bg-gray-100 transition-all">
+                  <button 
+                    className="w-full bg-gray-50 border border-gray-200 rounded-lg p-4 text-left hover:bg-gray-100 transition-all"
+                    onClick={handleAddressInput}
+                  >
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-gray-500 rounded-full flex items-center justify-center mr-3">
                         <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -573,27 +688,19 @@ export default function Home() {
                     placeholder="Enter ZIP code (e.g., 33612)"
                     className="w-full p-3 border border-gray-300 rounded-lg text-center text-lg focus:border-blue-500 focus:outline-none"
                     maxLength={5}
-                    onKeyPress={async (e) => {
-                      if (e.key === 'Enter' && e.currentTarget.value.length === 5) {
-                        const zipCode = e.currentTarget.value;
-                        setSelectedZip(zipCode);
-                        await detectLocation(zipCode);
-                        setCurrentQuestion(2);
+                    value={zipInput}
+                    onChange={(e) => setZipInput(e.target.value.replace(/\D/g, '').slice(0, 5))}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleZipSubmit();
                       }
                     }}
+                    disabled={locationDetecting}
                   />
                   <Button 
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
-                    disabled={locationDetecting}
-                    onClick={async (e) => {
-                      const input = e.currentTarget.parentNode?.querySelector('input') as HTMLInputElement;
-                      if (input?.value.length === 5) {
-                        const zipCode = input.value;
-                        setSelectedZip(zipCode);
-                        await detectLocation(zipCode);
-                        setCurrentQuestion(2);
-                      }
-                    }}
+                    disabled={locationDetecting || zipInput.length !== 5}
+                    onClick={handleZipSubmit}
                   >
                     {locationDetecting ? (
                       <>
