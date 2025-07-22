@@ -32,7 +32,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Resolve location to coordinates
   app.post("/api/resolve-location", async (req, res) => {
     try {
-      const { zip, lat, lng } = req.body;
+      const { zip, lat, lng, location } = req.body;
       
       // If lat/lng provided, return immediately
       if (lat && lng) {
@@ -43,16 +43,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // If ZIP provided, geocode it
-      if (!zip || typeof zip !== 'string' || zip.trim().length === 0) {
+      // Check for location parameter (can be ZIP code or full address)
+      const searchTerm = location || zip;
+      if (!searchTerm || typeof searchTerm !== 'string' || searchTerm.trim().length === 0) {
         return res.status(400).json({
           success: false,
-          message: "ZIP code or lat/lng coordinates are required"
+          message: "ZIP code, address, or lat/lng coordinates are required"
         });
       }
 
+      console.log(`🔍 Geocoding request for: "${searchTerm}"`);
       const googleMaps = new GoogleMapsService();
-      const geocodeResult = await googleMaps.geocodeLocation(zip.trim());
+      const geocodeResult = await googleMaps.geocodeLocation(searchTerm.trim());
+      
+      console.log('🌍 Geocoding result:', geocodeResult);
       
       if (!geocodeResult.success) {
         return res.status(400).json({

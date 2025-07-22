@@ -1,0 +1,53 @@
+Hey, the address entry is looking better and ZIP code lookups are working perfectly — thanks for that. But here’s what still needs fixing before launch:
+
+---
+
+✅ **WHAT’S WORKING:**
+- ZIP code input triggers the correct API response and returns nearby Mattress Firm stores.
+- Address input UI is cleaner and clearer now (nice).
+- The backend seems properly wired for ZIP-based lookups.
+
+---
+
+🚫 **WHAT’S STILL BROKEN:**
+
+1. **Current Location (GPS) Button Still Fails Silently**
+   - When clicked, it just spins — but **does not trigger the browser’s location permission request.**
+   - No prompt appears to allow location access.
+   - Likely culprit: `navigator.geolocation.getCurrentPosition(...)` is either:
+     - Not being called correctly
+     - Being blocked by dev environment security settings
+     - Or failing silently without a visible error
+
+   ✅ **Expected fix:**
+   - Ensure button calls `navigator.geolocation.getCurrentPosition(...)` on click
+   - Add visible loading spinner + fail timeout
+   - Show user-friendly error if location permission is denied
+   - Log any permission denial or geolocation errors in the console
+
+---
+
+2. **Full Address Entry Triggers “Address Not Found” Error**
+   - Entering: `18932 Addison lake dr land o lakes fl` throws:
+     ```
+     Address not found
+     Please check the address and try again, or use ZIP code
+     ```
+   - This is a valid Florida address — should work.
+   - Suggesting ZIP code is fine as a fallback, but full address **should work reliably** if we're using Google’s **Geocoding API.**
+
+   ✅ **Expected fix:**
+   - Ensure full address input is being passed to Google’s Geocoding API
+   - Validate that API response is being properly parsed and converted to lat/lng
+   - Add tolerance for slight typos or casing (e.g. “Dr” vs “Drive”)
+   - Fallback logic only if Geocoding fails entirely — not prematurely
+
+---
+
+📦 BONUS IMPROVEMENT (Optional but Ideal):
+- Autofill city/state/ZIP once address is successfully entered
+- Show pin on map preview (for visual reassurance before hitting “Find My Options”)
+
+---
+
+Let me know once this is pushed — I’ll test again in mobile and verify the permission + address bugs are resolved.

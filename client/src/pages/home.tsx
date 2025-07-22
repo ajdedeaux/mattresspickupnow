@@ -249,7 +249,7 @@ export default function Home() {
   const handleGPSLocation = async () => {
     console.log('🎯 GPS button clicked - checking geolocation support');
     
-    if (!navigator.geolocation) {
+    if (!navigator?.geolocation) {
       console.error('❌ Geolocation not supported by browser');
       toast({
         title: "Location not supported",
@@ -264,83 +264,88 @@ export default function Home() {
 
     const options = {
       enableHighAccuracy: true,
-      timeout: 15000,
-      maximumAge: 30000
+      timeout: 20000,
+      maximumAge: 60000
     };
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        console.log(`📍 Got GPS coordinates: ${latitude}, ${longitude}`);
-        
-        try {
-          console.log('🔄 Calling /api/nearby-stores with GPS coordinates');
-          const storesResponse = await fetch('/api/nearby-stores', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ lat: latitude, lng: longitude }),
-          });
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+      });
 
-          const result = await storesResponse.json();
-          console.log('📊 Store search result:', result);
-          
-          if (result.success && result.stores) {
-            setLocationsFound(result.stores.length);
-            setSelectedZip(`GPS: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
-            setStoreData(result);
-            
-            toast({
-              title: "Location detected",
-              description: `Found ${result.stores.length} Mattress Firm stores near you`
-            });
-            
-            console.log('🎉 GPS location successful - proceeding to next question');
-            setCurrentQuestion(2);
-          } else {
-            throw new Error(`API returned: ${JSON.stringify(result)}`);
-          }
-        } catch (error) {
-          console.error('❌ GPS location API error:', error);
-          toast({
-            title: "Location search failed", 
-            description: "Please try entering your ZIP code instead",
-            variant: "destructive"
-          });
-        } finally {
-          setLocationDetecting(false);
+      const { latitude, longitude } = position.coords;
+      console.log(`📍 Got GPS coordinates: ${latitude}, ${longitude}`);
+      
+      try {
+        console.log('🔄 Calling /api/nearby-stores with GPS coordinates');
+        const storesResponse = await fetch('/api/nearby-stores', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lat: latitude, lng: longitude }),
+        });
+
+        if (!storesResponse.ok) {
+          throw new Error(`HTTP ${storesResponse.status}: ${storesResponse.statusText}`);
         }
-      },
-      (error) => {
-        console.error('❌ Geolocation error:', error);
-        setLocationDetecting(false);
+
+        const result = await storesResponse.json();
+        console.log('📊 Store search result:', result);
         
-        let message = "Unable to get your location";
-        let title = "Location Error";
-        
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
+        if (result.success && result.stores && result.stores.length > 0) {
+          setLocationsFound(result.stores.length);
+          setSelectedZip(`GPS: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+          setStoreData(result);
+          
+          toast({
+            title: "Location detected",
+            description: `Found ${result.stores.length} Mattress Firm stores near you`
+          });
+          
+          console.log('🎉 GPS location successful - proceeding to next question');
+          setCurrentQuestion(2);
+        } else {
+          throw new Error(`No stores found: ${JSON.stringify(result)}`);
+        }
+      } catch (apiError) {
+        console.error('❌ GPS location API error:', apiError);
+        toast({
+          title: "Location search failed", 
+          description: "Please try entering your ZIP code instead",
+          variant: "destructive"
+        });
+      }
+    } catch (geoError: any) {
+      console.error('❌ Geolocation error:', geoError);
+      
+      let message = "Unable to get your location";
+      let title = "Location Error";
+      
+      if (geoError.code) {
+        switch (geoError.code) {
+          case 1: // PERMISSION_DENIED
             message = "Location access denied. Please enable location services and try again.";
             title = "Permission Denied";
             console.log('🚫 User denied location permission');
             break;
-          case error.POSITION_UNAVAILABLE:
+          case 2: // POSITION_UNAVAILABLE
             message = "Location information unavailable. Please try entering your ZIP code.";
             console.log('📍 Position unavailable');
             break;
-          case error.TIMEOUT:
+          case 3: // TIMEOUT
             message = "Location request timed out. Please try again or use ZIP code.";
             console.log('⏱️ Location request timeout');
             break;
         }
+      }
 
-        toast({
-          title: title,
-          description: message,
-          variant: "destructive"
-        });
-      },
-      options
-    );
+      toast({
+        title: title,
+        description: message,
+        variant: "destructive"
+      });
+    } finally {
+      setLocationDetecting(false);
+    }
   };
 
   const handleAddressInput = () => {
