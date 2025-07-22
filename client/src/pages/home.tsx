@@ -450,44 +450,151 @@ export default function Home() {
       </header>
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-blue-900 to-purple-900 text-white py-16 px-6">
+      <section className="bg-gradient-to-br from-blue-800 via-blue-900 to-indigo-900 text-white py-12 px-6">
         <div className="max-w-md mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Need a mattress TODAY?</h2>
-          <p className="text-xl mb-6">Pick one, pick it up, sleep on it tonight.</p>
-          
-          <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 mb-8">
-            <div className="text-sm font-semibold mb-2">Don't believe it fits in your car? WATCH THIS</div>
-            <video 
-              className="w-full rounded-lg border-2 border-white/30"
-              controls
-              preload="metadata"
-              style={{ maxHeight: '180px' }}
-              onError={(e) => console.error('Video error:', e)}
-            >
-              <source src="/attached_assets/v15044gf0000cr14gknog65kacvj5b6g_1753135800098.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-            <div className="text-xs text-white/90 mt-2 text-center font-medium">
-              PROOF: Queen mattress fits in Prius back seat
-            </div>
-          </div>
+          <h2 className="text-3xl font-bold mb-3">Need a Mattress Tonight?</h2>
+          <h3 className="text-2xl font-light mb-6">It Fits in Your Car.</h3>
+          <p className="text-lg mb-8 text-blue-100">Premium mattresses in boxes that fit on your back seat - no truck needed</p>
 
-          <div className="grid grid-cols-3 gap-3 text-sm">
-            <div className="bg-white/10 rounded-lg p-3">
-              <Car className="w-5 h-5 mx-auto mb-2 text-blue-400" />
-              <span>Any Car</span>
+          <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4">
+              <Car className="w-6 h-6 mx-auto mb-2 text-blue-300" />
+              <div className="text-sm font-medium">Back Seat Fits</div>
             </div>
-            <div className="bg-white/10 rounded-lg p-3">
-              <Check className="w-5 h-5 mx-auto mb-2 text-green-400" />
-              <span>Try First</span>
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4">
+              <Check className="w-6 h-6 mx-auto mb-2 text-green-300" />
+              <div className="text-sm font-medium">Try First</div>
             </div>
-            <div className="bg-white/10 rounded-lg p-3">
-              <Clock className="w-5 h-5 mx-auto mb-2 text-purple-400" />
-              <span>Tonight</span>
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4">
+              <Clock className="w-6 h-6 mx-auto mb-2 text-amber-300" />
+              <div className="text-sm font-medium">Same Day</div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Location Entry Section */}
+      {currentQuestion === 1 && (
+        <section className="py-8 px-6 bg-gray-50">
+          <div className="max-w-md mx-auto">
+            <Card className="shadow-lg border-0">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
+                  Enter your location to find mattresses ready for pickup:
+                </h3>
+                <p className="text-center text-gray-600 mb-6 text-sm">
+                  More precise location = closer pickup options
+                </p>
+                
+                <div className="space-y-4">
+                  <button className="w-full bg-blue-50 border border-blue-200 rounded-lg p-4 text-left hover:bg-blue-100 transition-all">
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mr-3">
+                        <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-900">Current location (GPS)</div>
+                        <div className="text-sm text-gray-600">Find nearest options right now</div>
+                      </div>
+                      <svg className="w-5 h-5 text-blue-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </button>
+                  
+                  <button className="w-full bg-gray-50 border border-gray-200 rounded-lg p-4 text-left hover:bg-gray-100 transition-all">
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-gray-500 rounded-full flex items-center justify-center mr-3">
+                        <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-900">Full address</div>
+                        <div className="text-sm text-gray-600">Get precise pickup locations</div>
+                      </div>
+                      <svg className="w-5 h-5 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </button>
+                  
+                  <div className="text-center text-gray-500 text-sm">Or enter ZIP code for quick search:</div>
+                  <input 
+                    type="text" 
+                    placeholder="Enter ZIP code (e.g., 33612)"
+                    className="w-full p-3 border border-gray-300 rounded-lg text-center text-lg focus:border-blue-500 focus:outline-none"
+                    maxLength={5}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && e.currentTarget.value.length === 5) {
+                        setCurrentQuestion(2);
+                      }
+                    }}
+                  />
+                  <Button 
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
+                    onClick={() => setCurrentQuestion(2)}
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                    </svg>
+                    FIND MY OPTIONS
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
+
+      {/* Information Card */}
+      {currentQuestion > 1 && (
+        <section className="py-6 px-6 bg-gray-50">
+          <div className="max-w-md mx-auto">
+            <Card className="bg-green-50 border-green-200 shadow-sm">
+              <CardContent className="p-4 text-center">
+                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Check className="w-6 h-6 text-white" />
+                </div>
+                <h4 className="font-bold text-gray-900 mb-2">Found 3 pickup locations near you!</h4>
+                
+                <div className="bg-blue-50 rounded-lg p-4 mb-4">
+                  <h5 className="font-semibold text-gray-900 mb-2">Here's what most people don't know:</h5>
+                  <div className="border-2 border-dashed border-blue-300 rounded-lg p-4 bg-white/50">
+                    <div className="flex items-center justify-center mb-2">
+                      <Car className="w-6 h-6 text-blue-600 mr-2" />
+                      <span className="font-semibold text-gray-900">These premium mattresses come in boxes</span>
+                    </div>
+                    <p className="text-sm text-blue-800 font-medium">that fit on your back seat.</p>
+                    <p className="text-sm text-gray-600 mt-2">No truck needed. No tying anything to your roof.</p>
+                    <p className="text-sm text-gray-600">You can try them in the store first, then drive home with one TODAY.</p>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg p-3 mb-4">
+                  <div className="flex items-center text-sm text-gray-700">
+                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="font-semibold">Closest pickup location</span>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1">2.1 miles away • Open until 9 PM</p>
+                </div>
+
+                <Button 
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold flex items-center justify-center gap-2"
+                  onClick={() => setCurrentQuestion(currentQuestion === 2 ? 2 : currentQuestion)}
+                >
+                  <Car className="w-5 h-5" />
+                  Show Me the Mattresses That Fit
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
 
       {/* 6 Questions System */}
       <main className="max-w-md mx-auto px-6 py-8">
@@ -526,7 +633,7 @@ export default function Home() {
         </div>
 
         {/* Question 1: Size */}
-        {currentQuestion === 1 && (
+        {currentQuestion === 2 && (
           <Card className="shadow-lg">
             <CardContent className="p-6">
               <h3 className="text-xl font-semibold text-center mb-6">What size do you need?</h3>
@@ -535,7 +642,7 @@ export default function Home() {
                   <button
                     key={size}
                     className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all"
-                    onClick={() => handleQuestionAnswer(size, 2)}
+                    onClick={() => handleQuestionAnswer(size, 3)}
                   >
                     <div className="text-lg font-semibold">{size}</div>
                   </button>
@@ -545,40 +652,115 @@ export default function Home() {
           </Card>
         )}
 
-        {/* Question 2: Comfort */}
-        {currentQuestion === 2 && (
-          <Card className="shadow-lg">
-            <CardContent className="p-6">
-              <h3 className="text-xl font-semibold text-center mb-6">What comfort level?</h3>
-              <div className="space-y-4">
-                {mattressOptions.map((option) => (
-                  <button
-                    key={option.id}
-                    className={`w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left ${
-                      option.popular ? 'border-green-500 bg-green-50' : ''
-                    }`}
-                    onClick={() => handleQuestionAnswer(option.id, 3)}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="font-semibold text-lg">{option.name}</div>
-                        <div className="text-sm text-gray-600 mb-1">{option.description}</div>
-                        <div className="text-sm text-gray-800">{option.comfort}</div>
-                        <div className="text-lg font-bold text-green-600 mt-1">
-                          {selectedSize ? option.sizes[selectedSize as keyof typeof option.sizes] : "from $199"}
-                        </div>
-                      </div>
-                      {option.popular && (
-                        <div className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
-                          Most Popular
-                        </div>
-                      )}
+        {/* Question 3: Comfort */}
+        {currentQuestion === 3 && (
+          <div className="space-y-6">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Perfect! These 4 premium mattresses are ready for pickup near 33612</h3>
+              <p className="text-blue-600 text-sm font-medium">Available for pickup • 2.1 miles away • Open until 9 PM</p>
+            </div>
+            
+            {mattressOptions.map((option, index) => (
+              <Card 
+                key={option.id}
+                className={`shadow-lg border-2 transition-all duration-200 hover:shadow-xl cursor-pointer relative ${
+                  option.popular 
+                    ? 'border-blue-400 bg-gradient-to-r from-blue-50 via-white to-white' 
+                    : 'border-gray-200 hover:border-blue-300'
+                }`}
+                onClick={() => handleQuestionAnswer(option.id, 4)}
+              >
+                {option.popular && (
+                  <div className="absolute -top-2 right-4 z-10">
+                    <span className="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                      BEST SELLER
+                    </span>
+                  </div>
+                )}
+                
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex-1">
+                      <h4 className="text-xl font-bold text-gray-900 mb-1">
+                        Sealy Memory Foam {option.name}
+                      </h4>
+                      <p className="text-gray-600 mb-2">
+                        {option.id === 'M' ? 'Our most popular choice - works for everyone' : 
+                         option.id === 'F' ? 'Perfect for back & stomach sleepers' :
+                         option.id === 'H' ? 'Best of both worlds - coil support + foam comfort' :
+                         'Ideal for side sleepers'}
+                      </p>
                     </div>
-                  </button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                    <div className="text-right ml-6">
+                      <div className="text-2xl font-bold text-gray-900">
+                        {selectedSize && option.sizes[selectedSize as keyof typeof option.sizes]}
+                      </div>
+                      <div className="text-sm line-through text-gray-400">
+                        {selectedSize && `$${(parseInt(option.sizes[selectedSize as keyof typeof option.sizes].replace('$', '').replace('.99', '')) + 150).toString()}`}
+                      </div>
+                      <div className="text-sm text-green-600 font-semibold">Ready for pickup now</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center mb-4">
+                    <div className="flex text-yellow-400 mr-2">
+                      {[...Array(4)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-current" />
+                      ))}
+                      <Star className="w-4 h-4 fill-current opacity-30" />
+                    </div>
+                    <span className="text-sm font-semibold text-gray-700">
+                      {option.id === 'F' ? '4.7/5' : option.id === 'M' ? '4.8/5' : option.id === 'H' ? '4.5/5' : '4.6/5'}
+                    </span>
+                    <span className="text-sm text-gray-500 ml-1">
+                      ({option.id === 'F' ? '1,834' : option.id === 'M' ? '2,847' : option.id === 'H' ? '978' : '1,592'} reviews)
+                    </span>
+                  </div>
+
+                  <p className="text-gray-600 text-sm mb-4">
+                    {option.id === 'F' ? 'Premium spinal alignment and support' : 
+                     option.id === 'M' ? 'Perfect balance of comfort and support' : 
+                     option.id === 'H' ? 'Traditional coil support with memory foam comfort' : 
+                     'Superior pressure point relief and comfort'}
+                  </p>
+
+                  <div className="bg-blue-50 rounded-lg p-3 mb-4 flex items-center">
+                    <Car className="w-5 h-5 text-blue-600 mr-2" />
+                    <span className="text-blue-800 font-medium text-sm">Fits on back seat of any car</span>
+                  </div>
+
+                  <div className="space-y-2 mb-6">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
+                      {option.id === 'M' ? 'Best seller - most popular choice' : 
+                       option.id === 'F' ? 'Brand new with full warranty' :
+                       option.id === 'H' ? 'Coil support + memory foam' :
+                       'Perfect for side sleepers'}
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
+                      {option.id === 'M' ? 'Same mattress others wait weeks for' :
+                       option.id === 'F' ? 'Try in store before you buy' :
+                       option.id === 'H' ? 'Great for hot sleepers' :
+                       'Pressure point relief'}
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
+                      {option.id === 'M' ? 'Guaranteed to fit in your car' :
+                       option.id === 'F' ? 'Fits in any car' :
+                       option.id === 'H' ? 'Full manufacturer warranty' :
+                       'Try it first, then decide'}
+                    </div>
+                  </div>
+
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-all">
+                    <Car className="w-5 h-5" />
+                    TRY THIS ONE
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
 
         {/* Question 3: ZIP Code */}
