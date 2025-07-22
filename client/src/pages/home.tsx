@@ -44,17 +44,17 @@ const getPersonaMessaging = (persona?: string) => {
   }
 };
 
-// The 4 Proven Options - Per Master Spec Pricing (Queen base prices)
+// The 4 Proven Options - Correct Pricing Matrix
 const mattressOptions = [
   {
     id: "F",
     name: "Firm",
     description: "8 inches",
     sizes: {
-      "Twin": "$199",
-      "Full": "$249", 
-      "Queen": "$299",
-      "King": "$349"
+      "Twin": "$199.99",
+      "Full": "$269.99", 
+      "Queen": "$299.99",
+      "King": "$369.99"
     },
     comfort: "Back & stomach sleepers",
     available: true
@@ -64,39 +64,39 @@ const mattressOptions = [
     name: "Medium",
     description: "10 inches",
     sizes: {
-      "Twin": "$299",
-      "Full": "$349",
-      "Queen": "$399", 
-      "King": "$449"
+      "Twin": "$249.99",
+      "Full": "$359.99",
+      "Queen": "$399.99", 
+      "King": "$469.99"
     },
     comfort: "Most popular - works for everyone",
     available: true,
     popular: true
   },
   {
-    id: "S", 
-    name: "Soft/Plush",
-    description: "12 inches",
-    sizes: {
-      "Twin": "$497",
-      "Full": "$597",
-      "Queen": "$697",
-      "King": "$797"
-    },
-    comfort: "Side sleepers & pressure relief",
-    available: true
-  },
-  {
     id: "H",
     name: "Hybrid",
     description: "10 inches",
     sizes: {
-      "Twin": "$399",
-      "Full": "$449",
-      "Queen": "$499",
-      "King": "$549"
+      "Twin": "$399.99",
+      "Full": "$449.99",
+      "Queen": "$499.99",
+      "King": "$599.99"
     },
     comfort: "Coil support + memory foam",
+    available: true
+  },
+  {
+    id: "S", 
+    name: "Soft/Plush",
+    description: "12 inches",
+    sizes: {
+      "Twin": "$549.99",
+      "Full": "$649.99",
+      "Queen": "$699.99",
+      "King": "$799.99"
+    },
+    comfort: "Side sleepers & pressure relief",
     available: true
   }
 ];

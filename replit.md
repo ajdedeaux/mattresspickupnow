@@ -38,7 +38,7 @@ Design preference: Premium and sleek appearance with icons only - absolutely no 
 ### Pure Urgency Lead Capture System
 The application implements a streamlined 6-question system designed for maximum speed and conversion:
 
-1. **Size Selection**: Twin/Full/Queen/King with instant pricing display (per master spec: F=$299, M=$399, S/Plush=$697, H=$499 for Queen)
+1. **Size Selection**: Twin/Full/Queen/King with instant pricing display (per correct pricing: F=$299.99, M=$399.99, H=$499.99, S=$699.99 for Queen)
 2. **Comfort Type**: F/M/S/H (Firm/Medium/Soft/Hybrid) - 4 proven options only
 3. **ZIP Code**: Instant location-based inventory checking
 4. **Budget Range**: Under $400/400-799/$800+ for automatic priority routing
