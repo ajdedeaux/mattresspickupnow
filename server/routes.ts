@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertLeadSchema, findStoresSchema, type Store } from "@shared/schema";
 import { triggerSMSAutomation, generateOwnerAlert } from "./sms-automation";
+import { detectPersona } from "./persona-engine";
 import { z } from "zod";
 import express from "express";
 
@@ -56,14 +57,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create new lead endpoint
+  // Create new lead endpoint with persona detection
   app.post("/api/leads", async (req, res) => {
     try {
       // Validate request body
       const validatedData = insertLeadSchema.parse(req.body);
       
-      // Create lead in storage
-      const lead = await storage.createLead(validatedData);
+      // Generate unique lead ID
+      const leadId = `MPN${Date.now()}`;
+      
+      // Run persona detection engine
+      const personaAnalysis = detectPersona(validatedData);
+      
+      // Determine priority based on persona and routing tier
+      let priority = "standard";
+      if (personaAnalysis.routingTier === "direct_to_aj") {
+        priority = "high";
+      } else if (validatedData.budgetRange === "under_400") {
+        priority = "basic";
+      }
+      
+      // Calculate price based on size and type per master spec
+      const mattressOptions = [
+        { id: "F", sizes: { "Twin": "$199", "Full": "$249", "Queen": "$299", "King": "$349" } },
+        { id: "M", sizes: { "Twin": "$299", "Full": "$349", "Queen": "$399", "King": "$449" } },
+        { id: "S", sizes: { "Twin": "$497", "Full": "$597", "Queen": "$697", "King": "$797" } },
+        { id: "H", sizes: { "Twin": "$399", "Full": "$449", "Queen": "$499", "King": "$549" } }
+      ];
+      const selectedOption = mattressOptions.find(opt => opt.id === validatedData.mattressType);
+      const price = selectedOption?.sizes[validatedData.mattressSize] || "Contact for pricing";
+      
+      // Create lead with persona data
+      const lead = await storage.createLead({
+        ...validatedData,
+        leadId,
+        priority,
+        price,
+        persona: personaAnalysis.persona,
+        routingTier: personaAnalysis.routingTier,
+      });
       
       // Get store information (using mock data for now)
       const mockStore = {
@@ -74,13 +106,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         hours: "9 PM"
       };
       
-      // Trigger SMS automation sequence
-      await triggerSMSAutomation(lead, mockStore);
+      // Trigger SMS automation based on routing tier
+      if (personaAnalysis.routingTier === "direct_to_aj") {
+        await triggerSMSAutomation(lead, mockStore);
+        await generateOwnerAlert(lead);
+      } else {
+        await triggerSMSAutomation(lead, mockStore);
+      }
       
       res.status(201).json({
         success: true,
-        leadId: lead.leadId,
-        message: "Lead created and SMS automation triggered"
+        leadId,
+        priority,
+        persona: personaAnalysis.persona,
+        routingTier: personaAnalysis.routingTier,
+        confidence: personaAnalysis.confidence,
+        reasoning: personaAnalysis.reasoning,
+        message: personaAnalysis.routingTier === "direct_to_aj"
+          ? "High priority lead - AJ will contact you within 15 minutes!" 
+          : "Lead captured successfully!"
       });
       
     } catch (error) {
@@ -160,6 +204,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({
         success: false,
         message: "Internal server error"
+      });
+    }
+  });
+
+  // CSV Export for Data Ownership (AJ must own all leads)
+  app.get("/api/leads/export", async (req, res) => {
+    try {
+      const leads = await storage.getAllLeads();
+      
+      // CSV headers
+      const csvHeaders = [
+        'Lead ID', 'Created At', 'Name', 'Phone', 'Email', 'ZIP Code',
+        'Mattress Size', 'Mattress Type', 'Budget Range', 'Urgency',
+        'Persona', 'Routing Tier', 'Priority', 'Status', 'Price', 'Store Name',
+        'Store Phone', 'Store Address', 'Picked Up', 'Follow Up Stage'
+      ];
+      
+      // Convert leads to CSV format
+      const csvRows = leads.map((lead: Lead) => [
+        lead.leadId,
+        lead.createdAt?.toISOString() || '',
+        lead.name,
+        lead.phone,
+        lead.email || '',
+        lead.zipCode,
+        lead.mattressSize,
+        lead.mattressType,
+        lead.budgetRange,
+        lead.urgency,
+        lead.persona || '',
+        lead.routingTier || '',
+        lead.priority,
+        lead.status,
+        lead.price || '',
+        lead.storeName || '',
+        lead.storePhone || '',
+        lead.storeAddress || '',
+        lead.pickedUp ? 'Yes' : 'No',
+        lead.followUpStage || 0
+      ]);
+      
+      // Generate CSV content
+      const csvContent = [
+        csvHeaders.join(','),
+        ...csvRows.map((row: (string | number | boolean)[]) => row.map((field: string | number | boolean) => `"${field}"`).join(','))
+      ].join('\n');
+      
+      // Set appropriate headers for CSV download
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="mattresspickupnow-leads-${new Date().toISOString().split('T')[0]}.csv"`);
+      
+      res.send(csvContent);
+      
+    } catch (error) {
+      console.error("CSV export error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to export leads"
       });
     }
   });

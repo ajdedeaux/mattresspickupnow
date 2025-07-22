@@ -4,8 +4,9 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  createLead(lead: InsertLead): Promise<Lead>;
+  createLead(lead: InsertLead & { leadId: string; priority: string; price?: string; persona?: string; routingTier?: string; }): Promise<Lead>;
   getLeadByLeadId(leadId: string): Promise<Lead | undefined>;
+  getAllLeads(): Promise<Lead[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -38,34 +39,29 @@ export class MemStorage implements IStorage {
     return user;
   }
 
-  async createLead(insertLead: InsertLead): Promise<Lead> {
+  async createLead(insertLead: InsertLead & { leadId: string; priority: string; price?: string; persona?: string; routingTier?: string; }): Promise<Lead> {
     const id = this.currentLeadId++;
-    const leadId = `MPN${Date.now().toString().slice(-5)}`;
-    
-    // Determine priority based on budget
-    let priority = "standard";
-    if (insertLead.budgetRange === "800_plus") priority = "high";
-    if (insertLead.budgetRange === "under_400") priority = "basic";
     
     const lead: Lead = {
       ...insertLead,
       id,
-      leadId,
       createdAt: new Date(),
       email: insertLead.email || null,
       status: "hot",
-      priority: priority as any,
       pickedUp: false,
       storeId: null,
       storeName: null,
       storePhone: null,
       storeAddress: null,
-      price: null,
       followUpStage: 0,
       lastContactAt: null,
     };
     this.leads.set(id, lead);
     return lead;
+  }
+
+  async getAllLeads(): Promise<Lead[]> {
+    return Array.from(this.leads.values());
   }
 
   async getLeadByLeadId(leadId: string): Promise<Lead | undefined> {

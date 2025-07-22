@@ -13,6 +13,8 @@ export const leads = pgTable("leads", {
   mattressType: text("mattress_type").notNull(), // F, M, S, H (Firm, Medium, Soft, Hybrid)
   budgetRange: text("budget_range").notNull(), // under_400, 400_799, 800_plus
   urgency: text("urgency").notNull(), // today, this_week
+  persona: text("persona"), // emergency_replacement, immediate_move_in, coming_of_age, guest_accommodations, child_milestone, student_transition, property_manager, delivery_mismatch, practical_no_nonsense
+  routingTier: text("routing_tier").notNull().default("self_service"), // direct_to_aj, self_service
   status: text("status").notNull().default("hot"), // hot, warm, contacted, converted, expired
   priority: text("priority").notNull().default("standard"), // high, standard, basic
   pickedUp: boolean("picked_up").default(false),
@@ -40,6 +42,8 @@ export const insertLeadSchema = createInsertSchema(leads).omit({
   price: true,
   followUpStage: true,
   lastContactAt: true,
+  persona: true,
+  routingTier: true,
 }).extend({
   name: z.string().min(1, "Name is required"),
   phone: z.string().regex(/^\(\d{3}\) \d{3}-\d{4}$/, "Invalid phone format"),

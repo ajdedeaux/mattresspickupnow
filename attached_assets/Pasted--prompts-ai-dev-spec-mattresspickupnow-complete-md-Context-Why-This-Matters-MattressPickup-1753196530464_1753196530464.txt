@@ -1,0 +1,97 @@
+# /prompts/ai-dev-spec-mattresspickupnow-complete.md
+
+## 🧠 Context: Why This Matters
+MattressPickupNow solves a massive overlooked problem: people who need a mattress **TODAY**. Whether it’s a move, emergency, guest situation, or delivery fail, this is about fast, reliable, emotionally intelligent solutions for people in a pinch.
+
+## 🎯 Mission
+Build a customer-facing lead capture web app that:
+- Routes leads based on urgency and persona
+- Simplifies product selection to 4 SKUs
+- Offers same-day pickup and concierge support
+- Captures leads with 6 key data points
+- Prioritizes speed, clarity, and mobile-first UX
+- Ensures *all lead data is owned* by the founder (AJ) for CRM/email follow-up
+
+---
+
+## 📁 Simulated /README.md (Vision + Strategy)
+**The Vision:** To dominate the urgent mattress solutions market by providing same-day pickup of simple, proven mattresses backed by concierge-level support and psychology-driven routing.
+
+**The Gap We Fill:** Online delivery is too slow. Traditional retail is too bloated. MattressPickupNow cuts through the noise.
+
+**Founder's Advantage:** AJ is an insider who knows the pain points, retail friction, and how to bypass the system to deliver same-day solutions.
+
+---
+
+## 📁 Simulated /personas/ (Customer Psychology Profiles)
+**1. Emergency Replacement** — Unexpected expense, just needs sleep now  
+**2. Immediate Move-In** — Moving chaos, wants frictionless setup  
+**3. Coming-of-Age Buyer** — First major purchase, needs confidence  
+**4. Guest Accommodations** — Hosting pressure, wants comfort + speed  
+**5. Child Milestone** — Kids growing, needs quick upgrade  
+**6. Student Transition** — New apartment, basic comfort needed  
+**7. Property Manager / Airbnb** — Profit-focused, urgent replacement  
+**8. Delivery Mismatch** — Ordered wrong, needs fast fix  
+**9. Practical No-Nonsense** — Doesn’t care, just needs a mattress
+
+---
+
+## 📁 Simulated /operations/ (Pricing, SKU, Routing)
+**Mattress SKUs (Queen Pricing):**
+- Firm: $299
+- Medium: $399
+- Soft/Plush: $697
+- Hybrid: $499
+
+**Available Sizes:** Twin, Full, Queen, King  
+**Routing Logic:**
+- Emergency, Move-In, PMs route directly to AJ
+- Others go to self-service flow with calendar CTA
+
+**Pickup Instructions:** All options fit in most cars, same-day pickup at designated locations.
+
+---
+
+## 📁 Simulated /technology/ (Backend, Logic, AI Prep)
+- **Frontend:** Mobile-first form UX (Name, Phone, Zip, Size, Comfort, Time)
+- **Backend:** Store data in local DB or cloud (Supabase, Firebase)
+- **Persona Detection Engine:** Rules-based matching from form data
+- **Lead Routing:** Real-time tier sorting (urgent → AJ, non-urgent → calendar)
+- **AI Prep:** Optional v2 voice note capture, summaries, routing chat
+
+---
+
+## 📁 Simulated /sales-psychology/ (Scripts, Trust, Tone)
+**Tone:** Calm, confident, problem-solver energy  
+**Validation Scripts:**  
+- “That makes total sense, let’s fix it fast.”  
+- “You’re not the only one — this happens more than you’d think.”  
+**Trust Elements:**  
+- “Same-day pickup available”  
+- “Fits in a Prius”  
+- “Try before you buy” (in-person validation)
+
+---
+
+## 📁 Simulated /team-alignment/
+- **AI Instructions:** Always prioritize urgency, persona fit, and tone
+- **Onboarding:** Teach agents 9 personas, 4 mattress SKUs, routing logic
+- **Decision Framework:** Speed > complexity. Simplicity wins.
+- **Context Preservation:** Never overcomplicate the experience
+
+---
+
+## 🧠 Dev Instructions
+- **Start:** Build /prompts/ai-dev-spec-mattresspickupnow-complete.md into app
+- **Stack:** Up to you. Must be AI-compatible and modular
+- **No Payments:** This is **not** an e-commerce tool. No Stripe, no checkout
+- **Data Ownership:** AJ must own all leads, CSV export or Zapier-ready
+- **Deploy Phase 1:** Lead capture → Routing → Calendar booking (optional)
+- **Test for Success:** 10 leads, 3 conversions, real-time speed stress test
+
+---
+
+## 🏁 Final Reminder
+**You’re not building a mattress store. You’re building an urgent-sleep response system.**
+
+Prioritize: URGENCY. SIMPLICITY. HUMAN UNDERSTANDING.

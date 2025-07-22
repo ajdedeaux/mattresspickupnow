@@ -38,19 +38,25 @@ Design preference: Premium and sleek appearance with icons only - absolutely no 
 ### Pure Urgency Lead Capture System
 The application implements a streamlined 6-question system designed for maximum speed and conversion:
 
-1. **Size Selection**: Twin/Full/Queen/King with instant pricing display
+1. **Size Selection**: Twin/Full/Queen/King with instant pricing display (per master spec: F=$299, M=$399, S/Plush=$697, H=$499 for Queen)
 2. **Comfort Type**: F/M/S/H (Firm/Medium/Soft/Hybrid) - 4 proven options only
 3. **ZIP Code**: Instant location-based inventory checking
 4. **Budget Range**: Under $400/400-799/$800+ for automatic priority routing
 5. **Urgency Level**: Today/This Week for immediate vs scheduled follow-up
 6. **Contact Form**: Minimal friction data capture with instant lead processing
 
-### Automatic Priority Routing System
-- **High Priority ($800+ Budget)**: Instant phone alert to owner with 15-minute callback guarantee
-- **Standard Priority ($400-799)**: Automated quotes with optional manual follow-up
-- **Basic Priority (Under $400)**: Self-service route with store directions and pickup instructions
-- **Today Urgency**: Immediate processing and same-day pickup coordination
-- **Progress Tracking**: Visual 5-step progress bar with instant question-by-question flow
+### Persona Detection Engine (NEW - Jan 2025)
+Rules-based psychology profiling system identifies 9 customer personas:
+- **Direct to AJ Routing**: Emergency Replacement, Immediate Move-In, Property Manager, Delivery Mismatch
+- **Self-Service Routing**: Coming-of-Age, Student Transition, Guest Accommodations, Child Milestone
+- **Default**: Practical No-Nonsense
+- **AI-Ready**: Confidence scoring and reasoning for each persona match
+
+### Automatic Priority Routing System (ENHANCED)
+- **Direct to AJ**: Emergency personas get instant owner alerts with 15-minute callback guarantee
+- **Self-Service**: Standard flow with calendar CTA and automated follow-up
+- **Psychology-Driven Messaging**: Persona-specific validation scripts ("That makes total sense, let's fix it fast")
+- **Data Ownership**: Complete CSV export for AJ's CRM and email follow-up
 
 ### Core Value Proposition
 "Need a mattress TODAY? Pick one, pick it up, sleep on it tonight." The 4-option system (F/M/S/H) eliminates decision paralysis while the "fits in a Prius" proof point solves transportation concerns. Zero thinking required, maximum speed execution.
@@ -91,9 +97,10 @@ The application implements a streamlined 6-question system designed for maximum 
 ### API Endpoints
 - `GET /api/health`: Health check endpoint
 - `POST /api/find-stores`: Find nearby mattress stores by ZIP code
-- `POST /api/leads`: Create new lead with automatic priority assignment and SMS automation trigger
+- `POST /api/leads`: Create new lead with persona detection, priority assignment, and SMS automation trigger
 - `POST /api/leads/:leadId/pickup`: Mark lead as picked up (stops automation sequence)  
 - `POST /api/leads/:leadId/sms`: Send manual SMS to lead
+- `GET /api/leads/export`: CSV export of all leads for data ownership (AJ's CRM integration)
 
 ## External Dependencies
 

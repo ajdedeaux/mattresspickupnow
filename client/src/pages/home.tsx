@@ -14,7 +14,37 @@ import { insertLeadSchema } from "@shared/schema";
 import { formatPhoneNumber } from "@/lib/utils";
 import { Car, Clock, Check, Star, Phone, AlertTriangle } from "lucide-react";
 
-// The 4 Proven Options - Pure Urgency System
+// Persona-specific messaging per master spec
+const getPersonaMessaging = (persona?: string) => {
+  switch (persona) {
+    case "emergency_replacement":
+      return {
+        heading: "We've Got You Covered - Fast",
+        description: "That makes total sense, let's fix it fast. You'll hear from us within 15 minutes.",
+        validationScript: "Emergency situations happen - you're not the only one dealing with this."
+      };
+    case "immediate_move_in":
+      return {
+        heading: "Move-In Made Simple", 
+        description: "Moving is stressful enough. We'll handle the mattress so you can focus on everything else.",
+        validationScript: "Move-in chaos is real - let us take this off your plate."
+      };
+    case "property_manager":
+      return {
+        heading: "Professional Property Solutions",
+        description: "We understand the business need for quick, reliable mattress solutions.",
+        validationScript: "Property management timing is critical - we get it."
+      };
+    default:
+      return {
+        heading: "Lead Captured Successfully!",
+        description: "We'll get you sleeping comfortably fast.",
+        validationScript: "Sometimes you just need a good mattress without the hassle."
+      };
+  }
+};
+
+// The 4 Proven Options - Per Master Spec Pricing (Queen base prices)
 const mattressOptions = [
   {
     id: "F",
@@ -22,9 +52,9 @@ const mattressOptions = [
     description: "8 inches",
     sizes: {
       "Twin": "$199",
-      "Full": "$269", 
+      "Full": "$249", 
       "Queen": "$299",
-      "King": "$369"
+      "King": "$349"
     },
     comfort: "Back & stomach sleepers",
     available: true
@@ -34,10 +64,10 @@ const mattressOptions = [
     name: "Medium",
     description: "10 inches",
     sizes: {
-      "Twin": "$249",
-      "Full": "$359",
+      "Twin": "$299",
+      "Full": "$349",
       "Queen": "$399", 
-      "King": "$469"
+      "King": "$449"
     },
     comfort: "Most popular - works for everyone",
     available: true,
@@ -45,13 +75,13 @@ const mattressOptions = [
   },
   {
     id: "S", 
-    name: "Soft",
+    name: "Soft/Plush",
     description: "12 inches",
     sizes: {
-      "Twin": "$549",
-      "Full": "$649",
+      "Twin": "$497",
+      "Full": "$597",
       "Queen": "$697",
-      "King": "$799"
+      "King": "$797"
     },
     comfort: "Side sleepers & pressure relief",
     available: true
@@ -64,7 +94,7 @@ const mattressOptions = [
       "Twin": "$399",
       "Full": "$449",
       "Queen": "$499",
-      "King": "$599"
+      "King": "$549"
     },
     comfort: "Coil support + memory foam",
     available: true
@@ -85,6 +115,7 @@ export default function Home() {
   const [selectedUrgency, setSelectedUrgency] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [leadCreated, setLeadCreated] = useState(false);
+  const [leadResponse, setLeadResponse] = useState<any>(null);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof insertLeadSchema>>({
@@ -103,13 +134,15 @@ export default function Home() {
 
   const createLeadMutation = useMutation({
     mutationFn: async (data: z.infer<typeof insertLeadSchema>) => {
-      return apiRequest.post("/api/leads", data);
+      return apiRequest("/api/leads", "POST", data);
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
       setLeadCreated(true);
+      setLeadResponse(response);
+      const messaging = getPersonaMessaging(response.persona);
       toast({
-        title: "Lead Captured Successfully!",
-        description: "You'll hear from us within 15 minutes.",
+        title: messaging.heading,
+        description: messaging.description,
       });
     },
     onError: (error) => {
@@ -177,18 +210,47 @@ export default function Home() {
                 <Check className="w-8 h-8 text-green-600" />
               </div>
               
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">You're All Set!</h2>
-              
-              {priority === "high" && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                  <div className="flex items-center justify-center text-red-700 font-semibold">
-                    <AlertTriangle className="w-5 h-5 mr-2" />
-                    HIGH PRIORITY LEAD
+              {leadResponse ? (
+                <>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">{getPersonaMessaging(leadResponse.persona).heading}</h2>
+                  <p className="text-gray-600 mb-4">{getPersonaMessaging(leadResponse.persona).description}</p>
+                  
+                  <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                    <p className="text-sm text-blue-800 italic">
+                      "{getPersonaMessaging(leadResponse.persona).validationScript}"
+                    </p>
                   </div>
-                  <p className="text-sm text-red-600 mt-2">
-                    We'll call you within 15 minutes with your options and nearest store location.
-                  </p>
-                </div>
+                  
+                  {leadResponse.routingTier === "direct_to_aj" && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                      <div className="flex items-center justify-center text-red-700 font-semibold">
+                        <AlertTriangle className="w-5 h-5 mr-2" />
+                        HIGH PRIORITY - DIRECT TO AJ
+                      </div>
+                      <p className="text-sm text-red-600 mt-2">
+                        AJ will personally call you within 15 minutes with your options and store location.
+                      </p>
+                      <p className="text-xs text-red-500 mt-1">
+                        Persona: {leadResponse.persona?.replace(/_/g, ' ')} • Confidence: {Math.round(leadResponse.confidence * 100)}%
+                      </p>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">You're All Set!</h2>
+                  {priority === "high" && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                      <div className="flex items-center justify-center text-red-700 font-semibold">
+                        <AlertTriangle className="w-5 h-5 mr-2" />
+                        HIGH PRIORITY LEAD
+                      </div>
+                      <p className="text-sm text-red-600 mt-2">
+                        We'll call you within 15 minutes with your options and nearest store location.
+                      </p>
+                    </div>
+                  )}
+                </>
               )}
               
               <div className="bg-gray-50 rounded-lg p-4 mb-6">
@@ -198,7 +260,7 @@ export default function Home() {
                 <p className="text-sm text-gray-600">Available for pickup today</p>
               </div>
 
-              {priority !== "high" && (
+              {(!leadResponse || leadResponse.routingTier !== "direct_to_aj") && (
                 <div className="space-y-4">
                   <p className="text-gray-700">
                     We're finding the closest location with your mattress in stock.
