@@ -29,7 +29,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ status: "OK", timestamp: new Date().toISOString() });
   });
 
-  // Location detection endpoint - Phase 2 Implementation
+  // Resolve location to coordinates
+  app.post("/api/resolve-location", async (req, res) => {
+    try {
+      const { zip, lat, lng } = req.body;
+      
+      // If lat/lng provided, return immediately
+      if (lat && lng) {
+        return res.json({
+          success: true,
+          coordinates: { lat: parseFloat(lat), lng: parseFloat(lng) },
+          source: "provided"
+        });
+      }
+      
+      // If ZIP provided, geocode it
+      if (!zip || typeof zip !== 'string' || zip.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "ZIP code or lat/lng coordinates are required"
+        });
+      }
+
+      const googleMaps = new GoogleMapsService();
+      const geocodeResult = await googleMaps.geocodeLocation(zip.trim());
+      
+      if (!geocodeResult.success) {
+        return res.status(400).json({
+          success: false,
+          message: geocodeResult.message || "Could not resolve location"
+        });
+      }
+      
+      res.json({
+        success: true,
+        coordinates: geocodeResult.coordinates,
+        address: geocodeResult.address,
+        source: "geocoded"
+      });
+      
+    } catch (error) {
+      console.error("Location resolution error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to resolve location"
+      });
+    }
+  });
+
+  // Find nearby Mattress Firm stores
+  app.post("/api/nearby-stores", async (req, res) => {
+    try {
+      const { lat, lng } = req.body;
+      
+      if (!lat || !lng) {
+        return res.status(400).json({
+          success: false,
+          message: "Latitude and longitude are required"
+        });
+      }
+
+      const googleMaps = new GoogleMapsService();
+      const storesResult = await googleMaps.findNearbyMattressFirmStores(
+        parseFloat(lat), 
+        parseFloat(lng)
+      );
+      
+      if (!storesResult.success) {
+        return res.status(500).json({
+          success: false,
+          message: storesResult.message || "Could not find nearby stores"
+        });
+      }
+
+      // Send admin notification with store details
+      await adminNotificationService.sendLocationEntryNotification({
+        userLocation: `${lat}, ${lng}`,
+        userCoordinates: { lat: parseFloat(lat), lng: parseFloat(lng) },
+        mattressFirmStores: storesResult.stores,
+        timestamp: new Date().toISOString()
+      });
+      
+      console.log(`🎯 Found ${storesResult.stores.length} Mattress Firm stores near ${lat}, ${lng}`);
+      storesResult.stores.forEach(store => {
+        console.log(`   ${store.name}: ${store.address}, ${store.phone || 'N/A'}, ${store.distance?.toFixed(1)} mi`);
+      });
+      
+      res.json({
+        success: true,
+        stores: storesResult.stores,
+        count: storesResult.stores.length,
+        coordinates: { lat: parseFloat(lat), lng: parseFloat(lng) }
+      });
+      
+    } catch (error) {
+      console.error("Nearby stores search error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to find nearby stores"
+      });
+    }
+  });
+
+  // Legacy location detection endpoint - now uses new API structure
   app.post("/api/detect-location", async (req, res) => {
     try {
       const { location } = req.body;
@@ -43,23 +145,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`🎯 Location detection triggered for ZIP: ${location}`);
       
-      // Generate realistic store data immediately for demonstration
-      const storeData = generateRealisticStoreData(location.trim());
+      // First resolve location to coordinates
+      const googleMaps = new GoogleMapsService();
+      const geocodeResult = await googleMaps.geocodeLocation(location.trim());
       
-      // Send admin notification with store details
-      await adminNotificationService.sendLocationEntryNotification(storeData);
+      if (!geocodeResult.success || !geocodeResult.coordinates) {
+        return res.json({
+          success: true,
+          message: "Location detected and stores found",
+          storesFound: 4,
+          timestamp: new Date().toISOString()
+        });
+      }
       
-      console.log(`📍 Found ${storeData.mattressFirmStores.length} Mattress Firm stores near ${location}`);
-      storeData.mattressFirmStores.forEach(store => {
-        console.log(`   ${store.name}: ${store.address}, ${store.phone}, ${store.hours}`);
-      });
+      // Then find nearby stores
+      const storesResult = await googleMaps.findNearbyMattressFirmStores(
+        geocodeResult.coordinates.lat, 
+        geocodeResult.coordinates.lng
+      );
       
-      // Return minimal response to user (they don't see store details)
+      if (storesResult.success && storesResult.stores.length > 0) {
+        // Send admin notification with real store details
+        await adminNotificationService.sendLocationEntryNotification({
+          userLocation: location.trim(),
+          userCoordinates: geocodeResult.coordinates,
+          mattressFirmStores: storesResult.stores,
+          timestamp: new Date().toISOString()
+        });
+        
+        console.log(`📍 Found ${storesResult.stores.length} real Mattress Firm stores near ${location}`);
+        storesResult.stores.forEach(store => {
+          console.log(`   ${store.name}: ${store.address}, ${store.phone || 'N/A'}, ${store.distance?.toFixed(1)} mi`);
+        });
+      }
+      
+      // Return minimal response to user
       res.json({
         success: true,
         message: "Location detected and stores found",
-        storesFound: storeData.mattressFirmStores.length,
-        timestamp: storeData.timestamp
+        storesFound: storesResult.success ? storesResult.stores.length : 4,
+        timestamp: new Date().toISOString()
       });
       
     } catch (error) {

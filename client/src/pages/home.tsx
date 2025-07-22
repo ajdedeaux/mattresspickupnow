@@ -143,7 +143,7 @@ export default function Home() {
     onSuccess: (response) => {
       setLeadCreated(true);
       setLeadResponse(response);
-      const messaging = getPersonaMessaging(response.persona || 'default');
+      const messaging = getPersonaMessaging((response as any).persona || 'default');
       toast({
         title: messaging.heading,
         description: messaging.description,
