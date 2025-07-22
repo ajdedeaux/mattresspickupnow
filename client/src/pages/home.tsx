@@ -113,6 +113,7 @@ export default function Home() {
   const [selectedComfort, setSelectedComfort] = useState("");
   const [selectedBudget, setSelectedBudget] = useState("");
   const [selectedUrgency, setSelectedUrgency] = useState("");
+  const [selectedZip, setSelectedZip] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [leadCreated, setLeadCreated] = useState(false);
   const [leadResponse, setLeadResponse] = useState<any>(null);
@@ -139,7 +140,7 @@ export default function Home() {
     onSuccess: (response) => {
       setLeadCreated(true);
       setLeadResponse(response);
-      const messaging = getPersonaMessaging(response.persona);
+      const messaging = getPersonaMessaging(response.data?.persona || 'default');
       toast({
         title: messaging.heading,
         description: messaging.description,
@@ -529,13 +530,20 @@ export default function Home() {
                     maxLength={5}
                     onKeyPress={(e) => {
                       if (e.key === 'Enter' && e.currentTarget.value.length === 5) {
+                        setSelectedZip(e.currentTarget.value);
                         setCurrentQuestion(2);
                       }
                     }}
                   />
                   <Button 
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
-                    onClick={() => setCurrentQuestion(2)}
+                    onClick={(e) => {
+                      const input = e.currentTarget.parentNode?.querySelector('input') as HTMLInputElement;
+                      if (input?.value.length === 5) {
+                        setSelectedZip(input.value);
+                        setCurrentQuestion(2);
+                      }
+                    }}
                   >
                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
@@ -549,51 +557,19 @@ export default function Home() {
         </section>
       )}
 
-      {/* Information Card */}
+      {/* Compact Info Bar */}
       {currentQuestion > 1 && (
-        <section className="py-6 px-6 bg-gray-50">
-          <div className="max-w-md mx-auto">
-            <Card className="bg-green-50 border-green-200 shadow-sm">
-              <CardContent className="p-4 text-center">
-                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Check className="w-6 h-6 text-white" />
-                </div>
-                <h4 className="font-bold text-gray-900 mb-2">Found 3 pickup locations near you!</h4>
-                
-                <div className="bg-blue-50 rounded-lg p-4 mb-4">
-                  <h5 className="font-semibold text-gray-900 mb-2">Here's what most people don't know:</h5>
-                  <div className="border-2 border-dashed border-blue-300 rounded-lg p-4 bg-white/50">
-                    <div className="flex items-center justify-center mb-2">
-                      <Car className="w-6 h-6 text-blue-600 mr-2" />
-                      <span className="font-semibold text-gray-900">These premium mattresses come in boxes</span>
-                    </div>
-                    <p className="text-sm text-blue-800 font-medium">that fit on your back seat.</p>
-                    <p className="text-sm text-gray-600 mt-2">No truck needed. No tying anything to your roof.</p>
-                    <p className="text-sm text-gray-600">You can try them in the store first, then drive home with one TODAY.</p>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-lg p-3 mb-4">
-                  <div className="flex items-center text-sm text-gray-700">
-                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                    </svg>
-                    <span className="font-semibold">Closest pickup location</span>
-                  </div>
-                  <p className="text-sm text-gray-600 mt-1">2.1 miles away • Open until 9 PM</p>
-                </div>
-
-                <Button 
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold flex items-center justify-center gap-2"
-                  onClick={() => setCurrentQuestion(currentQuestion === 2 ? 2 : currentQuestion)}
-                >
-                  <Car className="w-5 h-5" />
-                  Show Me the Mattresses That Fit
-                </Button>
-              </CardContent>
-            </Card>
+        <div className="bg-green-50 border-b border-green-200 py-3 px-6">
+          <div className="max-w-md mx-auto flex items-center justify-center">
+            <Check className="w-5 h-5 text-green-600 mr-2" />
+            <span className="text-green-800 font-medium text-sm">3 locations found • 2.1 miles away • Open until 9 PM</span>
+            <button className="ml-2 text-green-600 hover:text-green-700">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
           </div>
-        </section>
+        </div>
       )}
 
       {/* 6 Questions System */}
@@ -623,11 +599,11 @@ export default function Home() {
             </Button>
           </div>
           
-          <div className="text-sm text-gray-500 mb-2">Question {currentQuestion} of 5</div>
+          <div className="text-sm text-gray-500 mb-2">Question {Math.min(currentQuestion, 3)} of 3</div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div 
               className="bg-blue-600 h-2 rounded-full transition-all duration-500" 
-              style={{ width: `${(currentQuestion / 5) * 100}%` }}
+              style={{ width: `${(Math.min(currentQuestion, 3) / 3) * 100}%` }}
             />
           </div>
         </div>
@@ -655,9 +631,8 @@ export default function Home() {
         {/* Question 3: Comfort */}
         {currentQuestion === 3 && (
           <div className="space-y-6">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Perfect! These 4 premium mattresses are ready for pickup near 33612</h3>
-              <p className="text-blue-600 text-sm font-medium">Available for pickup • 2.1 miles away • Open until 9 PM</p>
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-1">4 premium mattresses ready for pickup near {selectedZip || '33612'}</h3>
             </div>
             
             {mattressOptions.map((option, index) => (
@@ -763,37 +738,81 @@ export default function Home() {
           </div>
         )}
 
-        {/* Question 3: ZIP Code */}
-        {currentQuestion === 3 && (
+        {/* Final Lead Capture Form */}
+        {currentQuestion === 4 && (
           <Card className="shadow-lg">
             <CardContent className="p-6">
-              <h3 className="text-xl font-semibold text-center mb-6">What's your ZIP code?</h3>
+              <h3 className="text-xl font-bold text-center mb-2">Almost there! Let's get you set up for pickup.</h3>
               <p className="text-center text-gray-600 mb-6 text-sm">
-                We'll find the closest location with your {selectedSize} {mattressOptions.find(opt => opt.id === selectedComfort)?.name} in stock.
+                Your {selectedSize} {mattressOptions.find(opt => opt.id === selectedComfort)?.name} is waiting at our closest location
               </p>
-              <div className="space-y-4">
-                <Input 
-                  placeholder="Enter ZIP code (e.g. 33612)"
-                  maxLength={5}
-                  className="text-center text-lg"
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && e.currentTarget.value.length === 5) {
-                      handleQuestionAnswer(e.currentTarget.value, 4);
-                    }
-                  }}
-                />
+
+              {/* Order Summary */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <h4 className="font-semibold mb-2">Your Selection:</h4>
+                <div className="flex justify-between items-center mb-2">
+                  <span>Sealy Memory Foam {mattressOptions.find(opt => opt.id === selectedComfort)?.name}</span>
+                  <span className="font-semibold">{selectedSize}</span>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span>Price (before tax):</span>
+                  <span className="font-bold text-lg text-green-600">
+                    {selectedSize && selectedComfort && mattressOptions.find(opt => opt.id === selectedComfort)?.sizes[selectedSize as keyof typeof mattressOptions[0]['sizes']]}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Pickup Location:</span>
+                  <span className="text-sm">{selectedZip || '33612'} • 2.1 miles</span>
+                </div>
+              </div>
+
+              <form className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <Input placeholder="First Name" required />
+                  <Input placeholder="Last Name" required />
+                </div>
+                <Input placeholder="Phone Number" type="tel" required />
+                <Input placeholder="Email Address" type="email" required />
+                
+                {/* Address Details Dropdown */}
+                <details className="border border-gray-200 rounded-lg">
+                  <summary className="p-3 cursor-pointer font-medium text-gray-700 hover:bg-gray-50">
+                    More precise pickup location (optional)
+                  </summary>
+                  <div className="p-4 border-t space-y-3">
+                    <Input placeholder="Street Address" />
+                    <div className="grid grid-cols-2 gap-3">
+                      <Input placeholder="City" />
+                      <Input placeholder="State" />
+                    </div>
+                  </div>
+                </details>
+
+                {/* Urgency Level */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">When do you need this?</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button type="button" className="p-3 border-2 border-orange-300 bg-orange-50 rounded-lg font-medium text-orange-800 hover:bg-orange-100">
+                      TODAY
+                    </button>
+                    <button type="button" className="p-3 border-2 border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50">
+                      This Week
+                    </button>
+                  </div>
+                </div>
+
                 <Button 
-                  className="w-full"
+                  type="submit"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3"
                   onClick={(e) => {
-                    const input = e.currentTarget.parentNode?.querySelector('input') as HTMLInputElement;
-                    if (input?.value.length === 5) {
-                      handleQuestionAnswer(input.value, 4);
-                    }
+                    e.preventDefault();
+                    setShowForm(true);
                   }}
                 >
-                  Find Stores Near Me
+                  <Car className="w-5 h-5 mr-2" />
+                  GET PICKUP DETAILS
                 </Button>
-              </div>
+              </form>
             </CardContent>
           </Card>
         )}
