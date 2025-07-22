@@ -119,6 +119,7 @@ export default function Home() {
   const [leadResponse, setLeadResponse] = useState<any>(null);
   const [locationDetecting, setLocationDetecting] = useState(false);
   const [locationsFound, setLocationsFound] = useState<number | null>(null);
+  const [storeData, setStoreData] = useState<any>(null);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof insertLeadSchema>>({
@@ -197,6 +198,7 @@ export default function Home() {
     setLeadResponse(null);
     setLocationDetecting(false);
     setLocationsFound(null);
+    setStoreData(null);
     form.reset();
   };
 
@@ -217,9 +219,18 @@ export default function Home() {
       
       if (result.success) {
         setLocationsFound(result.storesFound);
+        
+        // Get the actual store details that were found
+        const storeResponse = await fetch('/api/admin/notifications');
+        const storeResult = await storeResponse.json();
+        if (storeResult.success && storeResult.notifications.length > 0) {
+          const latestNotification = storeResult.notifications[0];
+          setStoreData(latestNotification.data);
+        }
+        
         toast({
           title: "Location detected",
-          description: `Found ${result.storesFound} stores near you`,
+          description: `Found ${result.storesFound} Mattress Firm stores near you`,
         });
       }
     } catch (error) {
@@ -611,11 +622,28 @@ export default function Home() {
           <div className="max-w-md mx-auto flex items-center justify-center">
             <Check className="w-5 h-5 text-green-600 mr-2" />
             <span className="text-green-800 font-medium text-sm">
-              {locationsFound !== null 
+              {storeData && storeData.nearestStore
+                ? `${locationsFound} stores found • ${storeData.nearestStore.name} (${storeData.nearestStore.distance} mi) • ${storeData.nearestStore.hours}`
+                : locationsFound !== null 
                 ? `${locationsFound} locations found • 2.1 miles away • Open until 9 PM`
                 : "3 locations found • 2.1 miles away • Open until 9 PM"
               }
             </span>
+            {storeData && storeData.allStores && (
+              <button 
+                className="ml-2 text-green-600 hover:text-green-700"
+                onClick={() => {
+                  const storeList = storeData.allStores.map((store: any) => 
+                    `${store.name}: ${store.phone} (${store.distance} mi)`
+                  ).join('\n');
+                  alert(`Nearby Mattress Firm Stores:\n\n${storeList}`);
+                }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
       )}
