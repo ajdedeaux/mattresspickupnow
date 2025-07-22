@@ -170,14 +170,31 @@ export class GoogleMapsService {
         console.log('⚠️ Strategy 3 failed:', error);
       }
 
-      console.log(`🏪 Combined search found ${allPlaces.length} total Mattress Firm locations`);
+      console.log(`🏪 Combined search found ${allPlaces.length} total locations`);
       
-      // Log all store names for debugging
-      allPlaces.forEach((place, index) => {
-        console.log(`   ${index + 1}. ${place.name || 'Unknown'} - ${place.vicinity || 'Unknown location'}`);
+      // Store raw results for analytics/QA
+      const rawResults = allPlaces.map(place => ({
+        name: place.name || 'Unknown',
+        vicinity: place.vicinity || 'Unknown location',
+        place_id: place.place_id
+      }));
+      
+      // Apply strict Mattress Firm filtering - ONLY stores that start with "Mattress Firm"
+      const filteredStores = allPlaces.filter(store => {
+        const name = (store.name || '').toLowerCase().trim();
+        const isValidMattressFirm = name.startsWith("mattress firm");
+        console.log(`🔍 Filtering "${store.name}": ${isValidMattressFirm ? '✅ KEEP' : '❌ DISCARD'}`);
+        return isValidMattressFirm;
       });
       
-      const places = allPlaces;
+      console.log(`🎯 STRICT FILTERING: ${allPlaces.length} raw results → ${filteredStores.length} valid Mattress Firm stores`);
+      console.log('📊 Raw results (all):', rawResults.map(r => r.name).join(', '));
+      console.log(`✅ Filtered results (MATTRESS FIRM ONLY - ${filteredStores.length} stores):`);
+      filteredStores.forEach((place, index) => {
+        console.log(`   ${index + 1}. ✅ ${place.name || 'Unknown'} - ${place.vicinity || 'Unknown location'}`);
+      });
+      
+      const places = filteredStores;
 
       // Process each store to get details
       const stores: MattressFirmLocation[] = [];

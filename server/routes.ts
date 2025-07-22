@@ -65,11 +65,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
+      // After geocoding, automatically find nearby Mattress Firm stores
+      const googleMapsService = new GoogleMapsService();
+      const storesResult = await googleMapsService.findNearbyMattressFirmStores(
+        geocodeResult.coordinates.lat, 
+        geocodeResult.coordinates.lng
+      );
+      
+      if (storesResult.success && storesResult.stores.length > 0) {
+        // Create location search tracking record
+        const leadId = `ZIP${Date.now()}`;
+        await storage.createLocationSearch({
+          leadId,
+          inputMethod: "zip_code",
+          inputValue: searchTerm.trim(),
+          coordinates: geocodeResult.coordinates,
+          nearbyStores: storesResult.stores.map(store => ({
+            name: store.name,
+            phone: store.phone || "",
+            address: store.address,
+            distance: store.distance || 0,
+            placeId: store.placeId || "",
+            location: store.location || { lat: 0, lng: 0 }
+          })),
+          zipCodeTag: searchTerm.length === 5 ? searchTerm.trim() : null,
+          sourceTracking: "zip_code_geocoded_filtered_mattress_firm_only",
+          storeMatches: storesResult.stores.length,
+          geoLocationMetadata: { address: geocodeResult.address }
+        });
+      }
+
       res.json({
         success: true,
         coordinates: geocodeResult.coordinates,
         address: geocodeResult.address,
-        source: "geocoded"
+        source: "geocoded",
+        storesFound: storesResult.success ? storesResult.stores.length : 0
       });
       
     } catch (error) {
@@ -106,7 +137,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Create location search tracking record
+      // Create location search tracking record with filtering metadata
       const leadId = `LS${Date.now()}`;
       await storage.createLocationSearch({
         leadId,
@@ -122,7 +153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           location: store.location || { lat: 0, lng: 0 }
         })),
         zipCodeTag: null,
-        sourceTracking: "direct_coordinates",
+        sourceTracking: `direct_coordinates_filtered_mattress_firm_only`,
         storeMatches: storesResult.stores.length,
         geoLocationMetadata: {}
       });
