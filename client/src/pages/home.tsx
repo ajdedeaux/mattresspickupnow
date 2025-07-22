@@ -235,8 +235,8 @@ export default function Home() {
         }
         
         toast({
-          title: "Location detected",
-          description: `Found ${result.storesFound} Mattress Firm stores near you`,
+          title: "Great news!",
+          description: `We've got pickup options nearby - let's find your perfect mattress!`,
         });
       }
     } catch (error) {
@@ -297,8 +297,8 @@ export default function Home() {
           setStoreData(result);
           
           toast({
-            title: "Location detected",
-            description: `Found ${result.stores.length} Mattress Firm stores near you`
+            title: "Perfect!",
+            description: `We've got several pickup locations near you - let's continue!`
           });
           
           console.log('🎉 GPS location successful - proceeding to next question');
@@ -884,21 +884,21 @@ export default function Home() {
           <div className="max-w-md mx-auto flex items-center justify-center">
             <Check className="w-5 h-5 text-green-600 mr-2" />
             <span className="text-green-800 font-medium text-sm">
-              {storeData && storeData.nearestStore
-                ? `${locationsFound} stores found • ${storeData.nearestStore.name} (${storeData.nearestStore.distance} mi) • ${storeData.nearestStore.hours}`
+              {storeData && storeData.stores
+                ? `${locationsFound} pickup locations found • Pickup Location #1 (${storeData.stores[0]?.distance?.toFixed(1) || '2.1'} mi) • Available today`
                 : locationsFound !== null 
-                ? `${locationsFound} locations found • 2.1 miles away • Open until 9 PM`
-                : "3 locations found • 2.1 miles away • Open until 9 PM"
+                ? `${locationsFound} pickup locations found • ${storeData?.stores?.[0]?.distance?.toFixed(1) || '2.1'} miles away • Available today`
+                : "Pickup locations found • 2.1 miles away • Available today"
               }
             </span>
-            {storeData && storeData.allStores && (
+            {storeData && storeData.stores && (
               <button 
                 className="ml-2 text-green-600 hover:text-green-700"
                 onClick={() => {
-                  const storeList = storeData.allStores.map((store: any) => 
-                    `${store.name}: ${store.phone} (${store.distance} mi)`
+                  const locationList = storeData.stores.map((store: any, index: number) => 
+                    `Pickup Location #${index + 1}: ${store.distance?.toFixed(1) || '0.0'} mi away`
                   ).join('\n');
-                  alert(`Nearby Mattress Firm Stores:\n\n${storeList}`);
+                  alert(`Available Pickup Locations:\n\n${locationList}`);
                 }}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -970,7 +970,7 @@ export default function Home() {
         {currentQuestion === 3 && (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-1">4 premium mattresses ready for pickup near {selectedZip || '33612'}</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-1">4 premium mattresses ready for pickup nearby</h3>
             </div>
             
             {mattressOptions.map((option, index) => (

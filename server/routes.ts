@@ -106,6 +106,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Create location search tracking record
+      const leadId = `LS${Date.now()}`;
+      await storage.createLocationSearch({
+        leadId,
+        inputMethod: "gps", // assume GPS for coordinates
+        inputValue: `${lat}, ${lng}`,
+        coordinates: { lat: parseFloat(lat), lng: parseFloat(lng) },
+        nearbyStores: storesResult.stores.map(store => ({
+          name: store.name,
+          phone: store.phone || "",
+          address: store.address,
+          distance: store.distance || 0,
+          placeId: store.placeId || "",
+          location: store.location || { lat: 0, lng: 0 }
+        })),
+        zipCodeTag: null,
+        sourceTracking: "direct_coordinates",
+        storeMatches: storesResult.stores.length,
+        geoLocationMetadata: {}
+      });
+
       // Send admin notification with store details
       await adminNotificationService.sendLocationEntryNotification({
         userLocation: `${lat}, ${lng}`,

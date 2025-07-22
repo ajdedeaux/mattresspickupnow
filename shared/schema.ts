@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, boolean, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, boolean, integer, json } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -65,6 +65,50 @@ export const insertLeadSchema = createInsertSchema(leads).omit({
 
 export type InsertLead = z.infer<typeof insertLeadSchema>;
 export type Lead = typeof leads.$inferSelect;
+
+// Location Search Tracking Table
+export const locationSearches = pgTable("location_searches", {
+  id: serial("id").primaryKey(),
+  leadId: text("lead_id").notNull().unique(),
+  searchTime: timestamp("search_time").defaultNow().notNull(),
+  inputMethod: text("input_method").notNull(), // "gps", "zip", "address"
+  inputValue: text("input_value").notNull(), // raw user input
+  coordinates: json("coordinates").$type<{ lat: number; lng: number }>(),
+  nearbyStores: json("nearby_stores").$type<Array<{
+    name: string;
+    phone: string;
+    address: string;
+    distance: number;
+    placeId: string;
+    location: { lat: number; lng: number };
+  }>>(),
+  zipCodeTag: text("zip_code_tag"), // extracted/derived ZIP code
+  sourceTracking: text("source_tracking"), // tracking metadata
+  storeMatches: integer("store_matches").notNull().default(0),
+  geoLocationMetadata: json("geo_location_metadata").$type<{
+    accuracy?: number;
+    altitude?: number;
+    heading?: number;
+    speed?: number;
+  }>(),
+  status: text("status").notNull().default("active"), // active, converted, expired
+});
+
+export const insertLocationSearchSchema = createInsertSchema(locationSearches).omit({
+  id: true,
+  leadId: true,
+  searchTime: true,
+  status: true,
+}).extend({
+  inputMethod: z.enum(["gps", "zip", "address"], {
+    required_error: "Input method is required"
+  }),
+  inputValue: z.string().min(1, "Input value is required"),
+  storeMatches: z.number().min(0).default(0),
+});
+
+export type InsertLocationSearch = z.infer<typeof insertLocationSearchSchema>;
+export type LocationSearch = typeof locationSearches.$inferSelect;
 
 // SMS Automation tables
 export const smsMessages = pgTable("sms_messages", {
