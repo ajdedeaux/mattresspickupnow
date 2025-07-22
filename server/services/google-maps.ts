@@ -97,19 +97,87 @@ export class GoogleMapsService {
     }
 
     try {
-      // Search for Mattress Firm stores near the location
-      const placesResponse = await this.client.placesNearby({
-        params: {
-          location: { lat, lng },
-          radius: 16093, // 10 miles in meters
-          keyword: 'Mattress Firm',
-          type: 'store',
-          key: this.apiKey,
-        },
-      });
+      console.log(`🔍 Searching for Mattress Firm stores near ${lat}, ${lng}`);
+      
+      // Try multiple search strategies to find all Mattress Firm stores
+      let allPlaces: any[] = [];
+      
+      // Strategy 1: Distance-ranked search (no radius limit)
+      try {
+        const distanceUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&rankby=distance&keyword=Mattress%20Firm&key=${this.apiKey}`;
+        console.log(`🎯 Strategy 1 - Distance ranking: ${distanceUrl}`);
+        
+        const distanceResponse = await this.client.placesNearby({
+          params: {
+            location: { lat, lng },
+            rankby: 'distance' as const,
+            keyword: 'Mattress Firm',
+            key: this.apiKey,
+          },
+        });
+        allPlaces.push(...distanceResponse.data.results);
+        console.log(`📍 Strategy 1 found ${distanceResponse.data.results.length} stores`);
+      } catch (error) {
+        console.log('⚠️ Strategy 1 failed:', error);
+      }
+      
+      // Strategy 2: Large radius search with prominence ranking
+      try {
+        const radiusUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=50000&keyword=Mattress%20Firm&key=${this.apiKey}`;
+        console.log(`🎯 Strategy 2 - Large radius (50km): ${radiusUrl}`);
+        
+        const radiusResponse = await this.client.placesNearby({
+          params: {
+            location: { lat, lng },
+            radius: 50000, // 50km radius to catch distant stores
+            keyword: 'Mattress Firm',
+            key: this.apiKey,
+          },
+        });
+        
+        // Add new places not already found
+        const newPlaces = radiusResponse.data.results.filter(
+          (place: any) => !allPlaces.find((existing: any) => existing.place_id === place.place_id)
+        );
+        allPlaces.push(...newPlaces);
+        console.log(`📍 Strategy 2 found ${newPlaces.length} additional stores`);
+      } catch (error) {
+        console.log('⚠️ Strategy 2 failed:', error);
+      }
+      
+      // Strategy 3: Generic store search for Mattress Firm
+      try {
+        const genericUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=40000&name=Mattress%20Firm&type=store&key=${this.apiKey}`;
+        console.log(`🎯 Strategy 3 - Generic store search: ${genericUrl}`);
+        
+        const genericResponse = await this.client.placesNearby({
+          params: {
+            location: { lat, lng },
+            radius: 40000,
+            name: 'Mattress Firm',
+            type: 'store',
+            key: this.apiKey,
+          },
+        });
+        
+        // Add new places not already found
+        const newPlaces = genericResponse.data.results.filter(
+          (place: any) => !allPlaces.find((existing: any) => existing.place_id === place.place_id)
+        );
+        allPlaces.push(...newPlaces);
+        console.log(`📍 Strategy 3 found ${newPlaces.length} additional stores`);
+      } catch (error) {
+        console.log('⚠️ Strategy 3 failed:', error);
+      }
 
-      const places = placesResponse.data.results;
-      console.log(`🏪 Google Places API found ${places.length} potential Mattress Firm locations`);
+      console.log(`🏪 Combined search found ${allPlaces.length} total Mattress Firm locations`);
+      
+      // Log all store names for debugging
+      allPlaces.forEach((place, index) => {
+        console.log(`   ${index + 1}. ${place.name || 'Unknown'} - ${place.vicinity || 'Unknown location'}`);
+      });
+      
+      const places = allPlaces;
 
       // Process each store to get details
       const stores: MattressFirmLocation[] = [];
