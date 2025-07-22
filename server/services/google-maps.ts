@@ -30,17 +30,124 @@ export class GoogleMapsService {
 
   constructor() {
     this.client = new Client({});
-    this.apiKey = process.env.GOOGLE_PLACES_API_KEY || '';
-    // Note: API key will be used when Google APIs are enabled
+    this.apiKey = process.env.GOOGLE_API_KEY || process.env.GOOGLE_PLACES_API_KEY || '';
+    
+    if (!this.apiKey) {
+      console.warn('⚠️  No Google API key found - using simulation mode');
+    } else {
+      console.log('✅ Google API key loaded - ready for real store lookups');
+    }
   }
 
   async searchMattressFirmStores(location: string): Promise<LocationSearchResult> {
     console.log(`🎯 Location detection triggered for ZIP: ${location}`);
     
-    // Return realistic store data immediately for demonstration
-    // This will work perfectly while you enable the Google APIs
-    console.log('📍 Using realistic store simulation for immediate functionality');
-    return this.generateRealisticStoreData(location);
+    if (!this.apiKey) {
+      console.log('📍 Using realistic store simulation (no API key)');
+      return this.generateRealisticStoreData(location);
+    }
+
+    try {
+      // First, get coordinates for the ZIP code
+      const geocodeResponse = await this.client.geocode({
+        params: {
+          address: location,
+          key: this.apiKey,
+        },
+      });
+
+      if (!geocodeResponse.data.results.length) {
+        console.log('📍 ZIP not found, using simulation data');
+        return this.generateRealisticStoreData(location);
+      }
+
+      const userCoords = geocodeResponse.data.results[0].geometry.location;
+      console.log(`📍 User coordinates: ${userCoords.lat}, ${userCoords.lng}`);
+
+      // Search for Mattress Firm stores near the location
+      const placesResponse = await this.client.placesNearby({
+        params: {
+          location: userCoords,
+          radius: 16093, // 10 miles in meters
+          keyword: 'Mattress Firm',
+          type: 'store',
+          key: this.apiKey,
+        },
+      });
+
+      const places = placesResponse.data.results;
+      console.log(`🏪 Found ${places.length} potential Mattress Firm locations`);
+
+      // Process each store to get details
+      const stores: MattressFirmLocation[] = [];
+      
+      for (const place of places.slice(0, 4)) { // Limit to 4 stores
+        const distance = this.calculateDistance(
+          userCoords.lat,
+          userCoords.lng,
+          place.geometry?.location?.lat || 0,
+          place.geometry?.location?.lng || 0
+        );
+
+        // Get additional details
+        let phone = place.formatted_phone_number;
+        let hours = 'Hours available on call';
+
+        if (place.place_id) {
+          try {
+            const detailsResponse = await this.client.placeDetails({
+              params: {
+                place_id: place.place_id,
+                fields: ['formatted_phone_number', 'opening_hours'],
+                key: this.apiKey,
+              },
+            });
+
+            const details = detailsResponse.data.result;
+            phone = details.formatted_phone_number || phone;
+            
+            if (details.opening_hours?.weekday_text) {
+              const today = new Date().getDay();
+              const todayHours = details.opening_hours.weekday_text[today];
+              hours = todayHours || hours;
+            }
+          } catch (error) {
+            console.log('⚠️  Could not get store details, using basic info');
+          }
+        }
+
+        stores.push({
+          name: place.name || 'Mattress Firm',
+          address: place.vicinity || 'Address not available',
+          phone: phone,
+          hours: hours,
+          distance: distance,
+          rating: place.rating,
+          placeId: place.place_id || '',
+          location: {
+            lat: place.geometry?.location?.lat || 0,
+            lng: place.geometry?.location?.lng || 0,
+          },
+        });
+      }
+
+      // Sort by distance
+      stores.sort((a, b) => (a.distance || 999) - (b.distance || 999));
+
+      console.log(`✅ Successfully found ${stores.length} real Mattress Firm stores`);
+
+      return {
+        userLocation: location,
+        userCoordinates: userCoords,
+        mattressFirmStores: stores,
+        timestamp: new Date().toISOString()
+      };
+
+    } catch (error) {
+      console.error('❌ Google API error:', error);
+      console.log('📍 Falling back to simulation data');
+      return this.generateRealisticStoreData(location);
+    }
   }
 
   private generateRealisticStoreData(zipCode: string): LocationSearchResult {
