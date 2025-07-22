@@ -271,6 +271,7 @@ export default function Home() {
           if (result.success) {
             setLocationsFound(result.count);
             setSelectedZip(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+            setStoreData(result);
             
             toast({
               title: "Location detected",
@@ -278,6 +279,8 @@ export default function Home() {
             });
             
             setCurrentQuestion(2);
+          } else {
+            throw new Error('Failed to find stores');
           }
         } catch (error) {
           console.error('GPS location error:', error);
@@ -321,10 +324,13 @@ export default function Home() {
   };
 
   const handleAddressInput = () => {
-    toast({
-      title: "Address Input",
-      description: "Please use the ZIP code field below for now",
-    });
+    // For now, prompt user to enter full address in ZIP field
+    setZipInput("");
+    const input = document.querySelector('input[placeholder*="ZIP code"]') as HTMLInputElement;
+    if (input) {
+      input.focus();
+      input.placeholder = "Enter your full address or ZIP code";
+    }
   };
 
   const handleZipSubmit = async () => {
@@ -674,7 +680,7 @@ export default function Home() {
                       </div>
                       <div>
                         <div className="font-semibold text-gray-900">Full address</div>
-                        <div className="text-sm text-gray-600">Get precise pickup locations</div>
+                        <div className="text-sm text-gray-600">Enter your complete address</div>
                       </div>
                       <svg className="w-5 h-5 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -690,6 +696,16 @@ export default function Home() {
                     maxLength={5}
                     value={zipInput}
                     onChange={(e) => setZipInput(e.target.value.replace(/\D/g, '').slice(0, 5))}
+                    onFocus={(e) => {
+                      if (e.target.value === "") {
+                        e.target.placeholder = "";
+                      }
+                    }}
+                    onBlur={(e) => {
+                      if (e.target.value === "") {
+                        e.target.placeholder = "Enter ZIP code (e.g., 33612)";
+                      }
+                    }}
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
                         handleZipSubmit();
