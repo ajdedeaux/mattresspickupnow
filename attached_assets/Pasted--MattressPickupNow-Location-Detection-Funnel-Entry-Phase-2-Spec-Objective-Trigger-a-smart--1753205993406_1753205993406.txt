@@ -1,0 +1,78 @@
+🔍 MattressPickupNow: Location Detection Funnel Entry (Phase 2 Spec)
+
+🎯 Objective
+
+Trigger a smart backend lookup when a user enters their zip code or location on the homepage. Use this data to silently search for nearby Mattress Firm store locations using Google Maps. Do not show store data to the user—this is for backend routing and proactive support.
+
+⸻
+
+🧠 What the System Should Do:
+
+✅ Step 1: Capture User Location
+	•	Triggered when the user:
+	•	Enters ZIP code or location manually
+	•	Allows browser to autofill location
+	•	Immediately show:
+“✅ Looking for nearby pickup locations…”
+
+⸻
+
+✅ Step 2: Google Maps Search (API-Driven)
+	•	Construct query:
+
+Mattress Firm near [ZIP or location input]
+
+
+	•	API triggers a backend-only Google Maps search.
+
+⸻
+
+✅ Step 3: Filtering Logic
+	•	Only keep results that start with:
+Mattress Firm ...
+	•	Eliminate all results that do NOT start with this exact prefix.
+
+Examples to keep:
+	•	Mattress Firm Tampa
+	•	Mattress Firm Walters Crossing
+	•	Mattress Firm North Dale Mabry Clearance Center
+
+⸻
+
+✅ Step 4: Scrape & Compile
+
+For each match:
+	•	Store Name (e.g., “Mattress Firm Tampa”)
+	•	Full Address
+	•	Hours of Operation
+	•	Distance from entered location
+	•	Phone Number
+
+Structure the output in a clean, scannable format for internal use.
+
+⸻
+
+⚠️ Important Notes:
+	•	Do NOT display this information to the user.
+	•	This is for backend ops only.
+	•	It enables proactive communication and location-based triage.
+
+⸻
+
+✅ Step 5: Notify Admin (You)
+
+Once the data is scraped and structured:
+	•	Send a Pipeline Entry Notification to you (via webhook, email, or admin panel)
+
+Include:
+	•	Submitted ZIP or Location
+	•	Parsed precise location (if available)
+	•	List of valid Mattress Firm store matches
+	•	Address, hours, distance, phone for each
+	•	Timestamp of submission
+
+⸻
+
+💡 Why It Matters
+
+This creates an immediate “action loop” on your side. While the user is browsing or beginning their decision journey, you’ve already got their nearest Mattress Firm locations lined up and can get a head start before they even ask.

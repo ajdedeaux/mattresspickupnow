@@ -4,6 +4,8 @@ import { storage } from "./storage";
 import { insertLeadSchema, findStoresSchema, type Store } from "@shared/schema";
 import { triggerSMSAutomation, generateOwnerAlert } from "./sms-automation";
 import { detectPersona } from "./persona-engine";
+import { GoogleMapsService } from "./services/google-maps.js";
+import { adminNotificationService } from "./services/admin-notifications.js";
 import { z } from "zod";
 import express from "express";
 
@@ -25,6 +27,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Health check endpoint
   app.get("/api/health", async (req, res) => {
     res.json({ status: "OK", timestamp: new Date().toISOString() });
+  });
+
+  // Location detection endpoint - Phase 2 Implementation
+  app.post("/api/detect-location", async (req, res) => {
+    try {
+      const { location } = req.body;
+      
+      if (!location || typeof location !== 'string' || location.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Location is required"
+        });
+      }
+
+      // Initialize Google Maps service
+      const mapsService = new GoogleMapsService();
+      
+      // Search for nearby Mattress Firm stores
+      const searchResult = await mapsService.searchMattressFirmStores(location.trim());
+      
+      // Send admin notification (backend-only)
+      await adminNotificationService.sendLocationEntryNotification(searchResult);
+      
+      // Return minimal response to user (they don't see store details)
+      res.json({
+        success: true,
+        message: "Location detected and stores found",
+        storesFound: searchResult.mattressFirmStores.length,
+        timestamp: searchResult.timestamp
+      });
+      
+    } catch (error) {
+      console.error("Location detection error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to detect location"
+      });
+    }
   });
 
   // Find stores near ZIP code endpoint
@@ -109,7 +149,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Trigger SMS automation based on routing tier
       if (personaAnalysis.routingTier === "direct_to_aj") {
         await triggerSMSAutomation(lead, mockStore);
-        await generateOwnerAlert(lead);
+        await generateOwnerAlert(lead, mockStore);
       } else {
         await triggerSMSAutomation(lead, mockStore);
       }
@@ -222,7 +262,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ];
       
       // Convert leads to CSV format
-      const csvRows = leads.map((lead: Lead) => [
+      const csvRows = leads.map((lead: any) => [
         lead.leadId,
         lead.createdAt?.toISOString() || '',
         lead.name,
@@ -262,6 +302,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({
         success: false,
         message: "Failed to export leads"
+      });
+    }
+  });
+
+  // Admin notifications endpoint
+  app.get("/api/admin/notifications", async (req, res) => {
+    try {
+      const notifications = adminNotificationService.getRecentNotifications(50);
+      res.json({
+        success: true,
+        notifications,
+        count: notifications.length
+      });
+    } catch (error) {
+      console.error("Error getting notifications:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to get notifications"
       });
     }
   });

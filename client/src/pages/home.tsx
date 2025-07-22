@@ -117,6 +117,8 @@ export default function Home() {
   const [showForm, setShowForm] = useState(false);
   const [leadCreated, setLeadCreated] = useState(false);
   const [leadResponse, setLeadResponse] = useState<any>(null);
+  const [locationDetecting, setLocationDetecting] = useState(false);
+  const [locationsFound, setLocationsFound] = useState<number | null>(null);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof insertLeadSchema>>({
@@ -140,7 +142,7 @@ export default function Home() {
     onSuccess: (response) => {
       setLeadCreated(true);
       setLeadResponse(response);
-      const messaging = getPersonaMessaging(response.data?.persona || 'default');
+      const messaging = getPersonaMessaging(response.persona || 'default');
       toast({
         title: messaging.heading,
         description: messaging.description,
@@ -189,10 +191,42 @@ export default function Home() {
     setSelectedComfort("");
     setSelectedBudget("");
     setSelectedUrgency("");
+    setSelectedZip("");
     setShowForm(false);
     setLeadCreated(false);
     setLeadResponse(null);
+    setLocationDetecting(false);
+    setLocationsFound(null);
     form.reset();
+  };
+
+  const detectLocation = async (location: string) => {
+    if (!location || location.length < 3) return;
+    
+    setLocationDetecting(true);
+    try {
+      const response = await fetch('/api/detect-location', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ location }),
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setLocationsFound(result.storesFound);
+        toast({
+          title: "Location detected",
+          description: `Found ${result.storesFound} stores near you`,
+        });
+      }
+    } catch (error) {
+      console.error('Location detection failed:', error);
+    } finally {
+      setLocationDetecting(false);
+    }
   };
 
   const onSubmit = (data: z.infer<typeof insertLeadSchema>) => {
@@ -528,27 +562,41 @@ export default function Home() {
                     placeholder="Enter ZIP code (e.g., 33612)"
                     className="w-full p-3 border border-gray-300 rounded-lg text-center text-lg focus:border-blue-500 focus:outline-none"
                     maxLength={5}
-                    onKeyPress={(e) => {
+                    onKeyPress={async (e) => {
                       if (e.key === 'Enter' && e.currentTarget.value.length === 5) {
-                        setSelectedZip(e.currentTarget.value);
+                        const zipCode = e.currentTarget.value;
+                        setSelectedZip(zipCode);
+                        await detectLocation(zipCode);
                         setCurrentQuestion(2);
                       }
                     }}
                   />
                   <Button 
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
-                    onClick={(e) => {
+                    disabled={locationDetecting}
+                    onClick={async (e) => {
                       const input = e.currentTarget.parentNode?.querySelector('input') as HTMLInputElement;
                       if (input?.value.length === 5) {
-                        setSelectedZip(input.value);
+                        const zipCode = input.value;
+                        setSelectedZip(zipCode);
+                        await detectLocation(zipCode);
                         setCurrentQuestion(2);
                       }
                     }}
                   >
-                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                    </svg>
-                    FIND MY OPTIONS
+                    {locationDetecting ? (
+                      <>
+                        <div className="w-5 h-5 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Looking for pickup locations...
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                        </svg>
+                        FIND MY OPTIONS
+                      </>
+                    )}
                   </Button>
                 </div>
               </CardContent>
@@ -562,12 +610,12 @@ export default function Home() {
         <div className="bg-green-50 border-b border-green-200 py-3 px-6">
           <div className="max-w-md mx-auto flex items-center justify-center">
             <Check className="w-5 h-5 text-green-600 mr-2" />
-            <span className="text-green-800 font-medium text-sm">3 locations found • 2.1 miles away • Open until 9 PM</span>
-            <button className="ml-2 text-green-600 hover:text-green-700">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+            <span className="text-green-800 font-medium text-sm">
+              {locationsFound !== null 
+                ? `${locationsFound} locations found • 2.1 miles away • Open until 9 PM`
+                : "3 locations found • 2.1 miles away • Open until 9 PM"
+              }
+            </span>
           </div>
         </div>
       )}
