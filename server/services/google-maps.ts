@@ -110,7 +110,7 @@ export class GoogleMapsService {
         const distanceResponse = await this.client.placesNearby({
           params: {
             location: { lat, lng },
-            rankby: 'distance' as const,
+            rankby: 'distance' as any,
             keyword: 'Mattress Firm',
             key: this.apiKey,
           },
