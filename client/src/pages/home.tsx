@@ -99,7 +99,7 @@ const LocationStep = ({ onLocationFound, isLoading }: {
       
       if (storesData.success && storesData.stores.length > 0) {
         onLocationFound(storesData.stores, locationData.coordinates);
-        toast({ title: 'Great news!', description: `Found ${storesData.stores.length} pickup locations near you` });
+        // Green celebration banner will show success - no popup needed
       } else {
         toast({ title: 'No stores found', description: 'No pickup locations found in that area' });
       }
@@ -132,7 +132,7 @@ const LocationStep = ({ onLocationFound, isLoading }: {
           
           if (data.success && data.stores.length > 0) {
             onLocationFound(data.stores, { lat: latitude, lng: longitude });
-            toast({ title: 'Perfect!', description: `Found ${data.stores.length} pickup locations nearby` });
+            // Green celebration banner will show success - no popup needed
           } else {
             toast({ title: 'No stores found', description: 'No pickup locations found in your area' });
           }
