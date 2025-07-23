@@ -581,27 +581,27 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         <p className="text-gray-600 text-sm">Fits in a Prius — Problem Solved</p>
       </div>
 
-      {/* Video Proof Section */}
+      {/* Interactive Proof Section */}
       <div className="rounded-xl overflow-hidden mb-6">
-        <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center relative overflow-hidden">
-          <video 
-            autoPlay 
-            muted 
-            loop 
-            playsInline
+        <button 
+          onClick={() => window.open('/fits-in-prius-video.mp4', '_blank')}
+          className="w-full aspect-video bg-gray-900 rounded-lg flex items-center justify-center relative overflow-hidden group hover:bg-gray-800 transition-colors"
+        >
+          <img 
+            src="@assets/IMG_3899_1753280830796.jpeg"
+            alt="Queen mattress fitting in Prius - proof of concept"
             className="w-full h-full object-cover"
-            poster="/video-thumbnail.jpg"
-          >
-            <source src="/fits-in-prius-video.mp4" type="video/mp4" />
-            <div className="absolute inset-0 bg-blue-600 flex items-center justify-center">
-              <div className="text-white text-center">
-                <Bed className="w-12 h-12 mx-auto mb-2" />
-                <p className="font-semibold">Queen mattress pickup</p>
-                <p className="text-sm opacity-90">It really does fit</p>
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-30 flex items-center justify-center transition-all">
+            <div className="text-white text-center">
+              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3 mx-auto group-hover:bg-opacity-30 transition-all">
+                <div className="w-0 h-0 border-l-[12px] border-l-white border-y-[8px] border-y-transparent ml-1"></div>
               </div>
+              <p className="font-semibold text-lg">Click for proof</p>
+              <p className="text-sm opacity-90">See how it actually fits</p>
             </div>
-          </video>
-        </div>
+          </div>
+        </button>
       </div>
 
       {/* Trust Signals */}
