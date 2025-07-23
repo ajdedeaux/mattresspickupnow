@@ -567,6 +567,8 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
   onFormOption: () => void;
 }) => {
   const nearestStore = userData.nearestStores[0];
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   
   return (
     <div className="space-y-6">
@@ -581,14 +583,65 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         <p className="text-gray-600 text-sm">Fits in a Prius — Problem Solved</p>
       </div>
 
-      {/* CTA Proof Image */}
+      {/* Interactive Flip Card */}
       <div className="rounded-xl overflow-hidden mb-6">
-        <div className="w-full aspect-video bg-gray-900 rounded-lg overflow-hidden">
-          <img 
-            src="/proof-image.jpeg"
-            alt="A mattress in a Prius - proof it fits"
-            className="w-full h-full object-cover"
-          />
+        <div className="w-full aspect-video relative perspective-1000">
+          <div 
+            className={`w-full h-full relative transition-transform duration-700 transform-style-preserve-3d cursor-pointer ${
+              isFlipped ? 'rotate-y-180' : ''
+            }`}
+            onClick={() => {
+              if (!isFlipped) {
+                setIsFlipped(true);
+                setTimeout(() => setIsVideoPlaying(true), 350);
+              }
+            }}
+          >
+            {/* Front Side - CTA Image */}
+            <div className="absolute inset-0 w-full h-full backface-hidden bg-gray-900 rounded-lg overflow-hidden group hover:scale-[1.02] transition-transform duration-200">
+              <img 
+                src="/proof-image.jpeg"
+                alt="A mattress in a Prius - proof it fits"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 flex items-center justify-center">
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white text-center">
+                  <div className="text-sm font-medium">Tap to see proof</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Back Side - Video */}
+            <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 bg-gray-900 rounded-lg overflow-hidden">
+              <video 
+                autoPlay={isVideoPlaying}
+                muted 
+                loop 
+                playsInline
+                className="w-full h-full object-cover"
+                poster="/video-thumbnail.jpg"
+              >
+                <source src="/fits-in-prius-video.mp4" type="video/mp4" />
+                <div className="absolute inset-0 bg-blue-600 flex items-center justify-center">
+                  <div className="text-white text-center">
+                    <Bed className="w-12 h-12 mx-auto mb-2" />
+                    <p className="font-semibold">Queen mattress pickup</p>
+                    <p className="text-sm opacity-90">It really does fit</p>
+                  </div>
+                </div>
+              </video>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsFlipped(false);
+                  setIsVideoPlaying(false);
+                }}
+                className="absolute top-3 right-3 w-8 h-8 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full flex items-center justify-center transition-all duration-200"
+              >
+                ×
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
