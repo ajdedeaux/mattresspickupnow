@@ -177,7 +177,7 @@ const LocationStep = ({ onLocationFound, isLoading }: {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">Let's find your pickup location</h2>
+        <h2 className="text-3xl font-bold text-gray-900 mb-3">Let's find your pickup location</h2>
         {!inputFocused && (
           <>
             <p className="text-gray-600 transition-opacity duration-300 mb-3">More precise location = closer pickup options</p>
@@ -208,7 +208,7 @@ const LocationStep = ({ onLocationFound, isLoading }: {
                   'Use current location'
                 )}
               </div>
-              <div className="text-sm text-blue-100">Finding nearest options right now</div>
+              <div className="text-sm text-blue-100">Find nearest options right now</div>
             </div>
           </div>
         </Button>
@@ -881,18 +881,18 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
-        <div className="max-w-md mx-auto px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">MattressPickupNow</h1>
-            <p className="text-sm text-gray-600">Sleep on it tonight</p>
-          </div>
-          {currentStep > 1 && (
+        <div className="max-w-md mx-auto px-6 py-6 text-center">
+          <h1 className="text-2xl font-bold text-gray-900">MattressPickupNow</h1>
+          <p className="text-gray-600 mt-1">Sleep on it tonight</p>
+        </div>
+        {currentStep > 1 && (
+          <div className="absolute top-6 left-6">
             <Button onClick={goBack} variant="ghost" size="sm">
               <ArrowLeft className="w-4 h-4 mr-1" />
               Back
             </Button>
-          )}
-        </div>
+          </div>
+        )}
       </header>
 
       {/* Progress indicator */}
