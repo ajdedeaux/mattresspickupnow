@@ -743,7 +743,18 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
 
 const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void }) => {
   const nearestStore = userData.nearestStores[0];
-  const smsMessage = `Hey – here's what I'm looking for: ${userData.size}, ${userData.comfort}, for ${userData.useCase}. Can you help me find the best pickup nearby under $800?`;
+  
+  // Generate personalized, dynamic SMS message with all funnel data
+  const generateSMSMessage = () => {
+    const comfortType = userData.comfort?.toLowerCase() || 'medium';
+    const mattressSize = userData.size || 'Queen';
+    const useContext = userData.useCase || 'myself';
+    
+    // Create natural, conversational message that gives business everything they need
+    return `Hi! Just went through your mattress finder - interested in the ${mattressSize} ${comfortType} for ${useContext}. Can I come try it today? What locations have immediate pickup availability?`;
+  };
+
+  const smsMessage = generateSMSMessage();
   
   const handleCopyAndText = () => {
     navigator.clipboard.writeText(smsMessage);
@@ -752,27 +763,27 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Ready to text!</h2>
-        <p className="text-gray-600">Here's your pre-filled message</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-1">Ready to text!</h2>
+        <p className="text-gray-600 text-sm">Your personalized message</p>
       </div>
 
       <Card>
-        <CardContent className="p-6">
-          <div className="font-semibold text-gray-900 mb-3">Message Preview:</div>
-          <div className="bg-gray-50 p-4 rounded-lg text-gray-700 italic">
+        <CardContent className="p-4">
+          <div className="font-medium text-gray-900 mb-2 text-sm">Message Preview:</div>
+          <div className="bg-gray-50 p-3 rounded-lg text-gray-700 text-sm">
             "{smsMessage}"
           </div>
         </CardContent>
       </Card>
 
       <Card className="bg-blue-50 border-blue-200">
-        <CardContent className="p-6">
+        <CardContent className="p-4">
           <div className="text-center">
-            <div className="font-semibold text-gray-900">Text this to:</div>
+            <div className="font-medium text-gray-900 text-sm">Text this to:</div>
             <div className="text-lg font-bold text-blue-600 mt-1">{nearestStore?.phone}</div>
-            <div className="text-sm text-gray-500 mt-1">{nearestStore?.name}</div>
+            <div className="text-xs text-gray-500 mt-1">{nearestStore?.name}</div>
           </div>
         </CardContent>
       </Card>
@@ -780,16 +791,16 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
       <div className="space-y-3">
         <Button 
           onClick={handleCopyAndText}
-          className="w-full h-14 bg-green-600 hover:bg-green-700 text-white rounded-xl"
+          className="w-full h-12 bg-green-600 hover:bg-green-700 text-white rounded-xl"
         >
-          <MessageSquare className="w-5 h-5 mr-2" />
+          <MessageSquare className="w-4 h-4 mr-2" />
           Copy & Text Now
         </Button>
 
         <Button 
           onClick={onBack}
           variant="outline"
-          className="w-full"
+          className="w-full h-10"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to options
@@ -799,38 +810,42 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
   );
 };
 
-const FormStep = ({ userData, onSubmit, isLoading }: { 
+const FormStep = ({ userData, onSubmit, isLoading, onBack }: { 
   userData: UserData; 
   onSubmit: (contactInfo: any) => void;
   isLoading: boolean;
+  onBack: () => void;
 }) => {
+  const [urgencyLevel, setUrgencyLevel] = useState('');
   const form = useForm({
     resolver: zodResolver(contactSchema),
     defaultValues: {
       name: '',
       phone: '',
       email: '',
+      urgency: '',
       notes: ''
     }
   });
 
+  const handleUrgencyChange = (value: string) => {
+    setUrgencyLevel(value);
+    form.setValue('urgency', value);
+  };
+
+  const handleSubmit = (data: any) => {
+    onSubmit({ ...data, urgency: urgencyLevel });
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="text-center">
-        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Mail className="w-8 h-8 text-blue-600" />
-        </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Perfect! We'll email you.</h2>
-        <p className="text-gray-600">Get your mattress match details via email within 15 minutes</p>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
-          <p className="text-sm text-blue-800">
-            <span className="font-medium">Email includes:</span> Store locations, pricing, pickup instructions, and direct contact info
-          </p>
-        </div>
+        <h2 className="text-xl font-bold text-gray-900 mb-1">Get your mattress details</h2>
+        <p className="text-gray-600 text-sm">We'll email you within 15 minutes</p>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <FormField
             control={form.control}
             name="name"
@@ -838,7 +853,7 @@ const FormStep = ({ userData, onSubmit, isLoading }: {
               <FormItem>
                 <FormLabel className="text-gray-900 font-medium">Full Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Your name" disabled={isLoading} className="h-12" />
+                  <Input {...field} placeholder="Your name" disabled={isLoading} className="h-10" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -852,11 +867,8 @@ const FormStep = ({ userData, onSubmit, isLoading }: {
               <FormItem>
                 <FormLabel className="text-gray-900 font-medium">Email Address</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="your@email.com" type="email" disabled={isLoading} className="h-12" />
+                  <Input {...field} placeholder="your@email.com" type="email" disabled={isLoading} className="h-10" />
                 </FormControl>
-                <FormDescription>
-                  We'll send your mattress details here within 15 minutes
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -867,17 +879,73 @@ const FormStep = ({ userData, onSubmit, isLoading }: {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-900 font-medium">Phone Number <span className="text-gray-500 font-normal">(Optional)</span></FormLabel>
+                <FormLabel className="text-gray-900 font-medium">Phone Number</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="(555) 123-4567" disabled={isLoading} className="h-12" />
+                  <Input {...field} placeholder="(555) 123-4567" disabled={isLoading} className="h-10" />
                 </FormControl>
-                <FormDescription>
-                  For urgent questions or delivery coordination
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
+
+          {/* Urgency Level - Key Addition */}
+          <div className="space-y-2">
+            <label className="text-gray-900 font-medium text-sm">How soon do you need this?</label>
+            <div className="grid grid-cols-1 gap-2">
+              <button
+                type="button"
+                onClick={() => handleUrgencyChange('today')}
+                className={`p-3 rounded-lg border text-left transition-all ${
+                  urgencyLevel === 'today' 
+                    ? 'border-red-500 bg-red-50 text-red-900' 
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="font-medium">Today/Tomorrow</div>
+                <div className="text-xs text-gray-600">I need this ASAP</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleUrgencyChange('week')}
+                className={`p-3 rounded-lg border text-left transition-all ${
+                  urgencyLevel === 'week' 
+                    ? 'border-blue-500 bg-blue-50 text-blue-900' 
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="font-medium">This week</div>
+                <div className="text-xs text-gray-600">Within the next few days</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleUrgencyChange('flexible')}
+                className={`p-3 rounded-lg border text-left transition-all ${
+                  urgencyLevel === 'flexible' 
+                    ? 'border-green-500 bg-green-50 text-green-900' 
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="font-medium">I'm flexible</div>
+                <div className="text-xs text-gray-600">Just browsing options</div>
+              </button>
+            </div>
+            
+            {/* Urgent Customer Redirect */}
+            {urgencyLevel === 'today' && (
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mt-2">
+                <p className="text-sm text-orange-800">
+                  <span className="font-medium">Need it today?</span> For faster service, call or text us instead - we'll respond immediately!
+                </p>
+                <button
+                  type="button"
+                  onClick={onBack}
+                  className="text-orange-700 underline text-sm mt-1 hover:text-orange-800"
+                >
+                  Go back to call/text options
+                </button>
+              </div>
+            )}
+          </div>
 
           <FormField
             control={form.control}
@@ -886,7 +954,7 @@ const FormStep = ({ userData, onSubmit, isLoading }: {
               <FormItem>
                 <FormLabel className="text-gray-900 font-medium">Special requests? <span className="text-gray-500 font-normal">(Optional)</span></FormLabel>
                 <FormControl>
-                  <Textarea {...field} placeholder="Preferred pickup time, delivery needs, etc." disabled={isLoading} className="min-h-[80px]" />
+                  <Textarea {...field} placeholder="Preferred pickup time, delivery needs, etc." disabled={isLoading} className="min-h-[60px]" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -895,27 +963,21 @@ const FormStep = ({ userData, onSubmit, isLoading }: {
 
           <Button 
             type="submit" 
-            className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-lg font-medium"
-            disabled={isLoading}
+            disabled={isLoading || !urgencyLevel}
+            className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
           >
             {isLoading ? (
               <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Sending your match...
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Sending...
               </>
             ) : (
               <>
-                <Mail className="w-5 h-5 mr-2" />
+                <Mail className="w-4 h-4 mr-2" />
                 Send My Mattress Match
               </>
             )}
           </Button>
-          
-          <div className="text-center pt-2">
-            <p className="text-xs text-gray-500">
-              You'll receive an email within 15 minutes with complete store details and pickup instructions
-            </p>
-          </div>
         </form>
       </Form>
     </div>
@@ -1083,6 +1145,7 @@ export default function Home() {
             userData={userSelections} 
             onSubmit={handleFormSubmit}
             isLoading={submitLead.isPending}
+            onBack={() => setCurrentStep(5)}
           />
         )}
       </main>
