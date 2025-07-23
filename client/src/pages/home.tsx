@@ -368,7 +368,11 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">You're in the right place</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-3">You're in the right place</h2>
+        <p className="text-gray-600 mb-6">
+          We help people in your exact situation every day — same-day pickup, compact fit, zero stress.<br/>
+          Here's how you want to move forward:
+        </p>
       </div>
 
       {/* Video - Clean Conversion Element */}
@@ -396,14 +400,27 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
 
       <div className="space-y-4">
         <Button 
+          onClick={() => window.open('tel:+18135550100', '_self')}
+          className="w-full h-16 bg-red-600 hover:bg-red-700 text-white rounded-xl"
+        >
+          <div className="flex items-center space-x-3">
+            <Phone className="w-6 h-6" />
+            <div className="text-left">
+              <div className="font-semibold">Call Now</div>
+              <div className="text-sm text-red-100">For urgent help or specific requests — talk directly with a real person</div>
+            </div>
+          </div>
+        </Button>
+
+        <Button 
           onClick={onSMSOption}
           className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
         >
           <div className="flex items-center space-x-3">
             <MessageSquare className="w-6 h-6" />
             <div className="text-left">
-              <div className="font-semibold">Text me the best match now</div>
-              <div className="text-sm text-blue-100">We'll find your exact pickup spot and help you sleep better tonight</div>
+              <div className="font-semibold">Text Me the Best Match</div>
+              <div className="text-sm text-blue-100">We'll send you the nearest in-stock option and set you up for same-day pickup</div>
             </div>
           </div>
         </Button>
@@ -411,13 +428,15 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         <Button 
           onClick={onFormOption}
           variant="outline"
-          className="w-full h-16 rounded-xl"
+          className="w-full h-16 rounded-xl border-2 hover:border-orange-400"
         >
           <div className="flex items-center space-x-3">
-            <Phone className="w-6 h-6" />
+            <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+              <span className="text-white text-xs font-bold">!</span>
+            </div>
             <div className="text-left">
-              <div className="font-semibold">We'll text you within 15 minutes</div>
-              <div className="text-sm text-gray-500">Leave your details and we'll handle the rest</div>
+              <div className="font-semibold text-gray-900">Speed It Up</div>
+              <div className="text-sm text-gray-500">Need this faster? Tell us your timeline and we'll prioritize you</div>
             </div>
           </div>
         </Button>
