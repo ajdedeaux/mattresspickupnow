@@ -581,27 +581,15 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         <p className="text-gray-600 text-sm">Fits in a Prius — Problem Solved</p>
       </div>
 
-      {/* Interactive Proof Section */}
+      {/* CTA Proof Image */}
       <div className="rounded-xl overflow-hidden mb-6">
-        <button 
-          onClick={() => window.open('/fits-in-prius-video.mp4', '_blank')}
-          className="w-full aspect-video bg-gray-900 rounded-lg flex items-center justify-center relative overflow-hidden group hover:bg-gray-800 transition-colors"
-        >
+        <div className="w-full aspect-video bg-gray-900 rounded-lg overflow-hidden">
           <img 
-            src="@assets/IMG_3899_1753280830796.jpeg"
-            alt="Queen mattress fitting in Prius - proof of concept"
+            src="/proof-image.jpeg"
+            alt="A mattress in a Prius - proof it fits"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-30 flex items-center justify-center transition-all">
-            <div className="text-white text-center">
-              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3 mx-auto group-hover:bg-opacity-30 transition-all">
-                <div className="w-0 h-0 border-l-[12px] border-l-white border-y-[8px] border-y-transparent ml-1"></div>
-              </div>
-              <p className="font-semibold text-lg">Click for proof</p>
-              <p className="text-sm opacity-90">See how it actually fits</p>
-            </div>
-          </div>
-        </button>
+        </div>
       </div>
 
       {/* Trust Signals */}
