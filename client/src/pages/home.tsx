@@ -210,7 +210,7 @@ const LocationStep = ({ onLocationFound, isLoading }: {
   );
 };
 
-const UseCaseStep = ({ onSelect }: { onSelect: (useCase: string) => void }) => {
+const UseCaseStep = ({ onSelect, storeCount }: { onSelect: (useCase: string) => void; storeCount?: number }) => {
   const useCases = [
     { id: 'me', label: 'Me', icon: User, description: 'Personal mattress' },
     { id: 'child', label: 'My Child', icon: Baby, description: 'Kids bedroom' },
@@ -222,6 +222,18 @@ const UseCaseStep = ({ onSelect }: { onSelect: (useCase: string) => void }) => {
 
   return (
     <div className="space-y-6">
+      {/* Exciting Success Header */}
+      {storeCount && (
+        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl p-6 shadow-lg mb-6">
+          <div className="flex items-center justify-center space-x-2 mb-2">
+            <CheckCircle className="w-8 h-8" />
+            <span className="text-2xl font-bold">Perfect!</span>
+          </div>
+          <div className="text-lg font-semibold">Found {storeCount} pickup locations nearby</div>
+          <div className="text-green-100 text-sm mt-1">You're in the right place - let's get you sleeping better tonight!</div>
+        </div>
+      )}
+      
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Who is this mattress for?</h2>
         <p className="text-gray-600">This helps us recommend the perfect fit</p>
@@ -231,7 +243,7 @@ const UseCaseStep = ({ onSelect }: { onSelect: (useCase: string) => void }) => {
         {useCases.map((useCase) => (
           <Card 
             key={useCase.id} 
-            className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-blue-300"
+            className="cursor-pointer hover:shadow-lg transition-all duration-200 border-2 hover:border-blue-300 hover:scale-105"
             onClick={() => onSelect(useCase.id)}
           >
             <CardContent className="p-6 text-center">
@@ -714,7 +726,7 @@ export default function Home() {
         )}
         
         {currentStep === 2 && (
-          <UseCaseStep onSelect={handleUseCaseSelect} />
+          <UseCaseStep onSelect={handleUseCaseSelect} storeCount={userSelections.nearestStores?.length} />
         )}
         
         {currentStep === 3 && (
