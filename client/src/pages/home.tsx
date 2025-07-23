@@ -597,20 +597,20 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
               }
             }}
           >
-            {/* Front Side - CTA Image */}
-            <div className="absolute inset-0 w-full h-full backface-hidden bg-gray-900 rounded-lg overflow-hidden group hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
-              <img 
-                src="/proof-image.jpeg"
-                alt="A mattress in a Prius - proof it fits"
-                className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-100 group-hover:opacity-80 transition-all duration-300"></div>
-              <div className="absolute bottom-4 left-4 right-4 text-white">
-                <div className="text-sm font-medium opacity-90 group-hover:opacity-100 transition-opacity duration-300">
-                  👆 Tap to see the proof
+            {/* Front Side - Custom Design */}
+            <div className="absolute inset-0 w-full h-full backface-hidden rounded-lg overflow-hidden group hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
+              <div className="w-full h-full bg-gradient-to-br from-blue-800 via-blue-700 to-blue-900 text-white flex flex-col items-center justify-center text-center p-6 relative">
+                <div className="text-2xl font-bold mb-2 tracking-wide" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
+                  A MATTRESS in a PRIUS?
                 </div>
+                <div className="text-4xl mb-4">
+                  🤔🤔🤔
+                </div>
+                <div className="text-base font-semibold opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+                  Tap to see the proof
+                </div>
+                <div className="absolute inset-0 ring-2 ring-transparent group-hover:ring-blue-400/50 rounded-lg transition-all duration-300"></div>
               </div>
-              <div className="absolute inset-0 ring-2 ring-transparent group-hover:ring-blue-400/50 rounded-lg transition-all duration-300"></div>
             </div>
             
             {/* Back Side - Video */}
