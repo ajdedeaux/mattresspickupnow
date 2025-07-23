@@ -9,6 +9,42 @@ import { adminNotificationService } from "./services/admin-notifications.js";
 import { z } from "zod";
 import express from "express";
 
+// Mock data function for development (avoids Google API charges)
+function getMockMattressFirmStores(lat: number, lng: number) {
+  return [
+    {
+      name: 'Mattress Firm Westshore Plaza',
+      address: '1234 Main St, Tampa, FL 33607',
+      phone: '(813) 555-0100',
+      hours: 'Wednesday: 10:00 AM – 8:00 PM',
+      distance: 2.1,
+      rating: 4.2,
+      placeId: 'mock_westshore_001',
+      location: { lat: lat + 0.01, lng: lng + 0.01 }
+    },
+    {
+      name: 'Mattress Firm Town Center',
+      address: '5678 Oak Ave, Tampa, FL 33609',
+      phone: '(813) 555-0200',
+      hours: 'Wednesday: 10:00 AM – 9:00 PM',
+      distance: 3.5,
+      rating: 4.0,
+      placeId: 'mock_towncenter_002',
+      location: { lat: lat + 0.02, lng: lng + 0.02 }
+    },
+    {
+      name: 'Mattress Firm Crossroads',
+      address: '9012 Pine Rd, Tampa, FL 33611',
+      phone: '(813) 555-0300',
+      hours: 'Wednesday: 10:00 AM – 8:00 PM',
+      distance: 4.8,
+      rating: 4.3,
+      placeId: 'mock_crossroads_003',
+      location: { lat: lat + 0.03, lng: lng + 0.03 }
+    }
+  ];
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // Serve attached assets (videos, images, etc.) with proper MIME types
@@ -52,9 +88,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      console.log(`🔍 Geocoding request for: "${searchTerm}"`);
-      const googleMaps = new GoogleMapsService();
-      const geocodeResult = await googleMaps.geocodeLocation(searchTerm.trim());
+      console.log(`🔌 DEVELOPMENT MODE: Mock geocoding for: "${searchTerm}"`);
+      // DEVELOPMENT MODE: Using mock geocoding to avoid Google API charges  
+      // TO RECONNECT: Uncomment the following lines:
+      // const googleMaps = new GoogleMapsService();
+      // const geocodeResult = await googleMaps.geocodeLocation(searchTerm.trim());
+      
+      const geocodeResult = {
+        success: true,
+        coordinates: { lat: 27.9506, lng: -82.4572 }, // Tampa Bay area
+        address: `Tampa Bay Area near ${searchTerm}`
+      };
       
       console.log('🌍 Geocoding result:', geocodeResult);
       
@@ -65,12 +109,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // After geocoding, automatically find nearby Mattress Firm stores
-      const googleMapsService = new GoogleMapsService();
-      const storesResult = await googleMapsService.findNearbyMattressFirmStores(
-        geocodeResult.coordinates.lat, 
-        geocodeResult.coordinates.lng
-      );
+      // DEVELOPMENT MODE: Using mock data to avoid Google API charges  
+      // TO RECONNECT: Change this to use googleMapsService.findNearbyMattressFirmStores()
+      const storesResult = {
+        success: true,
+        stores: getMockMattressFirmStores(geocodeResult.coordinates.lat, geocodeResult.coordinates.lng)
+      };
       
       if (storesResult.success && storesResult.stores.length > 0) {
         // Create location search tracking record
@@ -124,11 +168,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const googleMaps = new GoogleMapsService();
-      const storesResult = await googleMaps.findNearbyMattressFirmStores(
-        parseFloat(lat), 
-        parseFloat(lng)
-      );
+      // DEVELOPMENT MODE: Using mock data to avoid Google API charges  
+      // TO RECONNECT: Change this to use googleMaps.findNearbyMattressFirmStores()
+      const storesResult = {
+        success: true,
+        stores: getMockMattressFirmStores(parseFloat(lat), parseFloat(lng))
+      };
       
       if (!storesResult.success) {
         return res.status(500).json({
