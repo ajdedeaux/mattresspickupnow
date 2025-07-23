@@ -300,23 +300,23 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
   // Pricing structure based on size and comfort type
   const getPricing = (comfort: string, size: string = 'Queen') => {
     const pricingMatrix: Record<string, Record<string, string>> = {
-      'Firm': { Twin: '$199', Full: '$249', Queen: '$299', King: '$349' },
-      'Medium': { Twin: '$249', Full: '$299', Queen: '$349', King: '$399' },
-      'Plush': { Twin: '$299', Full: '$349', Queen: '$399', King: '$449' },
-      'Hybrid': { Twin: '$349', Full: '$399', Queen: '$449', King: '$499' }
+      'Firm': { Twin: '$199.99', Full: '$269.99', Queen: '$299.99', King: '$369.99' },
+      'Medium': { Twin: '$249.99', Full: '$359.99', Queen: '$399.99', King: '$469.99' },
+      'Hybrid': { Twin: '$399.99', Full: '$449.99', Queen: '$499.99', King: '$599.99' },
+      'Soft': { Twin: '$549.99', Full: '$649.99', Queen: '$699.99', King: '$799.99' }
     };
-    return pricingMatrix[comfort]?.[size] || pricingMatrix[comfort]?.['Queen'] || '$349';
+    return pricingMatrix[comfort]?.[size] || pricingMatrix[comfort]?.['Queen'] || '$399.99';
   };
 
   // Mattress height data
   const getHeight = (comfort: string) => {
     const heights: Record<string, string> = {
-      'Firm': '10"',
-      'Medium': '12"', 
-      'Plush': '12"',
-      'Hybrid': '13"'
+      'Firm': '8"',
+      'Medium': '10"', 
+      'Hybrid': '10"',
+      'Soft': '12"'
     };
-    return heights[comfort] || '12"';
+    return heights[comfort] || '10"';
   };
 
   const comforts = [
@@ -346,18 +346,6 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
       }
     },
     { 
-      id: 'plush', 
-      label: 'Plush', 
-      description: 'Ideal for side sleepers',
-      rating: '4.6/5',
-      reviews: '1,592',
-      brand: 'Sealy Memory Foam Soft',
-      specs: {
-        benefits: ['Superior pressure point relief', 'Gel-infused cooling technology', 'Perfect for hip and shoulder comfort'],
-        availability: 'Ready for pickup now'
-      }
-    },
-    { 
       id: 'hybrid', 
       label: 'Hybrid', 
       description: 'Best of both worlds - coil support + foam comfort',
@@ -366,6 +354,18 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
       brand: 'Basic Hybrid',
       specs: {
         benefits: ['Traditional coil support with memory foam', 'Maximum breathability for hot sleepers', 'Responsive bounce with contouring'],
+        availability: 'Ready for pickup now'
+      }
+    },
+    { 
+      id: 'soft', 
+      label: 'Soft', 
+      description: 'Ideal for side sleepers',
+      rating: '4.6/5',
+      reviews: '1,592',
+      brand: 'Sealy Memory Foam Soft',
+      specs: {
+        benefits: ['Superior pressure point relief', 'Gel-infused cooling technology', 'Perfect for hip and shoulder comfort'],
         availability: 'Ready for pickup now'
       }
     }
@@ -386,7 +386,7 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
     <div className="space-y-4">
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">How do you like your mattress to feel?</h2>
-        <p className="text-gray-600">All comfort levels under $800 with pickup tonight</p>
+        <p className="text-gray-600">All comfort levels from $199.99 with pickup tonight</p>
         <p className="text-sm text-gray-500 mt-1">Tap to see details • Tap again to select</p>
       </div>
 
