@@ -659,18 +659,13 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
 
       {/* Premium Trust Signals */}
       <div className="flex justify-center space-x-4 mb-6">
-        {/* Same Day Pickup - Car Fit Story */}
+        {/* Same Day Pickup - Immediate Fulfillment */}
         <div className="flex flex-col items-center">
           <div className="relative w-14 h-14 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mb-2 shadow-lg transform hover:scale-105 transition-transform duration-200">
-            {/* Custom Car with Open Trunk Icon */}
-            <svg className="w-8 h-8 text-white" viewBox="0 0 32 32" fill="currentColor">
-              {/* Car body */}
-              <path d="M6 18h2v2H6z M24 18h2v2H24z"/>
-              <path d="M4 14c0-1.1.9-2 2-2h20c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8z"/>
-              {/* Open trunk - showing mattress fits */}
-              <path d="M18 12v-2c0-.5.5-1 1-1h6c.5 0 1 .5 1 1v2h-8z" stroke="currentColor" strokeWidth="1" fill="rgba(255,255,255,0.8)"/>
-              {/* Mattress in trunk */}
-              <rect x="19" y="10.5" width="5" height="1" rx="0.5" fill="rgba(255,255,255,0.9)"/>
+            {/* Simple Clock Icon */}
+            <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12,6 12,12 16,14"/>
             </svg>
             <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
               <span className="text-white text-xs font-bold">!</span>
@@ -679,22 +674,16 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
           <p className="text-xs font-semibold text-gray-900">Same day pickup</p>
         </div>
         
-        {/* 120-Night Trial - Peaceful Sleep Story */}
+        {/* 120-Night Trial - Peace of Mind */}
         <div className="flex flex-col items-center">
           <div className="relative w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-2 shadow-lg transform hover:scale-105 transition-transform duration-200">
-            {/* Custom Peaceful Sleep Icon */}
-            <svg className="w-8 h-8 text-white" viewBox="0 0 32 32" fill="currentColor">
-              {/* Bed base */}
-              <path d="M4 20h24v4c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-4z"/>
-              {/* Mattress */}
-              <path d="M4 18h24c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2z" fill="rgba(255,255,255,0.9)"/>
-              {/* Pillow */}
-              <ellipse cx="8" cy="15" rx="3" ry="1.5" fill="rgba(255,255,255,0.8)"/>
-              {/* Peaceful sleeping person silhouette */}
-              <ellipse cx="16" cy="14" rx="6" ry="2" fill="rgba(255,255,255,0.7)"/>
-              {/* Sleep symbols (z's) */}
-              <text x="22" y="12" fontSize="4" fill="rgba(255,255,255,0.8)">z</text>
-              <text x="24" y="10" fontSize="3" fill="rgba(255,255,255,0.6)">z</text>
+            {/* Simple Calendar with 120 */}
+            <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+              <text x="12" y="17" fontSize="6" textAnchor="middle" fill="currentColor" fontWeight="bold">120</text>
             </svg>
             <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
               <span className="text-gray-900 text-xs font-bold">✓</span>
@@ -703,19 +692,14 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
           <p className="text-xs font-semibold text-gray-900">120-night trial</p>
         </div>
         
-        {/* Price Match - Protection Shield Story */}
+        {/* Price Match - Low Price Guarantee */}
         <div className="flex flex-col items-center">
           <div className="relative w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-2 shadow-lg transform hover:scale-105 transition-transform duration-200">
-            {/* Custom Price Protection Icon */}
-            <svg className="w-8 h-8 text-white" viewBox="0 0 32 32" fill="currentColor">
-              {/* Shield outline */}
-              <path d="M16 4l-8 4v8c0 6 8 12 8 12s8-6 8-12v-8l-8-4z" stroke="currentColor" strokeWidth="1.5" fill="rgba(255,255,255,0.1)"/>
-              {/* Dollar symbol in shield */}
-              <path d="M16 10v2m0 8v2m-2-6h1c1 0 2-1 2-2s-1-2-2-2h-2c-1 0-2 1-2 2m6 2c0 1-1 2-2 2h-1" 
-                    stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/>
-              {/* Price tag attachment */}
-              <circle cx="20" cy="12" r="3" fill="rgba(255,255,255,0.9)"/>
-              <path d="M19 11h2v2h-2z" fill="currentColor"/>
+            {/* Simple Receipt/Price Tag Icon */}
+            <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16l4-2 4 2V4a2 2 0 0 0-2-2z"/>
+              <line x1="9" y1="9" x2="9" y2="13"/>
+              <line x1="7" y1="11" x2="11" y2="11"/>
             </svg>
             <div className="absolute -top-1 -left-1 w-5 h-5 bg-orange-400 rounded-full flex items-center justify-center">
               <span className="text-white text-xs font-bold">$</span>
