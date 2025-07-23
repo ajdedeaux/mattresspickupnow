@@ -270,7 +270,7 @@ const LocationStep = ({ onLocationFound, isLoading }: {
                 {autoSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    <span className="animate-pulse">Scanning area near {zipCode}...</span>
+                    <span className="animate-pulse">Finding options near {zipCode}...</span>
                   </>
                 ) : (
                   <>
