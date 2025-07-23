@@ -169,10 +169,10 @@ The application is designed for rapid deployment with minimal configuration, foc
 - Preserved premium feeling while achieving Apple/Tesla-level design confidence
 
 **Trust Badge Optimization (Complete):**
-- Replaced overly complex custom icons with clean, minimal designs
-- Aligned with brand focus: low price, immediate fulfillment, peace of mind
-- Simple clock icon for same day pickup (immediate fulfillment focus)
-- Calendar with "120" for trial period (peace of mind guarantee)
-- Receipt/price tag for price match (low price value proposition)
-- Maintained premium gradient backgrounds and interactive elements
-- Clean, professional aesthetic matching reference materials
+- Simplified from complex gradients to subtle, minimal design
+- Consistent blue-50 background with blue-600 icons for brand alignment
+- Reduced visual weight to support rather than compete with main experience
+- Clean clock, shield, and dollar icons with consistent styling
+- Minimal approach emphasizes clarity over visual impact
+- Subtle nudges that build trust without demanding attention
+- Matches the clean, confident aesthetic of previous pages

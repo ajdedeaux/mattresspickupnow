@@ -657,55 +657,30 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         </div>
       </div>
 
-      {/* Premium Trust Signals */}
-      <div className="flex justify-center space-x-4 mb-6">
-        {/* Same Day Pickup - Immediate Fulfillment */}
+      {/* Subtle Trust Signals */}
+      <div className="flex justify-center space-x-6 mb-6">
+        {/* Same Day Pickup */}
         <div className="flex flex-col items-center">
-          <div className="relative w-14 h-14 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mb-2 shadow-lg transform hover:scale-105 transition-transform duration-200">
-            {/* Simple Clock Icon */}
-            <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12,6 12,12 16,14"/>
-            </svg>
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-xs font-bold">!</span>
-            </div>
+          <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-2">
+            <Clock className="w-5 h-5 text-blue-600" />
           </div>
-          <p className="text-xs font-semibold text-gray-900">Same day pickup</p>
+          <p className="text-xs font-medium text-gray-700">Same day pickup</p>
         </div>
         
-        {/* 120-Night Trial - Peace of Mind */}
+        {/* 120-Night Trial */}
         <div className="flex flex-col items-center">
-          <div className="relative w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-2 shadow-lg transform hover:scale-105 transition-transform duration-200">
-            {/* Simple Calendar with 120 */}
-            <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-              <text x="12" y="17" fontSize="6" textAnchor="middle" fill="currentColor" fontWeight="bold">120</text>
-            </svg>
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
-              <span className="text-gray-900 text-xs font-bold">✓</span>
-            </div>
+          <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-2">
+            <Shield className="w-5 h-5 text-blue-600" />
           </div>
-          <p className="text-xs font-semibold text-gray-900">120-night trial</p>
+          <p className="text-xs font-medium text-gray-700">120-night trial</p>
         </div>
         
-        {/* Price Match - Low Price Guarantee */}
+        {/* Price Match */}
         <div className="flex flex-col items-center">
-          <div className="relative w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-2 shadow-lg transform hover:scale-105 transition-transform duration-200">
-            {/* Simple Receipt/Price Tag Icon */}
-            <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16l4-2 4 2V4a2 2 0 0 0-2-2z"/>
-              <line x1="9" y1="9" x2="9" y2="13"/>
-              <line x1="7" y1="11" x2="11" y2="11"/>
-            </svg>
-            <div className="absolute -top-1 -left-1 w-5 h-5 bg-orange-400 rounded-full flex items-center justify-center">
-              <span className="text-white text-xs font-bold">$</span>
-            </div>
+          <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-2">
+            <DollarSign className="w-5 h-5 text-blue-600" />
           </div>
-          <p className="text-xs font-semibold text-gray-900">Price match guarantee</p>
+          <p className="text-xs font-medium text-gray-700">Price match guarantee</p>
         </div>
       </div>
 
