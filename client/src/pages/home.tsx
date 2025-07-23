@@ -368,12 +368,7 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-3">You're in the right place</h2>
-        <p className="text-gray-600 leading-relaxed">
-          We help people in your exact situation every single day — and we're already working on it.<br/>
-          The video below shows what pickup actually looks like.<br/>
-          It's fast. It's easy. It fits.
-        </p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">You're in the right place</h2>
       </div>
 
       {/* Video - Clean Conversion Element */}
