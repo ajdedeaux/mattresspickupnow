@@ -598,30 +598,38 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
             }}
           >
             {/* Front Side - CTA Image */}
-            <div className="absolute inset-0 w-full h-full backface-hidden bg-gray-900 rounded-lg overflow-hidden group hover:scale-[1.02] transition-transform duration-200">
+            <div className="absolute inset-0 w-full h-full backface-hidden bg-gray-900 rounded-lg overflow-hidden group hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
               <img 
                 src="/proof-image.jpeg"
                 alt="A mattress in a Prius - proof it fits"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
               />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 flex items-center justify-center">
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white text-center">
-                  <div className="text-sm font-medium">Tap to see proof</div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-100 group-hover:opacity-80 transition-all duration-300"></div>
+              <div className="absolute bottom-4 left-4 right-4 text-white">
+                <div className="text-sm font-medium opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+                  👆 Tap to see the proof
                 </div>
               </div>
+              <div className="absolute inset-0 ring-2 ring-transparent group-hover:ring-blue-400/50 rounded-lg transition-all duration-300"></div>
             </div>
             
             {/* Back Side - Video */}
             <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 bg-gray-900 rounded-lg overflow-hidden">
-              <video 
-                autoPlay={isVideoPlaying}
-                muted 
-                loop 
-                playsInline
-                className="w-full h-full object-cover"
-                poster="/video-thumbnail.jpg"
-              >
-                <source src="/fits-in-prius-video.mp4" type="video/mp4" />
+              {isVideoPlaying ? (
+                <video 
+                  ref={(video) => {
+                    if (video && isVideoPlaying) {
+                      video.play().catch(() => {});
+                    }
+                  }}
+                  muted 
+                  loop 
+                  playsInline
+                  className="w-full h-full object-cover"
+                >
+                  <source src="/fits-in-prius-video.mp4" type="video/mp4" />
+                </video>
+              ) : (
                 <div className="absolute inset-0 bg-blue-600 flex items-center justify-center">
                   <div className="text-white text-center">
                     <Bed className="w-12 h-12 mx-auto mb-2" />
@@ -629,7 +637,7 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
                     <p className="text-sm opacity-90">It really does fit</p>
                   </div>
                 </div>
-              </video>
+              )}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
