@@ -399,7 +399,7 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
           onClick={() => window.open('tel:+18135550100', '_self')}
           className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold"
         >
-          Call for immediate help
+          Call now
         </Button>
 
         <Button 
@@ -407,7 +407,7 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
           variant="outline"
           className="w-full h-14 border-2 border-gray-300 hover:border-gray-400 rounded-lg font-semibold"
         >
-          Text me the best match now
+          Text me
         </Button>
 
         <Button 
@@ -415,7 +415,7 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
           variant="outline"
           className="w-full h-14 border-2 border-gray-300 hover:border-gray-400 rounded-lg font-semibold"
         >
-          I need this faster
+          Email me
         </Button>
       </div>
     </div>
