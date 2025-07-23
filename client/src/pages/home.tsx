@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
@@ -20,6 +20,7 @@ import {
   Bed, 
   Phone, 
   MessageSquare, 
+  Mail,
   Check,
   CheckCircle,
   ArrowLeft,
@@ -619,8 +620,16 @@ const FormStep = ({ userData, onSubmit, isLoading }: {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Almost done!</h2>
-        <p className="text-gray-600">We'll text you the perfect match within 15 minutes</p>
+        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Mail className="w-8 h-8 text-blue-600" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Perfect! We'll email you.</h2>
+        <p className="text-gray-600">Get your mattress match details via email within 15 minutes</p>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
+          <p className="text-sm text-blue-800">
+            <span className="font-medium">Email includes:</span> Store locations, pricing, pickup instructions, and direct contact info
+          </p>
+        </div>
       </div>
 
       <Form {...form}>
@@ -630,23 +639,9 @@ const FormStep = ({ userData, onSubmit, isLoading }: {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Full Name</FormLabel>
+                <FormLabel className="text-gray-900 font-medium">Full Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Your name" disabled={isLoading} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone Number</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder="(555) 123-4567" disabled={isLoading} />
+                  <Input {...field} placeholder="Your name" disabled={isLoading} className="h-12" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -658,10 +653,30 @@ const FormStep = ({ userData, onSubmit, isLoading }: {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email (Optional)</FormLabel>
+                <FormLabel className="text-gray-900 font-medium">Email Address</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="your@email.com" type="email" disabled={isLoading} />
+                  <Input {...field} placeholder="your@email.com" type="email" disabled={isLoading} className="h-12" />
                 </FormControl>
+                <FormDescription>
+                  We'll send your mattress details here within 15 minutes
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-900 font-medium">Phone Number <span className="text-gray-500 font-normal">(Optional)</span></FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="(555) 123-4567" disabled={isLoading} className="h-12" />
+                </FormControl>
+                <FormDescription>
+                  For urgent questions or delivery coordination
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -672,9 +687,9 @@ const FormStep = ({ userData, onSubmit, isLoading }: {
             name="notes"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Any specific needs? (Optional)</FormLabel>
+                <FormLabel className="text-gray-900 font-medium">Special requests? <span className="text-gray-500 font-normal">(Optional)</span></FormLabel>
                 <FormControl>
-                  <Textarea {...field} placeholder="Delivery timeframe, special requests, etc." disabled={isLoading} />
+                  <Textarea {...field} placeholder="Preferred pickup time, delivery needs, etc." disabled={isLoading} className="min-h-[80px]" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -683,21 +698,27 @@ const FormStep = ({ userData, onSubmit, isLoading }: {
 
           <Button 
             type="submit" 
-            className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
+            className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-lg font-medium"
             disabled={isLoading}
           >
             {isLoading ? (
               <>
                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Submitting...
+                Sending your match...
               </>
             ) : (
               <>
-                <Check className="w-5 h-5 mr-2" />
-                Submit & Get My Match
+                <Mail className="w-5 h-5 mr-2" />
+                Send My Mattress Match
               </>
             )}
           </Button>
+          
+          <div className="text-center pt-2">
+            <p className="text-xs text-gray-500">
+              You'll receive an email within 15 minutes with complete store details and pickup instructions
+            </p>
+          </div>
         </form>
       </Form>
     </div>
