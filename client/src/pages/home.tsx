@@ -505,40 +505,50 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
                 </div>
               </div>
 
-              {/* Clean expanded view */}
+              {/* Premium expanded view */}
               {expandedCard === comfort.id && (
-                <div className="mt-4 pt-4 border-t border-gray-200 space-y-4">
-                  {/* Brand and quality indicators */}
+                <div className="mt-4 pt-4 border-t border-blue-200 space-y-3">
+                  {/* Brand and ratings with premium styling */}
                   <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-gray-900">{comfort.brand}</h4>
-                    <div className="text-sm text-gray-600">{comfort.rating} • {comfort.reviews} reviews</div>
+                    <h4 className="font-semibold text-blue-900">{comfort.brand}</h4>
+                    <div className="flex items-center">
+                      <span className="text-yellow-500 text-sm">⭐⭐⭐⭐⭐</span>
+                      <span className="text-sm text-blue-700 ml-2">{comfort.rating} ({comfort.reviews} reviews)</span>
+                    </div>
                   </div>
 
-                  {/* Simple specs */}
+                  {/* Premium specs grid */}
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="text-center p-2">
-                      <div className="font-medium text-gray-900">{getHeight(comfort.label)} thick</div>
-                      <div className="text-gray-500">Height</div>
+                    <div className="bg-blue-100 p-3 rounded-lg">
+                      <div className="font-medium text-blue-800">Height</div>
+                      <div className="text-blue-900 font-semibold">{getHeight(comfort.label)} thick</div>
                     </div>
-                    <div className="text-center p-2">
-                      <div className="font-medium text-gray-900">Back seat</div>
-                      <div className="text-gray-500">Car fit</div>
+                    <div className="bg-blue-100 p-3 rounded-lg">
+                      <div className="font-medium text-blue-800">Car Fit</div>
+                      <div className="text-blue-900 font-semibold">✓ Back seat</div>
                     </div>
                   </div>
 
-                  {/* Key benefits */}
-                  <div className="space-y-2">
-                    {comfort.specs.benefits.slice(0, 3).map((benefit, idx) => (
-                      <div key={idx} className="text-sm text-gray-700">• {benefit}</div>
-                    ))}
+                  {/* Premium benefits list */}
+                  <div>
+                    <div className="font-medium text-blue-800 mb-2">Key Benefits:</div>
+                    <div className="space-y-1">
+                      {comfort.specs.benefits.slice(0, 3).map((benefit, idx) => (
+                        <div key={idx} className="flex items-start text-sm">
+                          <span className="text-green-600 mr-2 mt-0.5">✓</span>
+                          <span className="text-blue-800">{benefit}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
-                  {/* Select button */}
+                  {/* Premium call to action button */}
                   <button 
                     onClick={(e) => handleSelectClick(comfort.id, e)}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors duration-200"
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white p-3 rounded-lg text-center transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
                   >
-                    Select this mattress
+                    <div className="font-semibold">Tap to select this mattress</div>
+                    <div className="text-xs text-blue-100">Available for pickup today</div>
                   </button>
                 </div>
               )}
