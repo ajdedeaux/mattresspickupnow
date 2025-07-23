@@ -310,7 +310,7 @@ const UseCaseStep = ({ onSelect, storeCount }: { onSelect: (useCase: string) => 
             <span className="text-2xl font-bold">Perfect!</span>
           </div>
           <div className="text-lg font-semibold">Found {storeCount} pickup locations nearby</div>
-          <div className="text-green-100 text-sm mt-1">Now let's understand your preferences to find the perfect fit</div>
+          <div className="text-green-100 text-sm mt-1">Let's understand your preferences to help narrow things down</div>
         </div>
       )}
       
