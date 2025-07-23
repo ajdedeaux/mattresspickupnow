@@ -179,7 +179,13 @@ const LocationStep = ({ onLocationFound, isLoading }: {
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Let's find your pickup location</h2>
         {!inputFocused && (
-          <p className="text-gray-600 transition-opacity duration-300">More precise location = closer pickup options</p>
+          <>
+            <p className="text-gray-600 transition-opacity duration-300 mb-3">More precise location = closer pickup options</p>
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 mx-auto max-w-sm">
+              <div className="text-blue-900 font-semibold text-lg">Try it. Like it. Buy it.</div>
+              <div className="text-blue-700 text-sm">Problem Solved</div>
+            </div>
+          </>
         )}
       </div>
 
