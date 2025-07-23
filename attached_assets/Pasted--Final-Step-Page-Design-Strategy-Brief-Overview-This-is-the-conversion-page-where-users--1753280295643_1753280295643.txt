@@ -1,0 +1,57 @@
+## Final Step Page - Design & Strategy Brief
+
+### Overview
+
+This is the conversion page where users make the decision to contact us after going through the mattress selection process. The goal is to capture leads at different intent levels while prioritizing phone calls (highest conversion) and making the entire experience feel premium and frictionless.
+
+### Page Flow & Psychology
+
+The page follows a logical progression that builds confidence and creates urgency:
+
+1. **“Available today”** - Immediate availability creates urgency without being pushy
+1. **“Try it. Like it. Buy it. Fits in a Prius — Problem Solved”** - Core value proposition that addresses the main objection (will it fit in my car)
+1. **Video proof section** - Shows actual mattress loading into a Prius, providing visual validation
+1. **Trust signals** - Three key benefits (Same day pickup, 120-night trial, Price match guarantee) remove final objections
+1. **“Let’s load you up.”** - Action-oriented close that connects directly to the video they just watched
+1. **Contact options** - Three clear paths based on user intent level
+
+### Contact Strategy & Button Hierarchy
+
+**Primary: Call Button (Green styling)**
+
+- Copy: “Give us a call”
+- Subtitle: “Get all your questions answered in one quick call”
+- Psychology: For users who want reassurance or have specific questions. Highest conversion intent.
+- Action: Direct phone call to close immediately while they’re engaged
+
+**Secondary: Text Button (Blue styling)**
+
+- Copy: “Shoot us a text”
+- Subtitle: “Quick & easy - we’ll respond in under 1 minute”
+- Psychology: For users who prefer texting but are ready to move forward
+- Action: Pre-populated text message with all their selections (size, firmness, use case, location) so they just hit send
+
+**Tertiary: Email Button (Gray styling)**
+
+- Copy: “Request more information”
+- Subtitle: “Get details sent to your email right away”
+- Psychology: For tire-kickers who need more info before committing
+- Action: Form collection that triggers automated detailed email with full product info
+
+### Design Principles
+
+- **Premium feel**: Clean typography, proper spacing, no emojis
+- **Clear hierarchy**: Visual weight guides users toward calling first
+- **Frictionless**: Each option is one-tap with clear expectations set
+- **Action-oriented**: Every element pushes toward immediate next steps
+- **Simple**: No unnecessary copy or visual clutter
+
+### Technical Requirements
+
+- Maintain existing brand colors and styling patterns
+- Pre-populate text message with user’s funnel selections
+- Form collection for email option with automation trigger
+- Video player for proof section
+- Responsive design matching current pages
+
+The entire experience should feel like a natural conclusion to their selection process - confident, premium, and designed to convert at their comfort level while prioritizing the highest-value contact methods.​​​​​​​​​​​​​​​​

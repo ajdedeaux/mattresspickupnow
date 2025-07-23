@@ -24,7 +24,10 @@ import {
   Check,
   CheckCircle,
   ArrowLeft,
-  Loader2
+  Loader2,
+  Clock,
+  Shield,
+  DollarSign
 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
@@ -567,14 +570,19 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
   
   return (
     <div className="space-y-6">
+      {/* Urgency Header */}
       <div className="text-center mb-6">
+        <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          Available today
+        </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Let's get you loaded up</h2>
         <p className="text-blue-600 font-semibold text-lg">Try it. Like it. Buy it.</p>
         <p className="text-gray-600 text-sm">Fits in a Prius — Problem Solved</p>
       </div>
 
-      {/* Video - Clean Conversion Element */}
-      <div className="rounded-xl overflow-hidden mb-8">
+      {/* Video Proof Section */}
+      <div className="rounded-xl overflow-hidden mb-6">
         <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center relative overflow-hidden">
           <video 
             autoPlay 
@@ -596,28 +604,62 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         </div>
       </div>
 
+      {/* Trust Signals */}
+      <div className="grid grid-cols-3 gap-4 mb-6 text-center">
+        <div className="flex flex-col items-center">
+          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mb-2">
+            <Clock className="w-5 h-5 text-blue-600" />
+          </div>
+          <p className="text-xs font-medium text-gray-900">Same day pickup</p>
+        </div>
+        <div className="flex flex-col items-center">
+          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mb-2">
+            <Shield className="w-5 h-5 text-blue-600" />
+          </div>
+          <p className="text-xs font-medium text-gray-900">120-night trial</p>
+        </div>
+        <div className="flex flex-col items-center">
+          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mb-2">
+            <DollarSign className="w-5 h-5 text-blue-600" />
+          </div>
+          <p className="text-xs font-medium text-gray-900">Price match guarantee</p>
+        </div>
+      </div>
+
+      {/* Contact Options - Prioritized Hierarchy */}
       <div className="space-y-3">
+        {/* Primary - Call (Green) */}
         <Button 
-          onClick={() => window.open('tel:+18135550100', '_self')}
-          className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold"
+          onClick={() => window.open(`tel:${nearestStore?.phone || '+18135550100'}`, '_self')}
+          className="w-full bg-green-600 hover:bg-green-700 text-white rounded-lg py-4 font-semibold"
         >
-          Call now
+          <div className="text-center">
+            <div className="font-semibold">Give us a call</div>
+            <div className="text-xs text-green-100 mt-1">Get all your questions answered in one quick call</div>
+          </div>
         </Button>
 
+        {/* Secondary - Text (Blue) */}
         <Button 
           onClick={onSMSOption}
-          variant="outline"
-          className="w-full h-14 border-2 border-gray-300 hover:border-gray-400 rounded-lg font-semibold"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-4 font-semibold"
         >
-          Text me
+          <div className="text-center">
+            <div className="font-semibold">Shoot us a text</div>
+            <div className="text-xs text-blue-100 mt-1">Quick & easy - we'll respond in under 1 minute</div>
+          </div>
         </Button>
 
+        {/* Tertiary - Email (Gray) */}
         <Button 
           onClick={onFormOption}
           variant="outline"
-          className="w-full h-14 border-2 border-gray-300 hover:border-gray-400 rounded-lg font-semibold"
+          className="w-full border-2 border-gray-300 hover:border-gray-400 rounded-lg py-4 font-semibold text-gray-700"
         >
-          Email me
+          <div className="text-center">
+            <div className="font-semibold">Request more information</div>
+            <div className="text-xs text-gray-500 mt-1">Get details sent to your email right away</div>
+          </div>
         </Button>
       </div>
     </div>
