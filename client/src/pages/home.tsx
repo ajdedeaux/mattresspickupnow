@@ -367,16 +367,12 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
   
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-3">You're in the right place</h2>
-        <p className="text-gray-600 mb-6">
-          We help people in your exact situation every day — same-day pickup, compact fit, zero stress.<br/>
-          Here's how you want to move forward:
-        </p>
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">You're in the right place</h2>
       </div>
 
       {/* Video - Clean Conversion Element */}
-      <div className="rounded-xl overflow-hidden">
+      <div className="rounded-xl overflow-hidden mb-8">
         <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center relative overflow-hidden">
           <video 
             autoPlay 
@@ -398,47 +394,28 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         <Button 
-          onClick={() => window.open('tel:+18135550100', '_self')}
-          className="w-full h-16 bg-red-600 hover:bg-red-700 text-white rounded-xl"
+          onClick={onSMSOption}
+          className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold"
         >
-          <div className="flex items-center space-x-3">
-            <Phone className="w-6 h-6" />
-            <div className="text-left">
-              <div className="font-semibold">Call Now</div>
-              <div className="text-sm text-red-100">For urgent help or specific requests — talk directly with a real person</div>
-            </div>
-          </div>
+          Text me the best match now
         </Button>
 
         <Button 
-          onClick={onSMSOption}
-          className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
+          onClick={() => window.open('tel:+18135550100', '_self')}
+          variant="outline"
+          className="w-full h-14 border-2 border-gray-300 hover:border-gray-400 rounded-lg font-semibold"
         >
-          <div className="flex items-center space-x-3">
-            <MessageSquare className="w-6 h-6" />
-            <div className="text-left">
-              <div className="font-semibold">Text Me the Best Match</div>
-              <div className="text-sm text-blue-100">We'll send you the nearest in-stock option and set you up for same-day pickup</div>
-            </div>
-          </div>
+          Call for immediate help
         </Button>
 
         <Button 
           onClick={onFormOption}
           variant="outline"
-          className="w-full h-16 rounded-xl border-2 hover:border-orange-400"
+          className="w-full h-14 border-2 border-gray-300 hover:border-gray-400 rounded-lg font-semibold"
         >
-          <div className="flex items-center space-x-3">
-            <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-xs font-bold">!</span>
-            </div>
-            <div className="text-left">
-              <div className="font-semibold text-gray-900">Speed It Up</div>
-              <div className="text-sm text-gray-500">Need this faster? Tell us your timeline and we'll prioritize you</div>
-            </div>
-          </div>
+          I need this faster
         </Button>
       </div>
     </div>
