@@ -177,14 +177,11 @@ const LocationStep = ({ onLocationFound, isLoading }: {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Let's find your pickup location</h2>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Let's find your pickup location</h2>
         {!inputFocused && (
           <>
             <p className="text-gray-600 transition-opacity duration-300 mb-3">More precise location = closer pickup options</p>
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 mx-auto max-w-sm">
-              <div className="text-blue-900 font-semibold text-lg">Try it. Like it. Buy it.</div>
-              <div className="text-blue-700 text-sm">Problem Solved</div>
-            </div>
+            <p className="text-blue-600 font-medium transition-opacity duration-300">Try it. Like it. Buy it. Problem Solved</p>
           </>
         )}
       </div>
@@ -886,8 +883,8 @@ export default function Home() {
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-md mx-auto px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-bold text-gray-900">MattressPickupNow</h1>
-            <p className="text-xs text-gray-500">Sleep on it tonight</p>
+            <h1 className="text-xl font-bold text-gray-900">MattressPickupNow</h1>
+            <p className="text-sm text-gray-600">Sleep on it tonight</p>
           </div>
           {currentStep > 1 && (
             <Button onClick={goBack} variant="ghost" size="sm">
