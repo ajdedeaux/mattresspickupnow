@@ -295,7 +295,7 @@ const SizeStep = ({ onSelect }: { onSelect: (size: string) => void }) => {
 };
 
 const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) => void; selectedSize?: string }) => {
-  const [flippedCard, setFlippedCard] = useState<string | null>(null);
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
 
   // Pricing structure based on size and comfort type
   const getPricing = (comfort: string, size: string = 'Queen') => {
@@ -308,6 +308,17 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
     return pricingMatrix[comfort]?.[size] || pricingMatrix[comfort]?.['Queen'] || '$349';
   };
 
+  // Mattress height data
+  const getHeight = (comfort: string) => {
+    const heights: Record<string, string> = {
+      'Firm': '10"',
+      'Medium': '12"', 
+      'Plush': '12"',
+      'Hybrid': '13"'
+    };
+    return heights[comfort] || '12"';
+  };
+
   const comforts = [
     { 
       id: 'firm', 
@@ -315,12 +326,11 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
       description: 'Perfect for back & stomach sleepers',
       bestFor: 'Back & stomach sleepers',
       rating: '4.7/5',
-      reviews: '1,834 reviews',
+      reviews: '1,834',
       brand: 'Sealy Memory Foam Firm',
       specs: {
         benefits: ['Premium spinal alignment and support', 'Brand new with full warranty', 'Try in store before you buy', 'Fits in any car'],
         carFit: 'Fits on back seat of any car',
-        warranty: 'Full manufacturer warranty',
         availability: 'Ready for pickup now'
       }
     },
@@ -331,12 +341,11 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
       bestFor: 'Most popular choice',
       popular: true,
       rating: '4.8/5',
-      reviews: '2,847 reviews',
+      reviews: '2,847',
       brand: 'Sealy Memory Foam Medium',
       specs: {
         benefits: ['Perfect balance of comfort and support', 'Best seller - most popular choice', 'Same mattress others wait weeks for', 'Guaranteed to fit in your car'],
         carFit: 'Fits on back seat of any car',
-        warranty: 'Full manufacturer warranty',
         availability: 'Ready for pickup now'
       }
     },
@@ -346,12 +355,11 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
       description: 'Ideal for side sleepers',
       bestFor: 'Side sleepers',
       rating: '4.6/5',
-      reviews: '1,592 reviews',
+      reviews: '1,592',
       brand: 'Sealy Memory Foam Soft',
       specs: {
         benefits: ['Superior pressure point relief and comfort', 'Perfect for side sleepers', 'Pressure point relief', 'Try it first, then decide'],
         carFit: 'Fits on back seat of any car',
-        warranty: 'Full manufacturer warranty',
         availability: 'Ready for pickup now'
       }
     },
@@ -361,103 +369,116 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
       description: 'Best of both worlds - coil support + foam comfort',
       bestFor: 'Best of both worlds',
       rating: '4.5/5',
-      reviews: '978 reviews',
+      reviews: '978',
       brand: 'Basic Hybrid',
       specs: {
         benefits: ['Traditional coil support with memory foam comfort', 'Coil support + memory foam', 'Great for hot sleepers', 'Full manufacturer warranty'],
         carFit: 'Fits on back seat of any car',
-        warranty: 'Full manufacturer warranty',
         availability: 'Ready for pickup now'
       }
     }
   ];
 
-  const handleCardClick = (comfortId: string, event: React.MouseEvent) => {
-    if (event.detail === 1) {
-      // Single click - flip card
-      setFlippedCard(flippedCard === comfortId ? null : comfortId);
-    } else if (event.detail === 2) {
-      // Double click - select option
+  const handleCardClick = (comfortId: string) => {
+    if (expandedCard === comfortId) {
+      // If clicking on expanded card, select it
       const comfort = comforts.find(c => c.id === comfortId);
       if (comfort) onSelect(comfort.label);
+    } else {
+      // Expand this card, collapse others
+      setExpandedCard(comfortId);
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
+    <div className="space-y-4">
+      <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">How do you like your mattress to feel?</h2>
         <p className="text-gray-600">All comfort levels under $800 with pickup tonight</p>
-        <p className="text-sm text-gray-500 mt-1">Click to see specs • Double-click to select</p>
+        <p className="text-sm text-gray-500 mt-1">Tap to see details • Tap again to select</p>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {comforts.map((comfort) => (
-          <div key={comfort.id} className="relative h-32">
-            <div 
-              className={`absolute inset-0 transition-transform duration-700 transform-style-preserve-3d cursor-pointer ${
-                flippedCard === comfort.id ? 'rotate-y-180' : ''
-              }`}
-              onClick={(e) => handleCardClick(comfort.id, e)}
-            >
-              {/* Front of card */}
-              <Card className={`absolute inset-0 backface-hidden transition-all duration-200 hover:shadow-md border-2 hover:border-blue-300 ${comfort.popular ? 'ring-2 ring-blue-200' : ''}`}>
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2">
-                        <div className="font-bold text-lg text-gray-900">{comfort.label}</div>
-                        {comfort.popular && (
-                          <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Most Popular</span>
-                        )}
-                      </div>
-                      <div className="text-gray-600 mt-1">{comfort.description}</div>
-                      <div className="text-sm text-blue-600 mt-2">{comfort.bestFor}</div>
-                    </div>
-                    <div className="text-right ml-4">
-                      <div className="text-xl font-bold text-gray-900">{getPricing(comfort.label, selectedSize)}</div>
-                      <div className="text-xs text-gray-500">{selectedSize || 'Queen'} size</div>
-                    </div>
+          <Card 
+            key={comfort.id}
+            className={`cursor-pointer transition-all duration-300 border-2 hover:shadow-lg ${
+              expandedCard === comfort.id 
+                ? 'border-blue-500 bg-blue-50 shadow-lg' 
+                : comfort.popular 
+                  ? 'border-blue-200 hover:border-blue-300' 
+                  : 'border-gray-200 hover:border-gray-300'
+            }`}
+            onClick={() => handleCardClick(comfort.id)}
+          >
+            <CardContent className={`transition-all duration-300 ${expandedCard === comfort.id ? 'p-6' : 'p-4'}`}>
+              {/* Compact view */}
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <h3 className="font-bold text-lg text-gray-900">{comfort.label}</h3>
+                    {comfort.popular && (
+                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Most Popular</span>
+                    )}
+                    {expandedCard === comfort.id && (
+                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">{comfort.specs.availability}</span>
+                    )}
                   </div>
-                </CardContent>
-              </Card>
+                  <p className="text-gray-600 text-sm">{comfort.description}</p>
+                  <div className="text-sm text-blue-600 mt-1">{comfort.bestFor}</div>
+                </div>
+                <div className="text-right ml-4">
+                  <div className="text-xl font-bold text-gray-900">{getPricing(comfort.label, selectedSize)}</div>
+                  <div className="text-xs text-gray-500">{selectedSize || 'Queen'} size</div>
+                </div>
+              </div>
 
-              {/* Back of card */}
-              <Card className="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200">
-                <CardContent className="p-4">
-                  <div className="h-full flex flex-col justify-between">
-                    <div>
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-lg font-bold text-blue-900">{comfort.brand}</h3>
-                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">{comfort.specs.availability}</span>
-                      </div>
-                      <div className="flex items-center mb-2">
-                        <span className="text-yellow-500">⭐⭐⭐⭐⭐</span>
-                        <span className="text-sm text-blue-700 ml-2">{comfort.rating} ({comfort.reviews})</span>
-                      </div>
-                      <div className="bg-blue-100 p-2 rounded-lg mb-3">
-                        <div className="text-sm font-medium text-blue-800 flex items-center">
-                          🚗 {comfort.specs.carFit}
-                        </div>
-                      </div>
-                      <div className="space-y-1 text-xs">
-                        {comfort.specs.benefits.map((benefit, idx) => (
-                          <div key={idx} className="flex items-start">
-                            <span className="text-green-600 mr-2">✓</span>
-                            <span className="text-blue-800">{benefit}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="text-right mt-2">
-                      <div className="text-xl font-bold text-blue-900">{getPricing(comfort.label, selectedSize)}</div>
-                      <div className="text-xs text-blue-700">Double-click to select</div>
+              {/* Expanded specifications */}
+              {expandedCard === comfort.id && (
+                <div className="mt-4 pt-4 border-t border-blue-200 space-y-3">
+                  {/* Brand and ratings */}
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold text-blue-900">{comfort.brand}</h4>
+                    <div className="flex items-center">
+                      <span className="text-yellow-500 text-sm">⭐⭐⭐⭐⭐</span>
+                      <span className="text-sm text-blue-700 ml-2">{comfort.rating} ({comfort.reviews} reviews)</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+
+                  {/* Key specs grid */}
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="bg-blue-100 p-3 rounded-lg">
+                      <div className="font-medium text-blue-800">Height</div>
+                      <div className="text-blue-900 font-semibold">{getHeight(comfort.label)} thick</div>
+                    </div>
+                    <div className="bg-blue-100 p-3 rounded-lg">
+                      <div className="font-medium text-blue-800">Car Fit</div>
+                      <div className="text-blue-900 font-semibold">✓ Back seat</div>
+                    </div>
+                  </div>
+
+                  {/* Benefits list */}
+                  <div>
+                    <div className="font-medium text-blue-800 mb-2">Key Benefits:</div>
+                    <div className="space-y-1">
+                      {comfort.specs.benefits.slice(0, 3).map((benefit, idx) => (
+                        <div key={idx} className="flex items-start text-sm">
+                          <span className="text-green-600 mr-2 mt-0.5">✓</span>
+                          <span className="text-blue-800">{benefit}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Call to action */}
+                  <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-3 rounded-lg text-center">
+                    <div className="font-semibold">Tap to select this mattress</div>
+                    <div className="text-xs text-blue-100">Available for pickup today</div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         ))}
       </div>
     </div>
