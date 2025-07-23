@@ -20,6 +20,7 @@ import {
   Bed, 
   Phone, 
   MessageSquare, 
+  MessageCircle,
   Mail,
   Check,
   CheckCircle,
