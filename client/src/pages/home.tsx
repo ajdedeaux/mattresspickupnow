@@ -686,8 +686,11 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         {/* Primary - Call (Green) */}
         <button 
           onClick={() => window.open(`tel:${nearestStore?.phone || '+18135550100'}`, '_self')}
-          className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl py-5 px-6 font-medium transition-all duration-200"
-          style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+          className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl py-5 px-6 font-medium transition-all duration-200 transform hover:scale-[1.02] hover:-translate-y-0.5"
+          style={{ 
+            boxShadow: '0 6px 20px rgba(34, 197, 94, 0.25), 0 2px 8px rgba(0,0,0,0.1)',
+            border: '1px solid rgba(255,255,255,0.1)'
+          }}
         >
           <div className="text-center">
             <div className="text-base font-semibold">Give us a call</div>
@@ -698,8 +701,11 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         {/* Secondary - Text (Blue) */}
         <button 
           onClick={onSMSOption}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-5 px-6 font-medium transition-all duration-200"
-          style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-5 px-6 font-medium transition-all duration-200 transform hover:scale-[1.02] hover:-translate-y-0.5"
+          style={{ 
+            boxShadow: '0 6px 20px rgba(37, 99, 235, 0.25), 0 2px 8px rgba(0,0,0,0.1)',
+            border: '1px solid rgba(255,255,255,0.1)'
+          }}
         >
           <div className="text-center">
             <div className="text-base font-semibold">Shoot us a text</div>
@@ -710,8 +716,10 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         {/* Tertiary - Email (Gray) */}
         <button 
           onClick={onFormOption}
-          className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl py-5 px-6 font-medium transition-all duration-200 border border-gray-200 hover:border-gray-300"
-          style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+          className="w-full bg-white hover:bg-gray-50 text-gray-700 rounded-xl py-5 px-6 font-medium transition-all duration-200 transform hover:scale-[1.01] hover:-translate-y-0.5 border border-gray-200 hover:border-gray-300"
+          style={{ 
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.1)',
+          }}
         >
           <div className="text-center">
             <div className="text-base font-semibold">Request more information</div>
