@@ -469,88 +469,76 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
     <div className="space-y-4">
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">How do you like your mattress to feel?</h2>
-        <p className="text-gray-600">All comfort levels from $199.99 with pickup tonight</p>
-        <p className="text-sm text-gray-500 mt-1">Tap to see details • Tap again to select</p>
+        <p className="text-gray-500">Tap to see details</p>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {comforts.map((comfort) => (
           <Card 
             key={comfort.id}
-            className={`cursor-pointer transition-all duration-300 border-2 hover:shadow-lg ${
+            className={`cursor-pointer transition-all duration-200 relative ${
               expandedCard === comfort.id 
-                ? 'border-blue-500 bg-blue-50 shadow-lg' 
+                ? 'border-2 border-blue-500 shadow-lg' 
                 : comfort.popular 
-                  ? 'border-blue-200 hover:border-blue-300' 
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-2 border-blue-400 shadow-md' 
+                  : 'border border-gray-200 hover:border-gray-300 hover:shadow-md'
             }`}
             onClick={() => handleCardClick(comfort.id)}
           >
-            <CardContent className={`transition-all duration-300 ${expandedCard === comfort.id ? 'p-6' : 'p-4'}`}>
-              {/* Compact view */}
+            {/* Most Popular Flag */}
+            {comfort.popular && (
+              <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-medium shadow-md">
+                Most Popular
+              </div>
+            )}
+            
+            <CardContent className={`transition-all duration-200 ${expandedCard === comfort.id ? 'p-6' : 'p-4'}`}>
+              {/* Clean compact view */}
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <h3 className="font-bold text-lg text-gray-900">{comfort.label}</h3>
-                    {comfort.popular && (
-                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Most Popular</span>
-                    )}
-                    {expandedCard === comfort.id && (
-                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">{comfort.specs.availability}</span>
-                    )}
-                  </div>
+                  <h3 className="font-semibold text-lg text-gray-900 mb-1">{comfort.label}</h3>
                   <p className="text-gray-600 text-sm">{comfort.description}</p>
                 </div>
                 <div className="text-right ml-4">
-                  <div className="text-xl font-bold text-gray-900">{getPricing(comfort.label, selectedSize)}</div>
+                  <div className="text-xl font-semibold text-gray-900">{getPricing(comfort.label, selectedSize)}</div>
                   <div className="text-xs text-gray-500">{selectedSize || 'Queen'} size</div>
                 </div>
               </div>
 
-              {/* Expanded specifications */}
+              {/* Clean expanded view */}
               {expandedCard === comfort.id && (
-                <div className="mt-4 pt-4 border-t border-blue-200 space-y-3">
-                  {/* Brand and ratings */}
+                <div className="mt-4 pt-4 border-t border-gray-200 space-y-4">
+                  {/* Brand and quality indicators */}
                   <div className="flex items-center justify-between">
-                    <h4 className="font-semibold text-blue-900">{comfort.brand}</h4>
-                    <div className="flex items-center">
-                      <span className="text-yellow-500 text-sm">⭐⭐⭐⭐⭐</span>
-                      <span className="text-sm text-blue-700 ml-2">{comfort.rating} ({comfort.reviews} reviews)</span>
-                    </div>
+                    <h4 className="font-medium text-gray-900">{comfort.brand}</h4>
+                    <div className="text-sm text-gray-600">{comfort.rating} • {comfort.reviews} reviews</div>
                   </div>
 
-                  {/* Key specs grid */}
+                  {/* Simple specs */}
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="bg-blue-100 p-3 rounded-lg">
-                      <div className="font-medium text-blue-800">Height</div>
-                      <div className="text-blue-900 font-semibold">{getHeight(comfort.label)} thick</div>
+                    <div className="text-center p-2">
+                      <div className="font-medium text-gray-900">{getHeight(comfort.label)} thick</div>
+                      <div className="text-gray-500">Height</div>
                     </div>
-                    <div className="bg-blue-100 p-3 rounded-lg">
-                      <div className="font-medium text-blue-800">Car Fit</div>
-                      <div className="text-blue-900 font-semibold">✓ Back seat</div>
-                    </div>
-                  </div>
-
-                  {/* Benefits list */}
-                  <div>
-                    <div className="font-medium text-blue-800 mb-2">Key Benefits:</div>
-                    <div className="space-y-1">
-                      {comfort.specs.benefits.slice(0, 3).map((benefit, idx) => (
-                        <div key={idx} className="flex items-start text-sm">
-                          <span className="text-green-600 mr-2 mt-0.5">✓</span>
-                          <span className="text-blue-800">{benefit}</span>
-                        </div>
-                      ))}
+                    <div className="text-center p-2">
+                      <div className="font-medium text-gray-900">Back seat</div>
+                      <div className="text-gray-500">Car fit</div>
                     </div>
                   </div>
 
-                  {/* Call to action button */}
+                  {/* Key benefits */}
+                  <div className="space-y-2">
+                    {comfort.specs.benefits.slice(0, 3).map((benefit, idx) => (
+                      <div key={idx} className="text-sm text-gray-700">• {benefit}</div>
+                    ))}
+                  </div>
+
+                  {/* Select button */}
                   <button 
                     onClick={(e) => handleSelectClick(comfort.id, e)}
-                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white p-3 rounded-lg text-center transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors duration-200"
                   >
-                    <div className="font-semibold">Tap to select this mattress</div>
-                    <div className="text-xs text-blue-100">Available for pickup today</div>
+                    Select this mattress
                   </button>
                 </div>
               )}
