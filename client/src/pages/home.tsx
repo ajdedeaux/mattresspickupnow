@@ -324,13 +324,11 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
       id: 'firm', 
       label: 'Firm', 
       description: 'Perfect for back & stomach sleepers',
-      bestFor: 'Back & stomach sleepers',
       rating: '4.7/5',
       reviews: '1,834',
       brand: 'Sealy Memory Foam Firm',
       specs: {
-        benefits: ['Premium spinal alignment and support', 'Brand new with full warranty', 'Try in store before you buy', 'Fits in any car'],
-        carFit: 'Fits on back seat of any car',
+        benefits: ['Premium spinal alignment and support', 'Brand new with full warranty', 'Try in store before you buy'],
         availability: 'Ready for pickup now'
       }
     },
@@ -338,14 +336,12 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
       id: 'medium', 
       label: 'Medium', 
       description: 'Our most popular choice - works for everyone',
-      bestFor: 'Most popular choice',
       popular: true,
       rating: '4.8/5',
       reviews: '2,847',
       brand: 'Sealy Memory Foam Medium',
       specs: {
-        benefits: ['Perfect balance of comfort and support', 'Best seller - most popular choice', 'Same mattress others wait weeks for', 'Guaranteed to fit in your car'],
-        carFit: 'Fits on back seat of any car',
+        benefits: ['Perfect balance of comfort and support', 'Best seller nationwide', 'Same mattress others wait weeks for'],
         availability: 'Ready for pickup now'
       }
     },
@@ -353,13 +349,11 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
       id: 'plush', 
       label: 'Plush', 
       description: 'Ideal for side sleepers',
-      bestFor: 'Side sleepers',
       rating: '4.6/5',
       reviews: '1,592',
       brand: 'Sealy Memory Foam Soft',
       specs: {
-        benefits: ['Superior pressure point relief and comfort', 'Perfect for side sleepers', 'Pressure point relief', 'Try it first, then decide'],
-        carFit: 'Fits on back seat of any car',
+        benefits: ['Superior pressure point relief', 'Gel-infused cooling technology', 'Perfect for hip and shoulder comfort'],
         availability: 'Ready for pickup now'
       }
     },
@@ -367,27 +361,25 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
       id: 'hybrid', 
       label: 'Hybrid', 
       description: 'Best of both worlds - coil support + foam comfort',
-      bestFor: 'Best of both worlds',
       rating: '4.5/5',
       reviews: '978',
       brand: 'Basic Hybrid',
       specs: {
-        benefits: ['Traditional coil support with memory foam comfort', 'Coil support + memory foam', 'Great for hot sleepers', 'Full manufacturer warranty'],
-        carFit: 'Fits on back seat of any car',
+        benefits: ['Traditional coil support with memory foam', 'Maximum breathability for hot sleepers', 'Responsive bounce with contouring'],
         availability: 'Ready for pickup now'
       }
     }
   ];
 
   const handleCardClick = (comfortId: string) => {
-    if (expandedCard === comfortId) {
-      // If clicking on expanded card, select it
-      const comfort = comforts.find(c => c.id === comfortId);
-      if (comfort) onSelect(comfort.label);
-    } else {
-      // Expand this card, collapse others
-      setExpandedCard(comfortId);
-    }
+    // Only expand/collapse cards, don't select
+    setExpandedCard(expandedCard === comfortId ? null : comfortId);
+  };
+
+  const handleSelectClick = (comfortId: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent card expansion
+    const comfort = comforts.find(c => c.id === comfortId);
+    if (comfort) onSelect(comfort.label);
   };
 
   return (
@@ -425,7 +417,6 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
                     )}
                   </div>
                   <p className="text-gray-600 text-sm">{comfort.description}</p>
-                  <div className="text-sm text-blue-600 mt-1">{comfort.bestFor}</div>
                 </div>
                 <div className="text-right ml-4">
                   <div className="text-xl font-bold text-gray-900">{getPricing(comfort.label, selectedSize)}</div>
@@ -470,11 +461,14 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
                     </div>
                   </div>
 
-                  {/* Call to action */}
-                  <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-3 rounded-lg text-center">
+                  {/* Call to action button */}
+                  <button 
+                    onClick={(e) => handleSelectClick(comfort.id, e)}
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white p-3 rounded-lg text-center transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                  >
                     <div className="font-semibold">Tap to select this mattress</div>
                     <div className="text-xs text-blue-100">Available for pickup today</div>
-                  </div>
+                  </button>
                 </div>
               )}
             </CardContent>
