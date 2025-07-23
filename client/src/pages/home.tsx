@@ -881,18 +881,16 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
-        <div className="max-w-md mx-auto px-6 py-6 text-center">
-          <h1 className="text-2xl font-bold text-gray-900">MattressPickupNow</h1>
-          <p className="text-gray-600 mt-1">Sleep on it tonight</p>
-        </div>
-        {currentStep > 1 && (
-          <div className="absolute top-6 left-6">
-            <Button onClick={goBack} variant="ghost" size="sm">
+        <div className="max-w-md mx-auto px-6 py-6 text-center relative">
+          {currentStep > 1 && (
+            <Button onClick={goBack} variant="ghost" size="sm" className="absolute left-0 top-1/2 -translate-y-1/2">
               <ArrowLeft className="w-4 h-4 mr-1" />
               Back
             </Button>
-          </div>
-        )}
+          )}
+          <h1 className="text-2xl font-bold text-gray-900">MattressPickupNow</h1>
+          <p className="text-gray-600 mt-1">Sleep on it tonight</p>
+        </div>
       </header>
 
       {/* Progress indicator */}
