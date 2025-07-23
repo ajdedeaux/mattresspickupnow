@@ -621,10 +621,15 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
                   ref={(video) => {
                     if (video && isVideoPlaying) {
                       video.play().catch(() => {});
+                      video.onended = () => {
+                        setTimeout(() => {
+                          setIsFlipped(false);
+                          setIsVideoPlaying(false);
+                        }, 500);
+                      };
                     }
                   }}
                   muted 
-                  loop 
                   playsInline
                   className="w-full h-full object-cover"
                 >
@@ -681,7 +686,8 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         {/* Primary - Call (Green) */}
         <button 
           onClick={() => window.open(`tel:${nearestStore?.phone || '+18135550100'}`, '_self')}
-          className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl py-5 px-6 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
+          className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl py-5 px-6 font-medium transition-all duration-200"
+          style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
         >
           <div className="text-center">
             <div className="text-base font-semibold">Give us a call</div>
@@ -692,7 +698,8 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         {/* Secondary - Text (Blue) */}
         <button 
           onClick={onSMSOption}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-5 px-6 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-5 px-6 font-medium transition-all duration-200"
+          style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
         >
           <div className="text-center">
             <div className="text-base font-semibold">Shoot us a text</div>
@@ -703,7 +710,8 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         {/* Tertiary - Email (Gray) */}
         <button 
           onClick={onFormOption}
-          className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl py-5 px-6 font-medium transition-all duration-200 shadow-sm hover:shadow-md border border-gray-200 hover:border-gray-300"
+          className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl py-5 px-6 font-medium transition-all duration-200 border border-gray-200 hover:border-gray-300"
+          style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
         >
           <div className="text-center">
             <div className="text-base font-semibold">Request more information</div>
