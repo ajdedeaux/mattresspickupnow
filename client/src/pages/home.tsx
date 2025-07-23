@@ -21,6 +21,7 @@ import {
   Phone, 
   MessageSquare, 
   Check,
+  CheckCircle,
   ArrowLeft,
   Loader2
 } from 'lucide-react';
