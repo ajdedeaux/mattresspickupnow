@@ -66,13 +66,19 @@ const LocationStep = ({ onLocationFound, isLoading }: {
 }) => {
   const [zipCode, setZipCode] = useState('');
   const [gpsLoading, setGpsLoading] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
+  const [autoSubmitting, setAutoSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const handleZipSubmit = async () => {
+  const handleZipSubmit = async (isAutoSubmit = false) => {
     if (zipCode.length !== 5) {
-      toast({ title: 'Please enter a valid 5-digit ZIP code', variant: 'destructive' });
+      if (!isAutoSubmit) {
+        toast({ title: 'Please enter a valid 5-digit ZIP code', variant: 'destructive' });
+      }
       return;
     }
+
+    if (isAutoSubmit) setAutoSubmitting(true);
 
     try {
       // First resolve ZIP to coordinates
@@ -106,6 +112,21 @@ const LocationStep = ({ onLocationFound, isLoading }: {
       }
     } catch (error) {
       toast({ title: 'Error finding stores', variant: 'destructive' });
+    } finally {
+      setAutoSubmitting(false);
+    }
+  };
+
+  // Auto-submit when ZIP is complete
+  const handleZipChange = (value: string) => {
+    const cleanValue = value.replace(/\D/g, '').slice(0, 5);
+    setZipCode(cleanValue);
+    
+    // Auto-submit when 5 digits are entered
+    if (cleanValue.length === 5) {
+      setTimeout(() => {
+        handleZipSubmit(true);
+      }, 400); // Small delay to feel natural
     }
   };
 
@@ -154,7 +175,9 @@ const LocationStep = ({ onLocationFound, isLoading }: {
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Let's find your pickup location</h2>
-        <p className="text-gray-600">More precise location = closer pickup options</p>
+        {!inputFocused && (
+          <p className="text-gray-600 transition-opacity duration-300">More precise location = closer pickup options</p>
+        )}
       </div>
 
       <div className="space-y-4">
@@ -180,34 +203,81 @@ const LocationStep = ({ onLocationFound, isLoading }: {
           </div>
         </Button>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
+        {!inputFocused && (
+          <div className="relative transition-opacity duration-300">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">or</span>
+            </div>
           </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">or</span>
-          </div>
-        </div>
+        )}
 
         <div className="space-y-3">
-          <Input
-            placeholder="Enter ZIP code"
-            value={zipCode}
-            onChange={(e) => setZipCode(e.target.value.replace(/\D/g, '').slice(0, 5))}
-            className="h-12 text-center text-lg"
-            disabled={isLoading}
-          />
-          <Button 
-            onClick={handleZipSubmit}
-            disabled={zipCode.length !== 5 || isLoading}
-            variant="outline"
-            className="w-full h-12"
-          >
-            <MapPin className="w-4 h-4 mr-2" />
-            Find pickup locations
-          </Button>
+          <div className="relative">
+            <Input
+              type="text"
+              inputMode="numeric"
+              value={zipCode}
+              onChange={(e) => handleZipChange(e.target.value)}
+              onFocus={() => setInputFocused(true)}
+              onBlur={() => setInputFocused(false)}
+              placeholder="Enter ZIP code"
+              className="h-12 text-center text-lg border-2 border-blue-300 rounded-xl focus:border-blue-500"
+              disabled={gpsLoading || isLoading}
+              maxLength={5}
+            />
+            {zipCode.length > 0 && zipCode.length < 5 && !autoSubmitting && (
+              <div className="absolute -bottom-8 left-0 right-0 text-center text-sm text-gray-500">
+                {5 - zipCode.length} more digit{5 - zipCode.length > 1 ? 's' : ''}
+              </div>
+            )}
+          </div>
+          
+          {/* Show progress indicator when typing */}
+          {zipCode.length > 0 && (
+            <div className="w-full bg-gray-200 rounded-full h-2 transition-all duration-300">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                style={{ width: `${(zipCode.length / 5) * 100}%` }}
+              />
+            </div>
+          )}
+
+          {/* Auto-submit feedback */}
+          {zipCode.length === 5 && (
+            <div className="text-center">
+              {autoSubmitting ? (
+                <div className="flex items-center justify-center text-blue-600">
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <span className="text-sm">Finding stores near {zipCode}...</span>
+                </div>
+              ) : (
+                <div className="text-sm text-green-600 flex items-center justify-center">
+                  <Check className="w-4 h-4 mr-1" />
+                  ZIP code complete
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* Fallback manual button (only show if user needs it) */}
+          {zipCode.length === 5 && !autoSubmitting && (
+            <Button 
+              onClick={() => handleZipSubmit(false)}
+              disabled={gpsLoading || isLoading}
+              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
+            >
+              <MapPin className="w-4 h-4 mr-2" />
+              Find pickup locations
+            </Button>
+          )}
         </div>
       </div>
+
+      {/* Bottom spacing to keep content visible above keyboard */}
+      <div className="h-20"></div>
     </div>
   );
 };
