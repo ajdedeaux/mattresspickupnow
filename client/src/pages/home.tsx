@@ -295,63 +295,139 @@ const SizeStep = ({ onSelect }: { onSelect: (size: string) => void }) => {
 };
 
 const ComfortStep = ({ onSelect }: { onSelect: (comfort: string) => void }) => {
+  const [flippedCard, setFlippedCard] = useState<string | null>(null);
+
   const comforts = [
     { 
       id: 'firm', 
       label: 'Firm', 
       description: 'Dense, supportive feel with minimal sink',
-      bestFor: 'Back & stomach sleepers'
+      bestFor: 'Back & stomach sleepers',
+      price: '$299.99',
+      specs: {
+        firmness: '8/10',
+        materials: 'High-density foam core',
+        sleepPosition: 'Back & stomach sleepers',
+        benefits: 'Spine alignment, edge support',
+        temperature: 'Cool sleeping surface'
+      }
     },
     { 
       id: 'medium', 
       label: 'Medium', 
       description: 'Balanced support and comfort – best seller',
       bestFor: 'Most popular choice',
-      popular: true
+      popular: true,
+      price: '$399.99',
+      specs: {
+        firmness: '5/10',
+        materials: 'Memory foam + support core',
+        sleepPosition: 'All sleeping positions',
+        benefits: 'Perfect balance, pressure relief',
+        temperature: 'Breathable comfort layer'
+      }
     },
     { 
       id: 'plush', 
       label: 'Plush', 
       description: 'Soft, fluffy feel for pressure relief',
-      bestFor: 'Side sleepers'
+      bestFor: 'Side sleepers',
+      price: '$699.99',
+      specs: {
+        firmness: '3/10',
+        materials: 'Plush memory foam layers',
+        sleepPosition: 'Side sleepers primarily',
+        benefits: 'Pressure point relief, contouring',
+        temperature: 'Gel-infused cooling'
+      }
     },
     { 
       id: 'hybrid', 
       label: 'Hybrid', 
       description: 'Coil + foam combo for bounce and support',
-      bestFor: 'Best of both worlds'
+      bestFor: 'Best of both worlds',
+      price: '$499.99',
+      specs: {
+        firmness: '6/10',
+        materials: 'Pocketed coils + foam',
+        sleepPosition: 'Combination sleepers',
+        benefits: 'Bounce, support, airflow',
+        temperature: 'Maximum breathability'
+      }
     }
   ];
+
+  const handleCardClick = (comfortId: string, event: React.MouseEvent) => {
+    if (event.detail === 1) {
+      // Single click - flip card
+      setFlippedCard(flippedCard === comfortId ? null : comfortId);
+    } else if (event.detail === 2) {
+      // Double click - select option
+      const comfort = comforts.find(c => c.id === comfortId);
+      if (comfort) onSelect(comfort.label);
+    }
+  };
 
   return (
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">How do you like your mattress to feel?</h2>
         <p className="text-gray-600">All comfort levels under $800 with pickup tonight</p>
+        <p className="text-sm text-gray-500 mt-1">Click to see specs • Double-click to select</p>
       </div>
 
       <div className="space-y-3">
         {comforts.map((comfort) => (
-          <Card 
-            key={comfort.id}
-            className={`cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-blue-300 ${comfort.popular ? 'ring-2 ring-blue-200' : ''}`}
-            onClick={() => onSelect(comfort.label)}
-          >
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2">
-                    <div className="font-bold text-lg text-gray-900">{comfort.label}</div>
-                    {comfort.popular && (
-                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Most Popular</span>
-                    )}
+          <div key={comfort.id} className="relative h-32">
+            <div 
+              className={`absolute inset-0 transition-transform duration-700 transform-style-preserve-3d cursor-pointer ${
+                flippedCard === comfort.id ? 'rotate-y-180' : ''
+              }`}
+              onClick={(e) => handleCardClick(comfort.id, e)}
+            >
+              {/* Front of card */}
+              <Card className={`absolute inset-0 backface-hidden transition-all duration-200 hover:shadow-md border-2 hover:border-blue-300 ${comfort.popular ? 'ring-2 ring-blue-200' : ''}`}>
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <div className="font-bold text-lg text-gray-900">{comfort.label}</div>
+                        {comfort.popular && (
+                          <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Most Popular</span>
+                        )}
+                      </div>
+                      <div className="text-gray-600 mt-1">{comfort.description}</div>
+                      <div className="text-sm text-blue-600 mt-2">{comfort.bestFor}</div>
+                    </div>
+                    <div className="text-right ml-4">
+                      <div className="text-xl font-bold text-gray-900">{comfort.price}</div>
+                      <div className="text-xs text-gray-500">Queen size</div>
+                    </div>
                   </div>
-                  <div className="text-gray-600 mt-1">{comfort.description}</div>
-                  <div className="text-sm text-blue-600 mt-2">{comfort.bestFor}</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+
+              {/* Back of card */}
+              <Card className="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200">
+                <CardContent className="p-6">
+                  <div className="h-full flex flex-col justify-between">
+                    <div>
+                      <h3 className="text-lg font-bold text-blue-900 mb-3">{comfort.label} Specifications</h3>
+                      <div className="grid grid-cols-1 gap-2 text-sm">
+                        <div><span className="font-medium text-blue-800">Firmness:</span> {comfort.specs.firmness}</div>
+                        <div><span className="font-medium text-blue-800">Materials:</span> {comfort.specs.materials}</div>
+                        <div><span className="font-medium text-blue-800">Benefits:</span> {comfort.specs.benefits}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xl font-bold text-blue-900">{comfort.price}</div>
+                      <div className="text-xs text-blue-700">Double-click to select</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         ))}
       </div>
     </div>
