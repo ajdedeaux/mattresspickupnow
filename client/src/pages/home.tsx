@@ -456,7 +456,22 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
 
   const handleCardClick = (comfortId: string) => {
     // Only expand/collapse cards, don't select
-    setExpandedCard(expandedCard === comfortId ? null : comfortId);
+    const newExpandedCard = expandedCard === comfortId ? null : comfortId;
+    setExpandedCard(newExpandedCard);
+    
+    // If expanding a card, smoothly position it for optimal viewing
+    if (newExpandedCard) {
+      setTimeout(() => {
+        const cardElement = document.getElementById(`comfort-card-${comfortId}`);
+        if (cardElement) {
+          cardElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'nearest'
+          });
+        }
+      }, 150); // Brief delay to allow card expansion animation
+    }
   };
 
   const handleSelectClick = (comfortId: string, event: React.MouseEvent) => {
@@ -476,6 +491,7 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
         {comforts.map((comfort) => (
           <Card 
             key={comfort.id}
+            id={`comfort-card-${comfort.id}`}
             className={`cursor-pointer transition-all duration-200 relative ${
               expandedCard === comfort.id 
                 ? 'border-2 border-blue-500 shadow-lg' 
