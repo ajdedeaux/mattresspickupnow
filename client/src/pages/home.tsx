@@ -124,9 +124,17 @@ const LocationStep = ({ onLocationFound, isLoading }: {
     
     // Auto-submit when 5 digits are entered
     if (cleanValue.length === 5) {
+      // Blur the input first to dismiss keyboard, then auto-submit
       setTimeout(() => {
-        handleZipSubmit(true);
-      }, 400); // Small delay to feel natural
+        const activeInput = document.activeElement as HTMLInputElement;
+        if (activeInput) {
+          activeInput.blur();
+        }
+        // Then trigger the search
+        setTimeout(() => {
+          handleZipSubmit(true);
+        }, 100);
+      }, 200);
     }
   };
 
@@ -245,33 +253,21 @@ const LocationStep = ({ onLocationFound, isLoading }: {
             </div>
           )}
 
-          {/* Auto-submit feedback */}
+          {/* Auto-submit feedback - no manual button needed */}
           {zipCode.length === 5 && (
-            <div className="text-center">
+            <div className="text-center py-4">
               {autoSubmitting ? (
                 <div className="flex items-center justify-center text-blue-600">
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  <span className="text-sm">Finding stores near {zipCode}...</span>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  <span className="text-base font-medium">Finding stores near {zipCode}...</span>
                 </div>
               ) : (
                 <div className="text-sm text-green-600 flex items-center justify-center">
                   <Check className="w-4 h-4 mr-1" />
-                  ZIP code complete
+                  <span>ZIP code complete - searching automatically</span>
                 </div>
               )}
             </div>
-          )}
-          
-          {/* Fallback manual button (only show if user needs it) */}
-          {zipCode.length === 5 && !autoSubmitting && (
-            <Button 
-              onClick={() => handleZipSubmit(false)}
-              disabled={gpsLoading || isLoading}
-              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
-            >
-              <MapPin className="w-4 h-4 mr-2" />
-              Find pickup locations
-            </Button>
           )}
         </div>
       </div>
