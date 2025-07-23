@@ -1041,7 +1041,20 @@ export default function Home() {
   };
 
   const goBack = () => {
-    if (currentStep > 1) setCurrentStep(currentStep - 1);
+    // Handle proper back navigation logic
+    if (currentStep === 8) {
+      // From email form, go back to confirmation/contact options
+      setCurrentStep(5);
+    } else if (currentStep === 6) {
+      // From SMS step, go back to confirmation/contact options  
+      setCurrentStep(5);
+    } else if (currentStep === 7) {
+      // From success screen, shouldn't have back button but if clicked, restart
+      setCurrentStep(1);
+    } else if (currentStep > 1) {
+      // Normal sequential back navigation for main flow (steps 1-5)
+      setCurrentStep(currentStep - 1);
+    }
   };
 
   const resetFlow = () => {
@@ -1064,7 +1077,7 @@ export default function Home() {
             <h1 className="text-xl font-bold text-gray-900">MattressPickupNow</h1>
             <p className="text-sm text-gray-600">Sleep on it tonight</p>
           </div>
-          {currentStep > 1 && (
+          {currentStep > 1 && currentStep !== 7 && (
             <Button onClick={goBack} variant="ghost" size="sm">
               <ArrowLeft className="w-4 h-4 mr-1" />
               Back
