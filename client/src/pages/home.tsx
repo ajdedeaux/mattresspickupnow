@@ -141,6 +141,9 @@ const LocationStep = ({ onLocationFound, isLoading }: {
         try {
           const { latitude, longitude } = position.coords;
           
+          // Add intentional delay for better UX - makes it feel like we're working hard
+          await new Promise(resolve => setTimeout(resolve, 1200));
+          
           const response = await fetch('/api/nearby-stores', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -148,6 +151,9 @@ const LocationStep = ({ onLocationFound, isLoading }: {
           });
           
           const data = await response.json();
+          
+          // Add another small delay before showing results
+          await new Promise(resolve => setTimeout(resolve, 600));
           
           if (data.success && data.stores.length > 0) {
             onLocationFound(data.stores, { lat: latitude, lng: longitude });
@@ -193,7 +199,11 @@ const LocationStep = ({ onLocationFound, isLoading }: {
             </div>
             <div className="text-left">
               <div className="font-semibold">
-                {gpsLoading ? 'Getting your location...' : 'Use current location'}
+                {gpsLoading ? (
+                  <span className="animate-pulse">Scanning your area...</span>
+                ) : (
+                  'Use current location'
+                )}
               </div>
               <div className="text-sm text-blue-100">Find nearest options right now</div>
             </div>
