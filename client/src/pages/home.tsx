@@ -675,39 +675,56 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         </div>
       </div>
 
-      {/* Contact Options - Prioritized Hierarchy */}
+      {/* Contact Options - Premium Hierarchy */}
       <div className="space-y-3">
         {/* Primary - Call (Green) */}
         <Button 
           onClick={() => window.open(`tel:${nearestStore?.phone || '+18135550100'}`, '_self')}
-          className="w-full bg-green-600 hover:bg-green-700 text-white rounded-lg py-4 font-semibold"
+          className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl py-5 font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] relative overflow-hidden group"
         >
-          <div className="text-center">
-            <div className="font-semibold">Give us a call</div>
-            <div className="text-xs text-green-100 mt-1">Get all your questions answered in one quick call</div>
+          <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-200"></div>
+          <div className="relative flex items-center justify-between px-2">
+            <div className="text-left flex-1">
+              <div className="text-lg font-bold">Give us a call</div>
+              <div className="text-sm font-normal opacity-90">Get all your questions answered in one quick call</div>
+            </div>
+            <div className="bg-white bg-opacity-20 rounded-full p-2.5 ml-3">
+              <Phone className="w-5 h-5" />
+            </div>
           </div>
         </Button>
 
         {/* Secondary - Text (Blue) */}
         <Button 
           onClick={onSMSOption}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-4 font-semibold"
+          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl py-5 font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02] relative overflow-hidden group"
         >
-          <div className="text-center">
-            <div className="font-semibold">Shoot us a text</div>
-            <div className="text-xs text-blue-100 mt-1">Quick & easy - we'll respond in under 1 minute</div>
+          <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-200"></div>
+          <div className="relative flex items-center justify-between px-2">
+            <div className="text-left flex-1">
+              <div className="text-lg font-bold">Shoot us a text</div>
+              <div className="text-sm font-normal opacity-90">Quick & easy - we'll respond in under 1 minute</div>
+            </div>
+            <div className="bg-white bg-opacity-20 rounded-full p-2.5 ml-3">
+              <MessageCircle className="w-5 h-5" />
+            </div>
           </div>
         </Button>
 
         {/* Tertiary - Email (Gray) */}
         <Button 
           onClick={onFormOption}
-          variant="outline"
-          className="w-full border-2 border-gray-300 hover:border-gray-400 rounded-lg py-4 font-semibold text-gray-700"
+          className="w-full bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 rounded-xl py-5 font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.02] relative overflow-hidden group border border-gray-300"
         >
-          <div className="text-center">
-            <div className="font-semibold">Request more information</div>
-            <div className="text-xs text-gray-500 mt-1">Get details sent to your email right away</div>
+          <div className="absolute inset-0 bg-gray-500 opacity-0 group-hover:opacity-5 transition-opacity duration-200"></div>
+          <div className="relative flex items-center justify-between px-2">
+            <div className="text-left flex-1">
+              <div className="text-lg font-bold">Request more information</div>
+              <div className="text-sm font-normal opacity-70">Get details sent to your email right away</div>
+            </div>
+            <div className="bg-gray-300 bg-opacity-50 rounded-full p-2.5 ml-3">
+              <Mail className="w-5 h-5" />
+            </div>
           </div>
         </Button>
       </div>
