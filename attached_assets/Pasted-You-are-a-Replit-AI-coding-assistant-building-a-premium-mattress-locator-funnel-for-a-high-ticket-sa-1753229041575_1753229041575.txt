@@ -1,0 +1,141 @@
+You are a Replit AI coding assistant building a premium mattress locator funnel for a high-ticket sales expert.
+
+Your job is to take the following structured flow and build a full interactive multi-step UI in React (or similar frontend tech), styled clean and modern (tailwind or basic CSS is fine), that walks a user from intent → location match → mattress preference → lead capture.
+
+---
+
+✅ GOAL:
+Design a simple, elegant UI that feels like a concierge-level digital assistant helping users find a mattress for pickup nearby. Everything must feel premium, simple, and frictionless.
+
+No emojis. Use clean info cards, subtle visual cues, sleek layouts.
+
+---
+
+🧠 FUNCTIONALITY SUMMARY:
+- Use the Google Maps API (or Places API if more precise)
+- Accept ZIP code or current location
+- Filter only stores where the name starts with “Mattress Firm”
+- Show matches with name, phone, distance
+- Let user select their intent and preferences
+- Capture their contact info and send a summary to the backend
+- Provide option to auto-generate a pre-filled SMS
+
+---
+
+💡 UI FLOW & LOGIC:
+
+STEP 1: Location Detection
+- Ask user to enter ZIP code or allow location
+- Use geolocation API to detect position
+- Trigger search for Mattress Firm stores only
+- If no permission or address not found, show a clear error message
+
+Display:
+- Message: “Great news – we found a few stores near you.”
+- Animated loading dial or simple visual to indicate progress
+- Show 3–5 closest Mattress Firm locations (name, number, distance)
+- Filter out anything that doesn’t include “Mattress Firm” in the name
+- Example format:
+    - Mattress Firm Zinfandel – (916) 852-1045 – 0.7 mi
+
+---
+
+STEP 2: Use Case Identification
+Prompt:
+“Who is this mattress for?”
+
+Options (as selectable cards):
+- Me
+- My Child
+- Guest Room
+- Dorm Room
+- Airbnb
+- Other
+
+Tag this value in backend logic.
+
+---
+
+STEP 3: Mattress Size Selection
+Prompt:
+“What size mattress do you need?”
+
+Options:
+- Twin
+- Full
+- Queen
+- King
+
+Each size card should:
+- Include a visual size chart comparison (basic graphic or illustration)
+- Show rough dimensions (inches)
+- Tooltip: Twin = kids or small adults. Queen = most common adult size. King = luxury/master bedroom, etc.
+
+---
+
+STEP 4: Comfort Preference
+Prompt:
+“How do you like your mattress to feel?”
+
+Options:
+- Firm
+- Medium (most popular)
+- Plush
+- Hybrid
+
+Include short educational blurbs under each:
+- Firm: Dense, supportive feel with minimal sink.
+- Medium: Balanced support and comfort – best seller.
+- Plush: Soft, fluffy feel for pressure relief.
+- Hybrid: Coil + foam combo for bounce and support.
+
+---
+
+STEP 5: Confirmation + Lead Capture
+
+Message:
+“Perfect. We’ll now check which of these locations has your exact mattress style in stock – all under $800 with pickup as soon as tonight.”
+
+Display two options:
+
+Option 1 – Speed it up:
+- Button: “Text me the best match now”
+- Auto-generate SMS preview:
+    - “Hey – here’s what I’m looking for: Queen, Plush, for master bedroom, ZIP 95670. Can you help me find the best pickup nearby under $800?”
+- Provide “Copy & Text” button that copies the message and opens native SMS app.
+
+Option 2 – Sit tight:
+- Message: “We’ll search for the perfect match and text you within 15 minutes.”
+- Form:
+    - Name (required)
+    - Phone (required)
+    - Email (optional)
+    - Notes (optional)
+
+---
+
+📦 BACKEND REQUIREMENTS:
+- Store all user inputs as a single object:
+    {
+      use_case: "Guest Room",
+      size: "Full",
+      feel: "Medium",
+      zip: "95670",
+      nearest_locations: [...],
+      contact_info: {...},
+    }
+
+- Flag stores that match query and proximity
+
+- Add field for lead_source (web, mobile, ad campaign tag if applicable)
+
+---
+
+🎯 YOUR OBJECTIVE:
+Make this entire process frictionless, human, intuitive — like talking to a concierge. User should feel guided, understood, and taken care of every step of the way.
+
+No corporate or salesy vibe. All language should feel like an expert guiding them through a simple solution to a very solvable problem.
+
+Deliver a working prototype with placeholder data and dummy SMS/email handler endpoints.
+
+Ready to build.

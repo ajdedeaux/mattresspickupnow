@@ -282,10 +282,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create new lead endpoint with persona detection
+  // Create new lead endpoint - Updated for multi-step funnel
   app.post("/api/leads", async (req, res) => {
     try {
-      // Validate request body
+      console.log('📝 Creating lead from funnel:', req.body);
+      
+      const { useCase, size, comfort, coordinates, nearestStores, contactInfo } = req.body;
+      
+      // Handle new funnel format
+      if (useCase && size && comfort) {
+        const leadId = `MPN${Date.now()}`;
+        
+        const comfortMap: Record<string, string> = {
+          'Firm': 'F', 'Medium': 'M', 'Plush': 'S', 'Hybrid': 'H'
+        };
+        
+        const mattressType = comfortMap[comfort] || 'M';
+        const priceMap: Record<string, Record<string, string>> = {
+          'F': { 'Twin': '$199.99', 'Full': '$269.99', 'Queen': '$299.99', 'King': '$369.99' },
+          'M': { 'Twin': '$249.99', 'Full': '$359.99', 'Queen': '$399.99', 'King': '$469.99' },
+          'S': { 'Twin': '$349.99', 'Full': '$459.99', 'Queen': '$699.99', 'King': '$799.99' },
+          'H': { 'Twin': '$299.99', 'Full': '$399.99', 'Queen': '$499.99', 'King': '$649.99' }
+        };
+        const price = priceMap[mattressType]?.[size] || '$399.99';
+        
+        const leadData = {
+          name: contactInfo?.name || '',
+          phone: contactInfo?.phone || '',
+          email: contactInfo?.email || null,
+          mattressType,
+          mattressSize: size,
+          budgetRange: 'under_800',
+          urgency: 'today',
+          useCase,
+          zipCode: '00000',
+          leadId,
+          priority: 'medium',
+          price,
+          persona: 'practical_no_nonsense',
+          routingTier: 'self_service'
+        };
+        
+        const lead = await storage.createLead(leadData);
+        
+        console.log('✅ Funnel lead created:', { leadId, useCase, size, comfort, price });
+        
+        return res.status(201).json({
+          success: true,
+          leadId,
+          price,
+          message: 'Great choice! We\'ll text you within 15 minutes with pickup details.'
+        });
+      }
+      
+      // Legacy format validation
       const validatedData = insertLeadSchema.parse(req.body);
       
       // Generate unique lead ID
