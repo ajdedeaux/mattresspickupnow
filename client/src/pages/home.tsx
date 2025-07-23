@@ -570,20 +570,16 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   
   return (
-    <div className="space-y-6">
-      {/* Urgency Header */}
-      <div className="text-center mb-6">
-        <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-          Available today
-        </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Let's get you loaded up</h2>
+    <div className="space-y-4">
+      {/* Compact Header */}
+      <div className="text-center mb-4">
+        <h2 className="text-2xl font-bold text-gray-900 mb-1">Let's get you loaded up</h2>
         <p className="text-blue-600 font-semibold text-lg">Try it. Like it. Buy it.</p>
         <p className="text-gray-600 text-sm">Fits in a Prius — Problem Solved</p>
       </div>
 
-      {/* Interactive Flip Card */}
-      <div className="rounded-xl overflow-hidden mb-6">
+      {/* Compact Video Section */}
+      <div className="rounded-xl overflow-hidden mb-4">
         <div className="w-full aspect-video relative perspective-1000">
           <div 
             className={`w-full h-full relative transition-transform duration-700 transform-style-preserve-3d cursor-pointer ${
@@ -657,39 +653,34 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         </div>
       </div>
 
-      {/* Subtle Trust Signals */}
-      <div className="flex justify-center space-x-6 mb-6">
-        {/* Same Day Pickup */}
+      {/* Compact Trust Signals */}
+      <div className="flex justify-center space-x-6 mb-4">
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-2">
-            <Clock className="w-5 h-5 text-blue-600" />
+          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-1">
+            <Clock className="w-4 h-4 text-blue-600" />
           </div>
           <p className="text-xs font-medium text-gray-700">Same day pickup</p>
         </div>
-        
-        {/* 120-Night Trial */}
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-2">
-            <Shield className="w-5 h-5 text-blue-600" />
+          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-1">
+            <Shield className="w-4 h-4 text-blue-600" />
           </div>
           <p className="text-xs font-medium text-gray-700">120-night trial</p>
         </div>
-        
-        {/* Price Match */}
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-2">
-            <DollarSign className="w-5 h-5 text-blue-600" />
+          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-1">
+            <DollarSign className="w-4 h-4 text-blue-600" />
           </div>
           <p className="text-xs font-medium text-gray-700">Price match guarantee</p>
         </div>
       </div>
 
-      {/* Contact Options - Clean Premium Design */}
-      <div className="space-y-4">
+      {/* Contact Options - Prominent & Accessible */}
+      <div className="space-y-3">
         {/* Primary - Call (Green) */}
         <button 
           onClick={() => window.open(`tel:${nearestStore?.phone || '+18135550100'}`, '_self')}
-          className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl py-5 px-6 font-medium transition-all duration-200 transform hover:scale-[1.02] hover:-translate-y-0.5"
+          className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl py-4 px-6 font-medium transition-all duration-200 transform hover:scale-[1.02] hover:-translate-y-0.5"
           style={{ 
             boxShadow: '0 6px 20px rgba(34, 197, 94, 0.25), 0 2px 8px rgba(0,0,0,0.1)',
             border: '1px solid rgba(255,255,255,0.1)'
@@ -704,7 +695,7 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
         {/* Secondary - Text (Blue) */}
         <button 
           onClick={onSMSOption}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-5 px-6 font-medium transition-all duration-200 transform hover:scale-[1.02] hover:-translate-y-0.5"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-4 px-6 font-medium transition-all duration-200 transform hover:scale-[1.02] hover:-translate-y-0.5"
           style={{ 
             boxShadow: '0 6px 20px rgba(37, 99, 235, 0.25), 0 2px 8px rgba(0,0,0,0.1)',
             border: '1px solid rgba(255,255,255,0.1)'
