@@ -205,7 +205,7 @@ const LocationStep = ({ onLocationFound, isLoading }: {
                   'Use current location'
                 )}
               </div>
-              <div className="text-sm text-blue-100">Find nearest options right now</div>
+              <div className="text-sm text-blue-100">Finding nearest options right now</div>
             </div>
           </div>
         </Button>
