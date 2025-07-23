@@ -368,9 +368,11 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">This is how simple it really is</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-3">You're in the right place</h2>
         <p className="text-gray-600 leading-relaxed">
-          We've already found options that match what you picked. Here's what it actually looks like when someone picks theirs up — same day, in and out. We do this for people every single day. You're next.
+          We help people in your exact situation every single day — and we're already working on it.<br/>
+          The video below shows what pickup actually looks like.<br/>
+          It's fast. It's easy. It fits.
         </p>
       </div>
 
@@ -390,7 +392,7 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
               <div className="text-white text-center">
                 <Bed className="w-12 h-12 mx-auto mb-2" />
                 <p className="font-semibold">Queen mattress pickup</p>
-                <p className="text-sm opacity-90">Real customer, real pickup</p>
+                <p className="text-sm opacity-90">It really does fit</p>
               </div>
             </div>
           </video>
@@ -398,10 +400,6 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
       </div>
 
       <div className="space-y-4">
-        <div className="text-center">
-          <h3 className="font-semibold text-gray-900 mb-4">Ready to get yours?</h3>
-        </div>
-
         <Button 
           onClick={onSMSOption}
           className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
@@ -410,7 +408,7 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
             <MessageSquare className="w-6 h-6" />
             <div className="text-left">
               <div className="font-semibold">Text me the best match now</div>
-              <div className="text-sm text-blue-100">Get instant help via SMS</div>
+              <div className="text-sm text-blue-100">We'll find your exact pickup spot and help you sleep better tonight</div>
             </div>
           </div>
         </Button>
