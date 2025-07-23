@@ -356,7 +356,34 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Perfect choice!</h2>
-        <p className="text-gray-600">We'll check which locations have your exact mattress in stock</p>
+        <p className="text-gray-600">See how easy pickup is - then get your mattress details</p>
+      </div>
+
+      {/* "Fits in a Prius" Video - Critical Conversion Element */}
+      <div className="bg-gray-100 rounded-xl p-6 space-y-4">
+        <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center relative overflow-hidden">
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            playsInline
+            className="w-full h-full object-cover"
+            poster="/video-thumbnail.jpg"
+          >
+            <source src="/fits-in-prius-video.mp4" type="video/mp4" />
+            <div className="absolute inset-0 bg-blue-600 flex items-center justify-center">
+              <div className="text-white text-center">
+                <Bed className="w-12 h-12 mx-auto mb-2" />
+                <p className="font-semibold">Fits in a Prius!</p>
+                <p className="text-sm opacity-90">Queen mattress pickup in action</p>
+              </div>
+            </div>
+          </video>
+        </div>
+        <div className="text-center">
+          <h3 className="font-semibold text-gray-900">Fits in ANY car!</h3>
+          <p className="text-sm text-gray-600">Queen mattress rolls up compact for easy pickup</p>
+        </div>
       </div>
 
       <Card className="bg-green-50 border-green-200">
@@ -376,7 +403,7 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
 
       <div className="space-y-4">
         <div className="text-center">
-          <h3 className="font-semibold text-gray-900 mb-4">How would you like to proceed?</h3>
+          <h3 className="font-semibold text-gray-900 mb-4">Ready to get your mattress?</h3>
         </div>
 
         <Button 
