@@ -368,12 +368,14 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Perfect choice!</h2>
-        <p className="text-gray-600">See how easy pickup is - then get your mattress details</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">This is how simple it really is</h2>
+        <p className="text-gray-600 leading-relaxed">
+          We've already found options that match what you picked. Here's what it actually looks like when someone picks theirs up — same day, in and out. We do this for people every single day. You're next.
+        </p>
       </div>
 
-      {/* "Fits in a Prius" Video - Critical Conversion Element */}
-      <div className="bg-gray-100 rounded-xl p-6 space-y-4">
+      {/* Video - Clean Conversion Element */}
+      <div className="rounded-xl overflow-hidden">
         <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center relative overflow-hidden">
           <video 
             autoPlay 
@@ -387,36 +389,17 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
             <div className="absolute inset-0 bg-blue-600 flex items-center justify-center">
               <div className="text-white text-center">
                 <Bed className="w-12 h-12 mx-auto mb-2" />
-                <p className="font-semibold">Fits in a Prius!</p>
-                <p className="text-sm opacity-90">Queen mattress pickup in action</p>
+                <p className="font-semibold">Queen mattress pickup</p>
+                <p className="text-sm opacity-90">Real customer, real pickup</p>
               </div>
             </div>
           </video>
         </div>
-        <div className="text-center">
-          <h3 className="font-semibold text-gray-900">Fits in ANY car!</h3>
-          <p className="text-sm text-gray-600">Queen mattress rolls up compact for easy pickup</p>
-        </div>
       </div>
-
-      <Card className="bg-green-50 border-green-200">
-        <CardContent className="p-6">
-          <div className="text-center">
-            <Check className="w-8 h-8 mx-auto mb-3 text-green-600" />
-            <div className="font-semibold text-gray-900">Your Selection</div>
-            <div className="text-gray-600 mt-2">
-              {userData.size} {userData.comfort} mattress for {userData.useCase}
-            </div>
-            <div className="text-sm text-gray-500 mt-1">
-              Nearest pickup: {nearestStore?.name?.replace('Mattress Firm ', '')} ({nearestStore?.distance?.toFixed(1)} mi)
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       <div className="space-y-4">
         <div className="text-center">
-          <h3 className="font-semibold text-gray-900 mb-4">Ready to get your mattress?</h3>
+          <h3 className="font-semibold text-gray-900 mb-4">Ready to get yours?</h3>
         </div>
 
         <Button 
