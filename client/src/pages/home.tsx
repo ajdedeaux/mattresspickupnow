@@ -294,65 +294,80 @@ const SizeStep = ({ onSelect }: { onSelect: (size: string) => void }) => {
   );
 };
 
-const ComfortStep = ({ onSelect }: { onSelect: (comfort: string) => void }) => {
+const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) => void; selectedSize?: string }) => {
   const [flippedCard, setFlippedCard] = useState<string | null>(null);
+
+  // Pricing structure based on size and comfort type
+  const getPricing = (comfort: string, size: string = 'Queen') => {
+    const pricingMatrix: Record<string, Record<string, string>> = {
+      'Firm': { Twin: '$199', Full: '$249', Queen: '$299', King: '$349' },
+      'Medium': { Twin: '$249', Full: '$299', Queen: '$349', King: '$399' },
+      'Plush': { Twin: '$299', Full: '$349', Queen: '$399', King: '$449' },
+      'Hybrid': { Twin: '$349', Full: '$399', Queen: '$449', King: '$499' }
+    };
+    return pricingMatrix[comfort]?.[size] || pricingMatrix[comfort]?.['Queen'] || '$349';
+  };
 
   const comforts = [
     { 
       id: 'firm', 
       label: 'Firm', 
-      description: 'Dense, supportive feel with minimal sink',
+      description: 'Perfect for back & stomach sleepers',
       bestFor: 'Back & stomach sleepers',
-      price: '$299.99',
+      rating: '4.7/5',
+      reviews: '1,834 reviews',
+      brand: 'Sealy Memory Foam Firm',
       specs: {
-        firmness: '8/10',
-        materials: 'High-density foam core',
-        sleepPosition: 'Back & stomach sleepers',
-        benefits: 'Spine alignment, edge support',
-        temperature: 'Cool sleeping surface'
+        benefits: ['Premium spinal alignment and support', 'Brand new with full warranty', 'Try in store before you buy', 'Fits in any car'],
+        carFit: 'Fits on back seat of any car',
+        warranty: 'Full manufacturer warranty',
+        availability: 'Ready for pickup now'
       }
     },
     { 
       id: 'medium', 
       label: 'Medium', 
-      description: 'Balanced support and comfort – best seller',
+      description: 'Our most popular choice - works for everyone',
       bestFor: 'Most popular choice',
       popular: true,
-      price: '$399.99',
+      rating: '4.8/5',
+      reviews: '2,847 reviews',
+      brand: 'Sealy Memory Foam Medium',
       specs: {
-        firmness: '5/10',
-        materials: 'Memory foam + support core',
-        sleepPosition: 'All sleeping positions',
-        benefits: 'Perfect balance, pressure relief',
-        temperature: 'Breathable comfort layer'
+        benefits: ['Perfect balance of comfort and support', 'Best seller - most popular choice', 'Same mattress others wait weeks for', 'Guaranteed to fit in your car'],
+        carFit: 'Fits on back seat of any car',
+        warranty: 'Full manufacturer warranty',
+        availability: 'Ready for pickup now'
       }
     },
     { 
       id: 'plush', 
       label: 'Plush', 
-      description: 'Soft, fluffy feel for pressure relief',
+      description: 'Ideal for side sleepers',
       bestFor: 'Side sleepers',
-      price: '$699.99',
+      rating: '4.6/5',
+      reviews: '1,592 reviews',
+      brand: 'Sealy Memory Foam Soft',
       specs: {
-        firmness: '3/10',
-        materials: 'Plush memory foam layers',
-        sleepPosition: 'Side sleepers primarily',
-        benefits: 'Pressure point relief, contouring',
-        temperature: 'Gel-infused cooling'
+        benefits: ['Superior pressure point relief and comfort', 'Perfect for side sleepers', 'Pressure point relief', 'Try it first, then decide'],
+        carFit: 'Fits on back seat of any car',
+        warranty: 'Full manufacturer warranty',
+        availability: 'Ready for pickup now'
       }
     },
     { 
       id: 'hybrid', 
       label: 'Hybrid', 
-      description: 'Coil + foam combo for bounce and support',
+      description: 'Best of both worlds - coil support + foam comfort',
       bestFor: 'Best of both worlds',
-      price: '$499.99',
+      rating: '4.5/5',
+      reviews: '978 reviews',
+      brand: 'Basic Hybrid',
       specs: {
-        firmness: '6/10',
-        materials: 'Pocketed coils + foam',
-        sleepPosition: 'Combination sleepers',
-        benefits: 'Bounce, support, airflow',
-        temperature: 'Maximum breathability'
+        benefits: ['Traditional coil support with memory foam comfort', 'Coil support + memory foam', 'Great for hot sleepers', 'Full manufacturer warranty'],
+        carFit: 'Fits on back seat of any car',
+        warranty: 'Full manufacturer warranty',
+        availability: 'Ready for pickup now'
       }
     }
   ];
@@ -400,8 +415,8 @@ const ComfortStep = ({ onSelect }: { onSelect: (comfort: string) => void }) => {
                       <div className="text-sm text-blue-600 mt-2">{comfort.bestFor}</div>
                     </div>
                     <div className="text-right ml-4">
-                      <div className="text-xl font-bold text-gray-900">{comfort.price}</div>
-                      <div className="text-xs text-gray-500">Queen size</div>
+                      <div className="text-xl font-bold text-gray-900">{getPricing(comfort.label, selectedSize)}</div>
+                      <div className="text-xs text-gray-500">{selectedSize || 'Queen'} size</div>
                     </div>
                   </div>
                 </CardContent>
@@ -409,18 +424,33 @@ const ComfortStep = ({ onSelect }: { onSelect: (comfort: string) => void }) => {
 
               {/* Back of card */}
               <Card className="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200">
-                <CardContent className="p-6">
+                <CardContent className="p-4">
                   <div className="h-full flex flex-col justify-between">
                     <div>
-                      <h3 className="text-lg font-bold text-blue-900 mb-3">{comfort.label} Specifications</h3>
-                      <div className="grid grid-cols-1 gap-2 text-sm">
-                        <div><span className="font-medium text-blue-800">Firmness:</span> {comfort.specs.firmness}</div>
-                        <div><span className="font-medium text-blue-800">Materials:</span> {comfort.specs.materials}</div>
-                        <div><span className="font-medium text-blue-800">Benefits:</span> {comfort.specs.benefits}</div>
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-lg font-bold text-blue-900">{comfort.brand}</h3>
+                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">{comfort.specs.availability}</span>
+                      </div>
+                      <div className="flex items-center mb-2">
+                        <span className="text-yellow-500">⭐⭐⭐⭐⭐</span>
+                        <span className="text-sm text-blue-700 ml-2">{comfort.rating} ({comfort.reviews})</span>
+                      </div>
+                      <div className="bg-blue-100 p-2 rounded-lg mb-3">
+                        <div className="text-sm font-medium text-blue-800 flex items-center">
+                          🚗 {comfort.specs.carFit}
+                        </div>
+                      </div>
+                      <div className="space-y-1 text-xs">
+                        {comfort.specs.benefits.map((benefit, idx) => (
+                          <div key={idx} className="flex items-start">
+                            <span className="text-green-600 mr-2">✓</span>
+                            <span className="text-blue-800">{benefit}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-xl font-bold text-blue-900">{comfort.price}</div>
+                    <div className="text-right mt-2">
+                      <div className="text-xl font-bold text-blue-900">{getPricing(comfort.label, selectedSize)}</div>
                       <div className="text-xs text-blue-700">Double-click to select</div>
                     </div>
                   </div>
@@ -783,7 +813,7 @@ export default function Home() {
         )}
         
         {currentStep === 4 && (
-          <ComfortStep onSelect={handleComfortSelect} />
+          <ComfortStep onSelect={handleComfortSelect} selectedSize={userSelections.size} />
         )}
         
         {currentStep === 5 && (
