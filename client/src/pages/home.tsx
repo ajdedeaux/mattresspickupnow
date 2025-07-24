@@ -83,6 +83,9 @@ const LocationStep = ({ onLocationFound, isLoading }: {
     setAutoSubmitting(true);
 
     try {
+      // Add realistic search delay to show system is working
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       // First resolve ZIP to coordinates
       const locationResponse = await fetch('/api/resolve-location', {
         method: 'POST',
