@@ -196,12 +196,12 @@ const LocationStep = ({ onLocationFound, isLoading }: {
                 <span>Same-day</span>
               </div>
               <div className="flex items-center space-x-1 text-xs text-gray-600">
-                <Shield className="w-3 h-3" />
-                <span>120-night trial</span>
+                <Car className="w-3 h-3" />
+                <span>Fits in your car</span>
               </div>
               <div className="flex items-center space-x-1 text-xs text-gray-600">
-                <DollarSign className="w-3 h-3" />
-                <span>Price guarantee</span>
+                <Shield className="w-3 h-3" />
+                <span>120-night trial</span>
               </div>
             </div>
             <p className="text-gray-700 font-medium">Find your location</p>
