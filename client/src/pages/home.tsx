@@ -747,70 +747,65 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
   const [animatedText, setAnimatedText] = useState('');
   const nearestStore = userData.nearestStores[0];
   
-  // Generate dynamic SMS message with premium, buying-intent language
-  const generateLiveSMSMessage = () => {
+  // Generate final message for sending
+  const generateFinalMessage = () => {
     const comfortType = userData.comfort?.toLowerCase() || 'medium';
     const mattressSize = userData.size || 'Queen';
     const location = 'Tampa area';
     
-    const namePart = userName ? userName : '[YOUR NAME]';
-    
-    // Refined urgency mapping - no specific timeframes, buying intent focused
     const urgencyMap = {
       'today': 'today',
       'tomorrow': 'tomorrow', 
       'week': 'this week'
     };
     
-    const timingText = urgency ? urgencyMap[urgency as keyof typeof urgencyMap] : '[WHEN]';
+    const timingText = urgency ? urgencyMap[urgency as keyof typeof urgencyMap] : 'soon';
     
-    return `Hi! My name is ${namePart} and I'm in the ${location}. I just used your mattress finder and I'm interested in a ${mattressSize} ${comfortType}. I'd like to come try it ${timingText} and buy it if it's right for me. Can you help me find the best pickup location? Please get back to me right away, I'm ready to move forward!`;
+    return `Hi! My name is ${userName} and I'm in the ${location}. I just used your mattress finder and I'm interested in a ${mattressSize} ${comfortType}. I'd like to come try it ${timingText} and buy it if it's right for me. Can you help me find the best pickup location? Please get back to me right away, I'm ready to move forward!`;
   };
-
-  const liveMessage = generateLiveSMSMessage();
-  
-  // Animate text changes with highlighting effect
-  useEffect(() => {
-    setAnimatedText(liveMessage);
-  }, [liveMessage]);
   
   const handleSendMessage = () => {
     if (!userName || !urgency) {
       return;
     }
     
-    // Copy to clipboard and open SMS (no phone numbers shown to user)
-    navigator.clipboard.writeText(liveMessage);
+    const finalMessage = generateFinalMessage();
+    navigator.clipboard.writeText(finalMessage);
     const phoneNumber = nearestStore?.phone?.replace(/\D/g, '') || '';
-    window.open(`sms:${phoneNumber}?body=${encodeURIComponent(liveMessage)}`);
+    window.open(`sms:${phoneNumber}?body=${encodeURIComponent(finalMessage)}`);
   };
 
-  // Premium message highlighting component
+  // LIVE message builder with REAL visual updates
   const renderLiveMessage = () => {
-    const message = liveMessage;
-    const nameHighlight = userName && message.includes(userName);
-    const urgencyHighlight = urgency && message.includes(urgencyMap[urgency as keyof typeof urgencyMap] || '');
+    const comfortType = userData.comfort?.toLowerCase() || 'medium';
+    const mattressSize = userData.size || 'Queen';
+    const location = 'Tampa area';
     
-    if (!nameHighlight && !urgencyHighlight) {
-      return <span className="text-gray-700">{message}</span>;
-    }
-    
-    // Split and highlight dynamic parts
-    let parts = [message];
-    
-    if (userName) {
-      parts = parts.flatMap(part => 
-        typeof part === 'string' ? part.split(userName) : [part]
-      ).reduce((acc: any[], part, i) => {
-        acc.push(part);
-        if (i < parts.length - 1) {
-          acc.push(<span key={`name-${i}`} className="bg-blue-100 text-blue-900 px-1 rounded transition-all duration-300">{userName}</span>);
-        }
-        return acc;
-      }, []);
-    }
-    
-    return <span className="text-gray-700">{parts}</span>;
+    return (
+      <span className="text-gray-700 leading-relaxed">
+        Hi! My name is{' '}
+        <span 
+          className={`transition-all duration-500 font-medium ${
+            userName 
+              ? 'bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-sm' 
+              : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md'
+          }`}
+        >
+          {userName || '[YOUR NAME]'}
+        </span>
+        {' '}and I'm in the {location}. I just used your mattress finder and I'm interested in a {mattressSize} {comfortType}. I'd like to come try it{' '}
+        <span 
+          className={`transition-all duration-500 font-medium ${
+            urgency 
+              ? 'bg-green-100 text-green-900 px-2 py-1 rounded-md shadow-sm' 
+              : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md'
+          }`}
+        >
+          {urgency || '[WHEN]'}
+        </span>
+        {' '}and buy it if it's right for me. Can you help me find the best pickup location? Please get back to me right away, I'm ready to move forward!
+      </span>
+    );
   };
 
   return (
@@ -833,10 +828,28 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
             <div className="text-sm leading-relaxed font-medium">
               "{renderLiveMessage()}"
             </div>
+            {userName && (
+              <div className="mt-3 flex items-center gap-2 text-xs text-blue-600">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                Name added! Message updated
+              </div>
+            )}
+            {urgency && (
+              <div className="mt-2 flex items-center gap-2 text-xs text-green-600">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                Urgency set! Message personalized
+              </div>
+            )}
           </div>
           <div className="text-center mt-3">
             <span className="text-xs text-blue-600 font-medium">
-              ✨ Message updates as you type and select options below
+              {!userName && !urgency ? (
+                "👆 Start typing to see your message build live"
+              ) : userName && urgency ? (
+                "🎉 Perfect! Your message is ready to send"
+              ) : (
+                "⚡ Keep going - watch it update in real-time"
+              )}
             </span>
           </div>
         </CardContent>
