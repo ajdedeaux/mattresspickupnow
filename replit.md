@@ -163,6 +163,13 @@ The application is designed for rapid deployment with minimal configuration, foc
 - One-tap optimized with no extra color styling or gradients on inputs
 - Focus on functionality over decoration for maximum user efficiency
 
+**Standard Page Flow (January 2025):**
+- Fixed message builder to show complete context first (logo, header, message preview)
+- Users can orient themselves and see the big picture before committing to input
+- Requires intentional tap on "Enter your name" button to begin input flow
+- Removed redundant bottom navigation when top back button is visible
+- Follows consistent UX pattern across all application steps
+
 ### January 2025 - Premium UI Polish & Clean Design Implementation
 
 **Button Enhancement (Complete):**
