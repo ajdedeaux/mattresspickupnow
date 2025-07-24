@@ -604,11 +604,9 @@ const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption }
   
   return (
     <div className="space-y-4">
-      {/* Compact Header */}
-      <div className="text-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-900 mb-1">Let's get you loaded up</h2>
-        <p className="text-blue-600 font-semibold text-lg">Try it. Like it. Buy it.</p>
-        <p className="text-gray-600 text-sm">Fits in a Prius — Problem Solved</p>
+      {/* Simplified Header */}
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">Ready to get your mattress?</h2>
       </div>
 
       {/* Compact Video Section */}
@@ -635,7 +633,7 @@ const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption }
                   🤔🤔🤔
                 </div>
                 <div className="text-base font-semibold opacity-90 group-hover:opacity-100 transition-opacity duration-300">
-                  {hasPlayedOnce ? 'Tap to replay' : 'Tap to see the proof'}
+                  Tap to see the proof
                 </div>
                 <div className="absolute inset-0 ring-2 ring-transparent group-hover:ring-blue-400/50 rounded-lg transition-all duration-300"></div>
               </div>
@@ -687,67 +685,47 @@ const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption }
         </div>
       </div>
 
-      {/* Compact Trust Signals */}
-      <div className="flex justify-center space-x-6 mb-4">
-        <div className="flex flex-col items-center">
-          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-1">
-            <Clock className="w-4 h-4 text-blue-600" />
-          </div>
-          <p className="text-xs font-medium text-gray-700">Same day pickup</p>
-        </div>
-        <div className="flex flex-col items-center">
-          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-1">
-            <Shield className="w-4 h-4 text-blue-600" />
-          </div>
-          <p className="text-xs font-medium text-gray-700">120-night trial</p>
-        </div>
-        <div className="flex flex-col items-center">
-          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-1">
-            <DollarSign className="w-4 h-4 text-blue-600" />
-          </div>
-          <p className="text-xs font-medium text-gray-700">Price match guarantee</p>
-        </div>
-      </div>
 
-      {/* Contact Options - Clean Icon Layout */}
-      <div className="flex justify-center space-x-8 pt-4">
-        {/* Call - Immediate Response */}
+
+      {/* Contact Options - Ultra-Clean Layout with Breathing Room */}
+      <div className="flex justify-center space-x-12 pt-8">
+        {/* Call */}
         <button 
           onClick={() => window.open(`tel:${nearestStore?.phone || '+18135550100'}`, '_self')}
           className="flex flex-col items-center group transition-all duration-200 transform hover:scale-110 active:scale-95"
         >
-          <div className="w-16 h-16 bg-green-600 hover:bg-green-700 rounded-2xl flex items-center justify-center mb-2 shadow-lg group-hover:shadow-xl transition-all duration-200"
+          <div className="w-20 h-20 bg-green-600 hover:bg-green-700 rounded-2xl flex items-center justify-center mb-3 shadow-lg group-hover:shadow-xl transition-all duration-200"
                style={{ boxShadow: '0 8px 25px rgba(34, 197, 94, 0.25)' }}>
-            <Phone className="w-7 h-7 text-white" />
+            <Phone className="w-8 h-8 text-white" />
           </div>
-          <span className="text-sm font-medium text-gray-900 mb-1">Call</span>
-          <span className="text-xs text-green-600 font-semibold">Immediate response</span>
+          <span className="text-base font-semibold text-gray-900 mb-1">Call</span>
+          <span className="text-xs text-green-600 font-medium">Now</span>
         </button>
 
-        {/* Text - Under 1 Min Response */}
+        {/* Text */}
         <button 
           onClick={onSMSOption}
           className="flex flex-col items-center group transition-all duration-200 transform hover:scale-110 active:scale-95"
         >
-          <div className="w-16 h-16 bg-blue-600 hover:bg-blue-700 rounded-2xl flex items-center justify-center mb-2 shadow-lg group-hover:shadow-xl transition-all duration-200"
+          <div className="w-20 h-20 bg-blue-600 hover:bg-blue-700 rounded-2xl flex items-center justify-center mb-3 shadow-lg group-hover:shadow-xl transition-all duration-200"
                style={{ boxShadow: '0 8px 25px rgba(37, 99, 235, 0.25)' }}>
-            <MessageCircle className="w-7 h-7 text-white" />
+            <MessageCircle className="w-8 h-8 text-white" />
           </div>
-          <span className="text-sm font-medium text-gray-900 mb-1">Text</span>
-          <span className="text-xs text-blue-600 font-semibold">Response in under 1 min</span>
+          <span className="text-base font-semibold text-gray-900 mb-1">Text</span>
+          <span className="text-xs text-blue-600 font-medium">1 min</span>
         </button>
 
-        {/* Email - Under 5 Min Response */}
+        {/* Email */}
         <button 
           onClick={onEmailOption}
           className="flex flex-col items-center group transition-all duration-200 transform hover:scale-110 active:scale-95"
         >
-          <div className="w-16 h-16 bg-gray-600 hover:bg-gray-700 rounded-2xl flex items-center justify-center mb-2 shadow-lg group-hover:shadow-xl transition-all duration-200"
+          <div className="w-20 h-20 bg-gray-600 hover:bg-gray-700 rounded-2xl flex items-center justify-center mb-3 shadow-lg group-hover:shadow-xl transition-all duration-200"
                style={{ boxShadow: '0 8px 25px rgba(75, 85, 99, 0.25)' }}>
-            <Mail className="w-7 h-7 text-white" />
+            <Mail className="w-8 h-8 text-white" />
           </div>
-          <span className="text-sm font-medium text-gray-900 mb-1">Email</span>
-          <span className="text-xs text-gray-600 font-semibold">Response in under 5 min</span>
+          <span className="text-base font-semibold text-gray-900 mb-1">Email</span>
+          <span className="text-xs text-gray-600 font-medium">5 min</span>
         </button>
       </div>
     </div>
@@ -1746,16 +1724,10 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Progress indicator */}
-      {currentStep <= 5 && (
+      {/* Progress indicator - Only show for steps 1-4 */}
+      {currentStep <= 4 && (
         <div className="bg-white border-b border-gray-200 py-3">
           <div className="max-w-md mx-auto px-6">
-            <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
-              <span>Step {currentStep} of 5</span>
-              <button onClick={resetFlow} className="text-blue-600 hover:text-blue-700">
-                Start over
-              </button>
-            </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div 
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
