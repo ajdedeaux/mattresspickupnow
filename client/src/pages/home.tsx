@@ -772,8 +772,8 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
     
     // Smart location logic
     const getLocationText = () => {
-      if (userData.zipCode) {
-        return `in the ${userData.zipCode} area`;
+      if (userData.zip) {
+        return `in the ${userData.zip} area`;
       }
       return 'in the Tampa area';
     };
@@ -799,7 +799,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
     
     const timingText = urgency ? urgencyMap[urgency as keyof typeof urgencyMap] : 'soon';
     
-    return `Hi! My name is ${userName} and I'm ${getLocationText()}. I just used your mattress finder and I'm interested in the ${getProductDescription()} that I selected. I'd like to come try it ${timingText} and buy it if it's right for me. Can you help me find the best pickup location? Please get back to me right away, I'm ready to move forward!`;
+    return `Hi! My name is ${userName} and I'm ${getLocationText()}. I just used your mattress finder and I'm interested in the ${getProductDescription()}. I'd like to come try it ${timingText} and buy it if it's right for me. Can you help me find the best pickup location? Please get back to me right away, I'm ready to move forward!`;
   };
   
   const handleSendMessage = () => {
@@ -820,8 +820,8 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
     
     // Smart location logic
     const getLocationText = () => {
-      if (userData.zipCode) {
-        return `in the ${userData.zipCode} area`;
+      if (userData.zip) {
+        return `in the ${userData.zip} area`;
       }
       return 'in the Tampa area';
     };
@@ -867,7 +867,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
         <span className="font-semibold text-gray-900 bg-yellow-100 px-2 py-1 rounded-md">
           the {getProductDescription()}
         </span>
-        {' '}that I selected. I'd like to come try it{' '}
+        . I'd like to come try it{' '}
         <span 
           className={`transition-all duration-500 font-medium ${
             urgency 
@@ -884,8 +884,8 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Premium Message Preview */}
-      <div className="pt-6 px-4">
+      {/* Premium Message Preview - LOCKED IN VIEWPORT */}
+      <div className="sticky top-0 z-50 pt-6 px-4 bg-gray-50">
         <Card className="border border-blue-200 bg-gradient-to-br from-blue-50 to-white shadow-sm">
           <CardContent className="p-3">
             <div className="flex items-center gap-2 mb-2">
