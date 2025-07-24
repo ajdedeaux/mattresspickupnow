@@ -841,12 +841,12 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
               {(userName || urgency) && (
                 <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-full">
                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-green-700 font-medium">Live</span>
+                  <span className="text-xs text-green-700 font-medium animate-pulse">Live</span>
                 </div>
               )}
             </div>
             
-            <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+            <div className="bg-white p-2.5 rounded-lg border border-gray-100 shadow-sm">
               <div className="text-sm leading-relaxed text-gray-800">
                 "{renderLiveMessage()}"
               </div>
@@ -870,7 +870,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
               autoFocus
             />
             <p className="text-xs text-gray-500">
-              Watch your message build live above
+              Watch it build above
             </p>
           </div>
         )}
@@ -880,7 +880,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
             <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">
               When do you need this?
             </h2>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {[
                 { id: 'today', label: 'Today', desc: 'ASAP - highest priority', icon: Clock },
                 { id: 'tomorrow', label: 'Tomorrow', desc: 'Next day pickup', icon: Calendar },
@@ -915,13 +915,13 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
 
         {currentStep === 'send' && (
           <div className="animate-in slide-in-from-bottom-4 duration-500 text-center">
-            <div className="mb-6">
+            <div className="mb-5">
               <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
                 <Check className="w-8 h-8 text-green-600" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Perfect! Your message is ready</h3>
               <p className="text-gray-600 text-sm">
-                Tap below to copy and send your personalized message
+                Tap to copy and send your personalized message
               </p>
             </div>
             
