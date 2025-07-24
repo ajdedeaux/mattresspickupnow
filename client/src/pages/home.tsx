@@ -778,16 +778,20 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
       return 'in the Tampa area';
     };
     
-    // Smart product description with pricing
+    // Smart product description with CORRECT pricing matrix
     const getProductDescription = () => {
-      const prices = {
-        'Firm': userData.size === 'Queen' ? '$299' : '$299',
-        'Medium': userData.size === 'Queen' ? '$399' : '$399', 
-        'Soft': userData.size === 'Queen' ? '$699' : '$699',
-        'Hybrid': userData.size === 'Queen' ? '$499' : '$499'
+      const getPriceBySize = (comfortType: string, size: string) => {
+        const priceMatrix = {
+          'Twin': { 'Firm': '$199', 'Medium': '$249', 'Soft': '$449', 'Hybrid': '$349' },
+          'Full': { 'Firm': '$249', 'Medium': '$299', 'Soft': '$549', 'Hybrid': '$399' },
+          'Queen': { 'Firm': '$299', 'Medium': '$399', 'Soft': '$699', 'Hybrid': '$499' },
+          'King': { 'Firm': '$449', 'Medium': '$549', 'Soft': '$899', 'Hybrid': '$699' }
+        };
+        
+        return priceMatrix[size as keyof typeof priceMatrix]?.[comfortType as keyof typeof priceMatrix['Twin']] || '$399';
       };
       
-      const price = prices[comfortType as keyof typeof prices] || '$399';
+      const price = getPriceBySize(comfortType, mattressSize);
       return `${mattressSize} ${comfortType} for ${price}`;
     };
     
@@ -826,16 +830,20 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
       return 'in the Tampa area';
     };
     
-    // Smart product description with pricing
+    // Smart product description with CORRECT pricing matrix
     const getProductDescription = () => {
-      const prices = {
-        'Firm': userData.size === 'Queen' ? '$299' : '$299',
-        'Medium': userData.size === 'Queen' ? '$399' : '$399', 
-        'Soft': userData.size === 'Queen' ? '$699' : '$699',
-        'Hybrid': userData.size === 'Queen' ? '$499' : '$499'
+      const getPriceBySize = (comfortType: string, size: string) => {
+        const priceMatrix = {
+          'Twin': { 'Firm': '$199', 'Medium': '$249', 'Soft': '$449', 'Hybrid': '$349' },
+          'Full': { 'Firm': '$249', 'Medium': '$299', 'Soft': '$549', 'Hybrid': '$399' },
+          'Queen': { 'Firm': '$299', 'Medium': '$399', 'Soft': '$699', 'Hybrid': '$499' },
+          'King': { 'Firm': '$449', 'Medium': '$549', 'Soft': '$899', 'Hybrid': '$699' }
+        };
+        
+        return priceMatrix[size as keyof typeof priceMatrix]?.[comfortType as keyof typeof priceMatrix['Twin']] || '$399';
       };
       
-      const price = prices[comfortType as keyof typeof prices] || '$399';
+      const price = getPriceBySize(comfortType, mattressSize);
       return `${mattressSize} ${comfortType} for ${price}`;
     };
     
@@ -884,6 +892,23 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
 
   return (
     <div className="fixed inset-0 bg-gray-50 flex flex-col overflow-hidden">
+      {/* Header */}
+      <div className="flex-shrink-0 px-4 py-4 border-b border-gray-200 bg-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">MattressPickupNow</h1>
+            <p className="text-sm text-gray-600">Sleep on it tonight</p>
+          </div>
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </button>
+        </div>
+      </div>
+
       {/* Premium Message Preview - COMPLETELY LOCKED */}
       <div className="flex-shrink-0 pt-6 px-4 bg-gray-50 z-50">
         <Card className="border border-blue-200 bg-gradient-to-br from-blue-50 to-white shadow-sm">
