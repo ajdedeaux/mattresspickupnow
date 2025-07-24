@@ -27,6 +27,8 @@ import {
   ArrowLeft,
   Loader2,
   Clock,
+  Calendar,
+  CalendarDays,
   Shield,
   DollarSign
 } from 'lucide-react';
@@ -826,26 +828,26 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Compact Message Preview - positioned in sweet spot */}
-      <div className="pt-8 px-4">
-        <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center">
-                <MessageSquare className="w-4 h-4 text-white" />
+      {/* Premium Message Preview */}
+      <div className="pt-6 px-4">
+        <Card className="border border-blue-200 bg-gradient-to-br from-blue-50 to-white shadow-sm">
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center">
+                <MessageSquare className="w-3 h-3 text-white" />
               </div>
-              <div className="font-semibold text-gray-900 text-sm">Building Your Message</div>
+              <div className="font-medium text-gray-700 text-xs tracking-wide">Building Your Message</div>
               <div className="flex-1"></div>
               {(userName || urgency) && (
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-green-600 font-medium">Live</span>
+                <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-full">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-green-700 font-medium">Live</span>
                 </div>
               )}
             </div>
             
-            <div className="bg-white p-4 rounded-lg border border-blue-200">
-              <div className="text-sm leading-relaxed font-medium">
+            <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+              <div className="text-sm leading-relaxed text-gray-800">
                 "{renderLiveMessage()}"
               </div>
             </div>
@@ -853,21 +855,21 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
         </Card>
       </div>
 
-      {/* Main Content Area - immediate below message */}
-      <div className="flex-1 px-4 py-6">
+      {/* Main Content Area */}
+      <div className="flex-1 px-4 py-4">
         {currentStep === 'name' && (
           <div className="animate-in slide-in-from-bottom-4 duration-500 text-center">
-            <label className="block text-2xl font-bold text-gray-900 mb-4">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
               What's your name?
-            </label>
+            </h2>
             <Input
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               placeholder="Enter your first name"
-              className="h-16 text-xl text-center border-2 border-blue-200 focus:border-blue-500 rounded-xl mb-3"
+              className="h-14 text-lg text-center border-2 border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-xl mb-2 shadow-sm"
               autoFocus
             />
-            <p className="text-sm text-gray-600">
+            <p className="text-xs text-gray-500">
               Watch your message build live above
             </p>
           </div>
@@ -875,30 +877,34 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
 
         {currentStep === 'urgency' && (
           <div className="animate-in slide-in-from-bottom-4 duration-500">
-            <label className="block text-2xl font-bold text-gray-900 mb-4 text-center">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">
               When do you need this?
-            </label>
-            <div className="space-y-3">
+            </h2>
+            <div className="space-y-2">
               {[
-                { id: 'today', label: 'Today', desc: 'ASAP - highest priority', emoji: '🔥' },
-                { id: 'tomorrow', label: 'Tomorrow', desc: 'Next day pickup', emoji: '⚡' },
-                { id: 'week', label: 'This week', desc: 'Within a few days', emoji: '📅' }
+                { id: 'today', label: 'Today', desc: 'ASAP - highest priority', icon: Clock },
+                { id: 'tomorrow', label: 'Tomorrow', desc: 'Next day pickup', icon: Calendar },
+                { id: 'week', label: 'This week', desc: 'Within a few days', icon: CalendarDays }
               ].map((option) => (
                 <button
                   key={option.id}
                   type="button"
                   onClick={() => setUrgency(option.id)}
-                  className={`w-full p-4 rounded-xl border-2 text-left transition-all duration-200 transform hover:scale-[1.02] ${
+                  className={`w-full p-3 rounded-xl border transition-all duration-200 transform hover:scale-[1.01] ${
                     urgency === option.id 
-                      ? 'border-blue-500 bg-blue-50 text-blue-900 shadow-lg' 
-                      : 'border-gray-200 hover:border-gray-300 hover:shadow-md bg-white'
+                      ? 'border-blue-500 bg-blue-50 text-blue-900 shadow-md' 
+                      : 'border-gray-200 hover:border-blue-200 hover:shadow-sm bg-white'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">{option.emoji}</span>
-                    <div>
-                      <div className="font-bold text-lg">{option.label}</div>
-                      <div className="text-sm text-gray-600">{option.desc}</div>
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      urgency === option.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      <option.icon className="w-4 h-4" />
+                    </div>
+                    <div className="text-left">
+                      <div className="font-semibold text-base">{option.label}</div>
+                      <div className="text-sm text-gray-500">{option.desc}</div>
                     </div>
                   </div>
                 </button>
@@ -910,20 +916,20 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
         {currentStep === 'send' && (
           <div className="animate-in slide-in-from-bottom-4 duration-500 text-center">
             <div className="mb-6">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="w-10 h-10 text-green-600" />
+              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <Check className="w-8 h-8 text-green-600" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Perfect! Your message is ready</h3>
-              <p className="text-gray-600 text-lg">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Perfect! Your message is ready</h3>
+              <p className="text-gray-600 text-sm">
                 Tap below to copy and send your personalized message
               </p>
             </div>
             
             <Button 
               onClick={handleSendMessage}
-              className="w-full h-16 rounded-xl text-lg font-bold bg-green-600 hover:bg-green-700 text-white transform hover:scale-[1.02] transition-all duration-200 mb-4"
+              className="w-full h-14 rounded-xl text-base font-semibold bg-green-600 hover:bg-green-700 text-white transform hover:scale-[1.01] transition-all duration-200 mb-3 shadow-lg"
               style={{ 
-                boxShadow: '0 8px 20px rgba(34, 197, 94, 0.3), 0 2px 4px rgba(0,0,0,0.1)'
+                boxShadow: '0 4px 16px rgba(34, 197, 94, 0.25)'
               }}
             >
               Send Message Now
@@ -936,7 +942,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
                 setUrgency('');
               }}
               variant="ghost"
-              className="w-full text-gray-600 text-lg"
+              className="w-full text-gray-500 hover:text-gray-700 text-sm"
             >
               Edit message
             </Button>
@@ -949,7 +955,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
         <Button 
           onClick={onBack}
           variant="outline"
-          className="w-full h-12 border border-gray-200 hover:border-gray-300 rounded-lg"
+          className="w-full h-11 border border-gray-200 hover:border-gray-300 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to options
