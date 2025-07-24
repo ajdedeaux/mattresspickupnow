@@ -1,0 +1,38 @@
+## Email Builder Implementation Feedback
+
+### Critical Missing Elements:
+
+The current email builder implementation is missing the core dynamic data integration that makes this approach powerful. The developer has not captured and highlighted the essential information we’ve already collected throughout the user’s selection process.
+
+### Required Dynamic Data Integration:
+
+**Must pull from their funnel journey:**
+
+- **Exact mattress selection** - Specific product name, type, and firmness they chose
+- **Precise pricing** - The exact price they saw during selection
+- **Location data** - Their specific area/ZIP code information
+- **Any other selection details** - Size, features, etc. from their funnel experience
+
+**Visual highlighting requirement:**
+All pre-populated data should be highlighted in the email preview (same treatment as the text message builder) to show “we captured this perfectly” versus the new information they’re providing.
+
+### Simplified Input Strategy:
+
+The user should only need to provide **two new pieces of information:**
+
+1. **Their name** - For personalization throughout the email
+1. **Urgency level** - Timeline/priority for their inquiry
+
+### Remove Unnecessary Fields:
+
+**Eliminate the email input field entirely.** This defeats the purpose of the streamlined approach. We capture their email automatically when they send the message from their own email client.
+
+### Expected User Experience:
+
+Users should see their specific selections prominently displayed and highlighted in the email preview, creating the same ownership effect as the text message builder. They should think: “Yes, this email perfectly represents exactly what I selected and what I want.”
+
+### The Core Issue:
+
+The current implementation treats this like a generic contact form rather than a personalized inquiry based on their specific product journey. The email should read as if they’re following up on their exact selections, not making a general inquiry about mattresses.
+
+The goal is the same magical real-time building experience as the text version, but with even less user input required while maintaining full personalization through their captured journey data.​​​​​​​​​​​​​​​​

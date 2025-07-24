@@ -1260,31 +1260,39 @@ const FormStep = ({ userData, onSubmit, isLoading, onBack }: {
 
 const EmailStep = ({ userData, onBack }: { userData: UserData; onBack: () => void }) => {
   const [userName, setUserName] = useState('');
-  const [userEmail, setUserEmail] = useState('');
-  const [currentStep, setCurrentStep] = useState<'name' | 'email' | 'send'>('name');
+  const [urgency, setUrgency] = useState('');
+  const [currentStep, setCurrentStep] = useState<'name' | 'urgency' | 'send'>('name');
   const [hasStartedInput, setHasStartedInput] = useState(false);
   const nearestStore = userData.nearestStores[0];
   
   // Auto-advance to next step when name is entered
   useEffect(() => {
     if (userName && userName.length >= 2 && currentStep === 'name') {
-      const timer = setTimeout(() => setCurrentStep('email'), 1500);
+      const timer = setTimeout(() => setCurrentStep('urgency'), 1500);
       return () => clearTimeout(timer);
     }
   }, [userName, currentStep]);
   
-  // Auto-advance to send when email is entered
+  // Auto-advance to send when urgency is selected
   useEffect(() => {
-    if (userEmail && userEmail.includes('@') && currentStep === 'email') {
+    if (urgency && currentStep === 'urgency') {
       const timer = setTimeout(() => setCurrentStep('send'), 1000);
       return () => clearTimeout(timer);
     }
-  }, [userEmail, currentStep]);
+  }, [urgency, currentStep]);
   
-  // Generate email content
+  // Generate email content with dynamic data from funnel
   const generateEmailContent = () => {
     const comfortType = userData.comfort || 'Medium';
     const mattressSize = userData.size || 'Queen';
+    
+    // Smart location logic
+    const getLocationText = () => {
+      if (userData.location?.address) {
+        return `in the ${userData.location.address} area`;
+      }
+      return 'in the Tampa area';
+    };
     
     const getProductDescription = () => {
       const getPriceBySize = (comfortType: string, size: string) => {
@@ -1302,12 +1310,20 @@ const EmailStep = ({ userData, onBack }: { userData: UserData; onBack: () => voi
       return `${mattressSize} ${comfortType} mattress for ${price}`;
     };
     
+    const urgencyMap = {
+      'today': 'today',
+      'tomorrow': 'tomorrow', 
+      'week': 'this week'
+    };
+    
+    const timingText = urgency ? urgencyMap[urgency as keyof typeof urgencyMap] : 'soon';
+    
     const subject = `Mattress Inquiry - ${getProductDescription()}`;
     const body = `Hi there!
 
-My name is ${userName} and I just used your mattress finder tool. I'm interested in learning more about the ${getProductDescription()} that's available for same-day pickup.
+My name is ${userName} and I'm ${getLocationText()}. I just used your mattress finder and I'm interested in the ${getProductDescription()} that's available for same-day pickup.
 
-Could you please send me:
+I'd like to come try it ${timingText} and buy it if it's right for me. Could you please send me:
 - Store location and hours
 - Availability confirmation  
 - Any current promotions
@@ -1316,26 +1332,33 @@ Could you please send me:
 I'm ready to make a decision quickly if it's the right fit!
 
 Thank you,
-${userName}
-${userEmail}`;
+${userName}`;
 
     return { subject, body };
   };
   
   const handleSendEmail = () => {
-    if (!userName || !userEmail) return;
+    if (!userName || !urgency) return;
     
     const { subject, body } = generateEmailContent();
-    const storeEmail = nearestStore?.email || 'info@mattresspickupnow.com';
+    const storeEmail = 'info@mattresspickupnow.com';
     
     const mailtoLink = `mailto:${storeEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoLink;
   };
 
-  // Live email preview
+  // Live email preview with DYNAMIC DATA from funnel
   const renderLiveEmail = () => {
     const comfortType = userData.comfort || 'Medium';
     const mattressSize = userData.size || 'Queen';
+    
+    // Smart location logic
+    const getLocationText = () => {
+      if (userData.location?.address) {
+        return `in the ${userData.location.address} area`;
+      }
+      return 'in the Tampa area';
+    };
     
     const getProductDescription = () => {
       const getPriceBySize = (comfortType: string, size: string) => {
@@ -1353,10 +1376,18 @@ ${userEmail}`;
       return `${mattressSize} ${comfortType} mattress for ${price}`;
     };
 
+    const urgencyMap = {
+      'today': 'today',
+      'tomorrow': 'tomorrow', 
+      'week': 'this week'
+    };
+    
+    const timingText = urgency ? urgencyMap[urgency as keyof typeof urgencyMap] : '[WHEN]';
+
     return (
       <div className="text-sm text-gray-700 leading-relaxed">
         <div className="mb-3">
-          <strong>To:</strong> <span className="text-blue-600">{nearestStore?.email || 'info@mattresspickupnow.com'}</span><br/>
+          <strong>To:</strong> <span className="text-blue-600">info@mattresspickupnow.com</span><br/>
           <strong>Subject:</strong> Mattress Inquiry - {getProductDescription()}
         </div>
         
@@ -1367,19 +1398,33 @@ ${userEmail}`;
           <span 
             className={`transition-all duration-500 font-medium ${
               userName 
-                ? 'bg-blue-100 text-blue-900 px-2 py-1 rounded-md' 
+                ? 'bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-sm' 
                 : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md'
             }`}
           >
             {userName || '[YOUR NAME]'}
           </span>
-          {' '}and I just used your mattress finder tool. I'm interested in learning more about{' '}
+          {' '}and I'm{' '}
+          <span className="font-semibold text-gray-900 bg-yellow-100 px-2 py-1 rounded-md">
+            {getLocationText()}
+          </span>
+          . I just used your mattress finder and I'm interested in{' '}
           <span className="font-semibold text-gray-900 bg-yellow-100 px-2 py-1 rounded-md">
             the {getProductDescription()}
           </span>
           {' '}that's available for same-day pickup.<br/><br/>
           
-          Could you please send me:<br/>
+          I'd like to come try it{' '}
+          <span 
+            className={`transition-all duration-500 font-medium ${
+              urgency 
+                ? 'bg-green-100 text-green-900 px-2 py-1 rounded-md shadow-sm' 
+                : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md'
+            }`}
+          >
+            {timingText}
+          </span>
+          {' '}and buy it if it's right for me. Could you please send me:<br/>
           - Store location and hours<br/>
           - Availability confirmation<br/>
           - Any current promotions<br/>
@@ -1391,20 +1436,11 @@ ${userEmail}`;
           <span 
             className={`transition-all duration-500 font-medium ${
               userName 
-                ? 'bg-blue-100 text-blue-900 px-2 py-1 rounded-md' 
+                ? 'bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-sm' 
                 : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md'
             }`}
           >
             {userName || '[YOUR NAME]'}
-          </span><br/>
-          <span 
-            className={`transition-all duration-500 font-medium ${
-              userEmail 
-                ? 'bg-green-100 text-green-900 px-2 py-1 rounded-md' 
-                : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md'
-            }`}
-          >
-            {userEmail || '[YOUR EMAIL]'}
           </span>
         </div>
       </div>
@@ -1427,7 +1463,7 @@ ${userEmail}`;
               </div>
               <div className="font-semibold text-gray-800 text-sm tracking-wide">Building Your Email</div>
               <div className="flex-1"></div>
-              {(userName || userEmail) && (
+              {(userName || urgency) && (
                 <div className="flex items-center gap-1.5 bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-1.5 rounded-full border border-green-200 shadow-sm">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                   <span className="text-xs text-green-700 font-semibold animate-pulse">Live</span>
@@ -1505,28 +1541,43 @@ ${userEmail}`;
           </div>
         )}
 
-        {currentStep === 'email' && (
-          <div className="animate-in slide-in-from-bottom-4 duration-500 text-center space-y-6">
-            <div className="space-y-2">
+        {currentStep === 'urgency' && (
+          <div className="animate-in slide-in-from-bottom-4 duration-500 space-y-6">
+            <div className="text-center space-y-2">
               <h2 className="text-2xl font-bold text-gray-900">
-                What's your email?
+                When do you need this?
               </h2>
-              <p className="text-gray-600 text-base">So they can respond to you</p>
+              <p className="text-gray-600 text-base">Help us prioritize your request</p>
             </div>
-            
-            <div className="max-w-sm mx-auto space-y-3">
-              <Input
-                type="email"
-                value={userEmail}
-                onChange={(e) => setUserEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="text-center text-lg h-14 rounded-xl border-2 border-blue-200 focus:border-blue-500 bg-white transition-all duration-200"
-                autoFocus
-              />
-              <div className="flex items-center justify-center gap-2 text-sm text-blue-600">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
-                <span className="font-medium">Watch it build above</span>
-              </div>
+            <div className="space-y-3">
+              {[
+                { id: 'today', label: 'Today', desc: 'ASAP - highest priority', icon: Clock },
+                { id: 'tomorrow', label: 'Tomorrow', desc: 'Next day pickup', icon: Calendar },
+                { id: 'week', label: 'This week', desc: 'Within a few days', icon: CalendarDays }
+              ].map((option) => (
+                <button
+                key={option.id}
+                type="button"
+                onClick={() => setUrgency(option.id)}
+                className={`w-full p-3 rounded-xl border transition-all duration-200 transform hover:scale-[1.01] ${
+                  urgency === option.id 
+                    ? 'border-blue-500 bg-blue-50 text-blue-900 shadow-md' 
+                    : 'border-gray-200 hover:border-blue-200 hover:shadow-sm bg-white'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                    urgency === option.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    <option.icon className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="font-semibold text-base">{option.label}</div>
+                    <div className="text-sm opacity-70">{option.desc}</div>
+                  </div>
+                </div>
+              </button>
+            ))}
             </div>
           </div>
         )}
@@ -1558,7 +1609,7 @@ ${userEmail}`;
               </Button>
               
               <p className="text-xs text-gray-500 leading-relaxed">
-                This opens your email app with a pre-written message. You send it yourself - we never email you first.
+                Opens your email app with everything pre-filled. You send it - we never email first.
               </p>
             </div>
           </div>
