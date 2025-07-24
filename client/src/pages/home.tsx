@@ -799,6 +799,14 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
     const mattressSize = userData.size || 'Queen';
     const location = 'Tampa area';
     
+    const urgencyMap = {
+      'today': 'today',
+      'tomorrow': 'tomorrow', 
+      'week': 'this week'
+    };
+    
+    const timingText = urgency ? urgencyMap[urgency as keyof typeof urgencyMap] : '[WHEN]';
+    
     return (
       <span className="text-gray-700 leading-relaxed">
         Hi! My name is{' '}
@@ -819,7 +827,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
               : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md'
           }`}
         >
-          {urgency || '[WHEN]'}
+          {timingText}
         </span>
         {' '}and buy it if it's right for me. Can you help me find the best pickup location? Please get back to me right away, I'm ready to move forward!
       </span>
