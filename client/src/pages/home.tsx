@@ -77,23 +77,17 @@ const LocationStep = ({ onLocationFound, isLoading }: {
   const [autoSubmitting, setAutoSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const handleZipSubmit = async () => {
-    if (zipCode.length !== 5) {
-      toast({ title: 'Please enter a valid 5-digit ZIP code', variant: 'destructive' });
-      return;
-    }
+  const handleZipSubmit = async (zipToSubmit = zipCode) => {
+    if (zipToSubmit.length !== 5) return;
 
     setAutoSubmitting(true);
 
     try {
-      // Add intentional delay for better UX - makes it feel like we're working hard
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
       // First resolve ZIP to coordinates
       const locationResponse = await fetch('/api/resolve-location', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ zip: zipCode })
+        body: JSON.stringify({ zipCode: zipToSubmit })
       });
       
       const locationData = await locationResponse.json();
@@ -102,9 +96,6 @@ const LocationStep = ({ onLocationFound, isLoading }: {
         toast({ title: 'Could not find that ZIP code', variant: 'destructive' });
         return;
       }
-
-      // Add another small delay before finding stores
-      await new Promise(resolve => setTimeout(resolve, 800));
 
       // Then find nearby stores
       const storesResponse = await fetch('/api/nearby-stores', {
@@ -117,7 +108,6 @@ const LocationStep = ({ onLocationFound, isLoading }: {
       
       if (storesData.success && storesData.stores.length > 0) {
         onLocationFound(storesData.stores, locationData.coordinates);
-        // Green celebration banner will show success - no popup needed
       } else {
         toast({ title: 'No stores found', description: 'No pickup locations found in that area' });
       }
@@ -128,10 +118,15 @@ const LocationStep = ({ onLocationFound, isLoading }: {
     }
   };
 
-  // Just handle ZIP input changes - no auto-submit
+  // Auto-submit when ZIP code is complete
   const handleZipChange = (value: string) => {
     const cleanValue = value.replace(/\D/g, '').slice(0, 5);
     setZipCode(cleanValue);
+    
+    // Auto-submit when ZIP is complete
+    if (cleanValue.length === 5) {
+      handleZipSubmit(cleanValue);
+    }
   };
 
   const handleGPSLocation = async () => {
@@ -229,64 +224,27 @@ const LocationStep = ({ onLocationFound, isLoading }: {
         )}
 
         <div className="space-y-3">
-          <div className="relative">
-            <Input
-              type="text"
-              inputMode="numeric"
-              value={zipCode}
-              onChange={(e) => handleZipChange(e.target.value)}
-              onFocus={() => setInputFocused(true)}
-              onBlur={() => setInputFocused(false)}
-              placeholder="Enter ZIP code"
-              className="h-12 text-center text-lg border-2 border-blue-300 rounded-xl focus:border-blue-500"
-              disabled={gpsLoading || isLoading}
-              maxLength={5}
-            />
-            {zipCode.length > 0 && zipCode.length < 5 && !autoSubmitting && (
-              <div className="absolute -bottom-8 left-0 right-0 text-center text-sm text-gray-500">
-                {5 - zipCode.length} more digit{5 - zipCode.length > 1 ? 's' : ''}
-              </div>
-            )}
-          </div>
+          <Input
+            type="text"
+            inputMode="numeric"
+            value={zipCode}
+            onChange={(e) => handleZipChange(e.target.value)}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
+            placeholder="Enter ZIP code"
+            className="h-12 text-center text-lg border-2 border-blue-300 rounded-xl focus:border-blue-500"
+            disabled={gpsLoading || autoSubmitting}
+            maxLength={5}
+          />
           
-          {/* Show progress indicator when typing */}
-          {zipCode.length > 0 && (
-            <div className="w-full bg-gray-200 rounded-full h-2 transition-all duration-300">
-              <div 
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-                style={{ width: `${(zipCode.length / 5) * 100}%` }}
-              />
-            </div>
-          )}
-
-          {/* ZIP complete feedback and search button */}
-          {zipCode.length === 5 && (
-            <>
-              <div className="text-center">
-                <div className="text-sm text-green-600 flex items-center justify-center mb-3">
-                  <Check className="w-4 h-4 mr-1" />
-                  <span>ZIP code complete</span>
-                </div>
+          {/* Only show loading state when actually submitting */}
+          {autoSubmitting && (
+            <div className="text-center">
+              <div className="flex items-center justify-center text-blue-600">
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <span className="text-sm">Finding options near {zipCode}...</span>
               </div>
-              
-              <Button 
-                onClick={handleZipSubmit}
-                disabled={gpsLoading || autoSubmitting}
-                className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
-              >
-                {autoSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    <span className="animate-pulse">Finding options near {zipCode}...</span>
-                  </>
-                ) : (
-                  <>
-                    <MapPin className="w-4 h-4 mr-2" />
-                    Find pickup locations
-                  </>
-                )}
-              </Button>
-            </>
+            </div>
           )}
         </div>
       </div>
