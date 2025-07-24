@@ -744,8 +744,24 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
 const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void }) => {
   const [userName, setUserName] = useState('');
   const [urgency, setUrgency] = useState('');
-  const [animatedText, setAnimatedText] = useState('');
+  const [currentStep, setCurrentStep] = useState<'name' | 'urgency' | 'send'>('name');
   const nearestStore = userData.nearestStores[0];
+  
+  // Auto-advance to next step when name is entered
+  useEffect(() => {
+    if (userName && currentStep === 'name') {
+      const timer = setTimeout(() => setCurrentStep('urgency'), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [userName, currentStep]);
+  
+  // Auto-advance to send when urgency is selected
+  useEffect(() => {
+    if (urgency && currentStep === 'urgency') {
+      const timer = setTimeout(() => setCurrentStep('send'), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [urgency, currentStep]);
   
   // Generate final message for sending
   const generateFinalMessage = () => {
@@ -809,109 +825,129 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
   };
 
   return (
-    <div className="space-y-4">
-      <div className="text-center">
-        <h2 className="text-xl font-bold text-gray-900 mb-1">Create your message</h2>
-        <p className="text-gray-600 text-sm">Watch it build live</p>
-      </div>
-
-      {/* Compact Form Fields First */}
-      <div className="space-y-3">
-        <div>
-          <label className="block text-sm font-semibold text-gray-900 mb-2">What's your name?</label>
-          <Input
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            placeholder="Enter your first name"
-            className="h-10 text-sm border-2 border-gray-200 focus:border-blue-500 rounded-lg"
-          />
-        </div>
-        
-        <div>
-          <label className="block text-sm font-semibold text-gray-900 mb-2">When do you need this?</label>
-          <div className="grid grid-cols-1 gap-2">
-            {[
-              { id: 'today', label: 'Today', desc: 'ASAP' },
-              { id: 'tomorrow', label: 'Tomorrow', desc: 'Next day' },
-              { id: 'week', label: 'This week', desc: 'Few days' }
-            ].map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => setUrgency(option.id)}
-                className={`w-full p-3 rounded-lg border-2 text-left transition-all duration-200 ${
-                  urgency === option.id 
-                    ? 'border-blue-500 bg-blue-50 text-blue-900' 
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="font-semibold text-sm">{option.label}</div>
-                <div className="text-xs text-gray-600">{option.desc}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Compact Live Preview */}
-      <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+    <div className="space-y-4 max-h-screen overflow-hidden">
+      {/* Always Visible Live Message Builder */}
+      <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 sticky top-0 z-10">
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
               <MessageSquare className="w-4 h-4 text-white" />
             </div>
-            <div className="font-semibold text-gray-900 text-sm">Live Preview</div>
+            <div className="font-semibold text-gray-900 text-sm">Building Your Message</div>
             <div className="flex-1"></div>
             {(userName || urgency) && (
               <div className="flex items-center gap-1">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs text-green-600 font-medium">Updating</span>
+                <span className="text-xs text-green-600 font-medium">Live</span>
               </div>
             )}
           </div>
           
-          <div className="bg-white p-3 rounded-lg border border-blue-200">
-            <div className="text-xs leading-relaxed">
+          <div className="bg-white p-4 rounded-lg border border-blue-200">
+            <div className="text-sm leading-relaxed font-medium">
               "{renderLiveMessage()}"
             </div>
-          </div>
-          
-          <div className="text-center mt-2">
-            <span className="text-xs text-blue-600 font-medium">
-              {!userName && !urgency ? (
-                "Start typing above to see live updates"
-              ) : userName && urgency ? (
-                "Perfect! Ready to send"
-              ) : (
-                "Keep going - watch it update"
-              )}
-            </span>
           </div>
         </CardContent>
       </Card>
 
-      {/* Action Buttons */}
-      <div className="space-y-2">
-        <Button 
-          onClick={handleSendMessage}
-          disabled={!userName || !urgency}
-          className={`w-full h-12 rounded-xl text-sm font-semibold transition-all duration-200 ${
-            !userName || !urgency
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-green-600 hover:bg-green-700 text-white'
-          }`}
-        >
-          {(!userName || !urgency) ? 'Complete info above' : 'Send Message'}
-        </Button>
+      {/* Progressive Step Interface */}
+      <div className="px-4">
+        {currentStep === 'name' && (
+          <div className="animate-in slide-in-from-bottom-4 duration-500">
+            <label className="block text-lg font-bold text-gray-900 mb-3 text-center">
+              What's your name?
+            </label>
+            <Input
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              placeholder="Enter your first name"
+              className="h-14 text-lg text-center border-2 border-blue-200 focus:border-blue-500 rounded-xl"
+              autoFocus
+            />
+            <p className="text-center text-sm text-gray-600 mt-2">
+              Watch your message build as you type
+            </p>
+          </div>
+        )}
 
-        <Button 
-          onClick={onBack}
-          variant="outline"
-          className="w-full h-10 border border-gray-200 hover:border-gray-300 rounded-lg text-sm"
-        >
-          <ArrowLeft className="w-4 h-4 mr-1" />
-          Back
-        </Button>
+        {currentStep === 'urgency' && (
+          <div className="animate-in slide-in-from-bottom-4 duration-500">
+            <label className="block text-lg font-bold text-gray-900 mb-3 text-center">
+              When do you need this?
+            </label>
+            <div className="space-y-3">
+              {[
+                { id: 'today', label: 'Today', desc: 'ASAP - highest priority', emoji: '🔥' },
+                { id: 'tomorrow', label: 'Tomorrow', desc: 'Next day pickup', emoji: '⚡' },
+                { id: 'week', label: 'This week', desc: 'Within a few days', emoji: '📅' }
+              ].map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => setUrgency(option.id)}
+                  className={`w-full p-4 rounded-xl border-2 text-left transition-all duration-200 transform hover:scale-[1.02] ${
+                    urgency === option.id 
+                      ? 'border-blue-500 bg-blue-50 text-blue-900 shadow-lg' 
+                      : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{option.emoji}</span>
+                    <div>
+                      <div className="font-bold text-base">{option.label}</div>
+                      <div className="text-sm text-gray-600">{option.desc}</div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {currentStep === 'send' && (
+          <div className="animate-in slide-in-from-bottom-4 duration-500 text-center">
+            <div className="mb-4">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Check className="w-8 h-8 text-green-600" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Perfect! Your message is ready</h3>
+              <p className="text-sm text-gray-600">
+                Tap below to copy and send your personalized message
+              </p>
+            </div>
+            
+            <Button 
+              onClick={handleSendMessage}
+              className="w-full h-14 rounded-xl text-base font-bold bg-green-600 hover:bg-green-700 text-white transform hover:scale-[1.02] transition-all duration-200"
+              style={{ 
+                boxShadow: '0 8px 20px rgba(34, 197, 94, 0.3), 0 2px 4px rgba(0,0,0,0.1)'
+              }}
+            >
+              Send Message Now
+            </Button>
+            
+            <Button 
+              onClick={() => setCurrentStep('name')}
+              variant="ghost"
+              className="w-full mt-3 text-gray-600"
+            >
+              Edit message
+            </Button>
+          </div>
+        )}
+
+        {/* Back button - always available */}
+        <div className="mt-6 pb-4">
+          <Button 
+            onClick={onBack}
+            variant="outline"
+            className="w-full h-10 border border-gray-200 hover:border-gray-300 rounded-lg text-sm"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            Back to options
+          </Button>
+        </div>
       </div>
     </div>
   );
