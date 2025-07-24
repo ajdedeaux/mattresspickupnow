@@ -788,26 +788,33 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
   // Premium message highlighting component
   const renderLiveMessage = () => {
     const message = liveMessage;
-    const nameHighlight = userName && message.includes(userName);
-    const urgencyHighlight = urgency && message.includes(urgencyMap[urgency as keyof typeof urgencyMap] || '');
     
-    if (!nameHighlight && !urgencyHighlight) {
+    if (!userName && !urgency) {
       return <span className="text-gray-700">{message}</span>;
     }
     
-    // Split and highlight dynamic parts
-    let parts = [message];
+    // Create parts array by splitting on dynamic content
+    const parts = [];
+    let currentIndex = 0;
     
-    if (userName) {
-      parts = parts.flatMap(part => 
-        typeof part === 'string' ? part.split(userName) : [part]
-      ).reduce((acc: any[], part, i) => {
-        acc.push(part);
-        if (i < parts.length - 1) {
-          acc.push(<span key={`name-${i}`} className="bg-blue-100 text-blue-900 px-1 rounded transition-all duration-300">{userName}</span>);
-        }
-        return acc;
-      }, []);
+    // Split message while preserving highlighted parts
+    const messageCopy = message;
+    
+    if (userName && messageCopy.includes(userName)) {
+      const nameIndex = messageCopy.indexOf(userName);
+      if (nameIndex > currentIndex) {
+        parts.push(messageCopy.substring(currentIndex, nameIndex));
+      }
+      parts.push(
+        <span key="name-highlight" className="bg-blue-100 text-blue-900 px-1 rounded transition-all duration-300">
+          {userName}
+        </span>
+      );
+      currentIndex = nameIndex + userName.length;
+    }
+    
+    if (currentIndex < messageCopy.length) {
+      parts.push(messageCopy.substring(currentIndex));
     }
     
     return <span className="text-gray-700">{parts}</span>;

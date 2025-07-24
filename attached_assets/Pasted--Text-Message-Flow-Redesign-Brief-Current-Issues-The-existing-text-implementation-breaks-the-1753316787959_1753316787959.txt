@@ -1,0 +1,71 @@
+## Text Message Flow Redesign Brief
+
+### Current Issues
+
+The existing text implementation breaks the premium, frictionless experience we’ve established:
+
+- **No real-time preview** - Users can’t see their message building as they type
+- **Static form feeling** - Doesn’t match the smooth, interactive flow of previous steps
+- **Too much information exposed** - Shows phone numbers and store locations we want to keep private
+- **Assumed timeframes** - Text says “this afternoon” when we don’t know their actual availability
+- **Lacks premium feel** - Doesn’t feel like part of the same polished platform
+
+### New Vision: Gamified Message Builder
+
+Create a live, interactive experience where users watch their personalized message build in real-time as they input information. Should feel engaging and satisfying - like they’re crafting something custom.
+
+### Required Functionality
+
+**Real-Time Updates:**
+
+- Name field updates message instantly as they type each character
+- Urgency selection dynamically changes message language
+- Smooth animations when text updates
+- Highlight changing portions momentarily for visual feedback
+
+**Message Content Logic:**
+
+- Dynamic text: “Hi! My name is [LIVE NAME] and I’m in the [LOCATION] area. I just used your mattress finder and I’m interested in a [SIZE] [TYPE]. I’d like to come try it [TODAY/TOMORROW/THIS WEEK] and buy it if it’s right for me. Can you help me find the best pickup location? Please get back to me right away, I’m ready to move forward!”
+- No specific timeframes like “this afternoon” - use general terms based on urgency selection
+- Show buying intent and urgency without being presumptuous
+
+**Information Privacy:**
+
+- NO phone numbers visible anywhere
+- NO store locations or company names shown
+- Button simply says “Send Message” or “Copy & Send Now”
+- All routing handled behind the scenes
+
+**Form Fields:**
+
+- Name (real-time text update)
+- Urgency: “Today”, “Tomorrow”, “This week” (with appropriate descriptive text)
+- All other data (location, mattress type, size) auto-populated from funnel
+
+### Design Requirements
+
+**Premium Feel:**
+
+- Match existing platform design language and styling
+- Smooth animations and transitions
+- Clean typography and spacing consistent with previous steps
+- Apple/Tesla-level polish
+
+**Frictionless UX:**
+
+- One-tap final action
+- No cognitive load about where message goes or how it works
+- Feels like natural extension of the funnel journey
+- Maintains momentum from previous steps
+
+### User Psychology
+
+Users should feel like they’re personalizing a message for better service, not realizing they’re providing comprehensive qualification data. The live preview creates engagement and ownership of the message content.
+
+### Technical Notes
+
+Ensure the live preview actually updates character-by-character as they type. The current implementation appears to be static generation rather than true real-time updates.
+
+**Goal:** Create the most satisfying, premium text generation experience that captures maximum qualification data while feeling effortless and engaging. Users should leave thinking “wow, that was smooth” rather than “I just filled out a form.”
+
+You have full creative freedom to execute this vision while maintaining design consistency with the established platform aesthetic.​​​​​​​​​​​​​​​​
