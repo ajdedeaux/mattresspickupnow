@@ -709,58 +709,45 @@ const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption }
         </div>
       </div>
 
-      {/* Contact Options - Prominent & Accessible */}
-      <div className="space-y-3">
-        {/* Primary - Call (Green) */}
+      {/* Contact Options - Clean Icon Layout */}
+      <div className="flex justify-center space-x-8 pt-4">
+        {/* Call - Immediate Response */}
         <button 
           onClick={() => window.open(`tel:${nearestStore?.phone || '+18135550100'}`, '_self')}
-          className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl py-4 px-6 font-medium transition-all duration-200 transform hover:scale-[1.02] hover:-translate-y-0.5"
-          style={{ 
-            boxShadow: '0 6px 20px rgba(34, 197, 94, 0.25), 0 2px 8px rgba(0,0,0,0.1)',
-            border: '1px solid rgba(255,255,255,0.1)'
-          }}
+          className="flex flex-col items-center group transition-all duration-200 transform hover:scale-110 active:scale-95"
         >
-          <div className="text-center">
-            <div className="text-base font-semibold">Give us a call</div>
-            <div className="text-sm opacity-90 mt-1">Get all your questions answered in one quick call</div>
+          <div className="w-16 h-16 bg-green-600 hover:bg-green-700 rounded-2xl flex items-center justify-center mb-2 shadow-lg group-hover:shadow-xl transition-all duration-200"
+               style={{ boxShadow: '0 8px 25px rgba(34, 197, 94, 0.25)' }}>
+            <Phone className="w-7 h-7 text-white" />
           </div>
+          <span className="text-sm font-medium text-gray-900 mb-1">Call</span>
+          <span className="text-xs text-green-600 font-semibold">Immediate response</span>
         </button>
 
-        {/* Secondary - Text (Blue) */}
+        {/* Text - Under 1 Min Response */}
         <button 
           onClick={onSMSOption}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-4 px-6 font-medium transition-all duration-200 transform hover:scale-[1.02] hover:-translate-y-0.5"
-          style={{ 
-            boxShadow: '0 6px 20px rgba(37, 99, 235, 0.25), 0 2px 8px rgba(0,0,0,0.1)',
-            border: '1px solid rgba(255,255,255,0.1)'
-          }}
+          className="flex flex-col items-center group transition-all duration-200 transform hover:scale-110 active:scale-95"
         >
-          <div className="text-center">
-            <div className="text-base font-semibold">Shoot us a text</div>
-            <div className="text-sm opacity-90 mt-1">Quick & easy - we'll respond in under 1 minute</div>
+          <div className="w-16 h-16 bg-blue-600 hover:bg-blue-700 rounded-2xl flex items-center justify-center mb-2 shadow-lg group-hover:shadow-xl transition-all duration-200"
+               style={{ boxShadow: '0 8px 25px rgba(37, 99, 235, 0.25)' }}>
+            <MessageCircle className="w-7 h-7 text-white" />
           </div>
+          <span className="text-sm font-medium text-gray-900 mb-1">Text</span>
+          <span className="text-xs text-blue-600 font-semibold">Response in under 1 min</span>
         </button>
 
-        {/* Tertiary - Email (Gray) */}
+        {/* Email - Under 5 Min Response */}
         <button 
           onClick={onEmailOption}
-          className="w-full bg-white hover:bg-gray-50 text-gray-700 rounded-xl py-4 px-6 font-medium transition-all duration-200 transform hover:scale-[1.01] hover:-translate-y-0.5 border border-gray-200 hover:border-gray-300"
-          style={{ 
-            boxShadow: '0 4px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.1)',
-          }}
+          className="flex flex-col items-center group transition-all duration-200 transform hover:scale-110 active:scale-95"
         >
-          <div className="text-center">
-            <div className="text-base font-semibold">Send an email</div>
-            <div className="text-sm opacity-70 mt-1">Opens your email app with our details</div>
+          <div className="w-16 h-16 bg-gray-600 hover:bg-gray-700 rounded-2xl flex items-center justify-center mb-2 shadow-lg group-hover:shadow-xl transition-all duration-200"
+               style={{ boxShadow: '0 8px 25px rgba(75, 85, 99, 0.25)' }}>
+            <Mail className="w-7 h-7 text-white" />
           </div>
-        </button>
-
-        {/* Form option */}
-        <button 
-          onClick={onFormOption}
-          className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl py-3 px-6 font-medium transition-all duration-200 text-sm"
-        >
-          Fill out a form instead
+          <span className="text-sm font-medium text-gray-900 mb-1">Email</span>
+          <span className="text-xs text-gray-600 font-semibold">Response in under 5 min</span>
         </button>
       </div>
     </div>
