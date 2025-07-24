@@ -907,26 +907,26 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Message Builder - Fixed at Top */}
-      <div className="px-4 pt-4 pb-2 bg-gray-50">
-          <Card className="border border-blue-200 bg-gradient-to-br from-blue-50 to-white shadow-sm">
-            <CardContent className="p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <MessageSquare className="w-3 h-3 text-white" />
+      {/* Message Builder - Premium Design */}
+      <div className="px-4 pt-6 pb-4 bg-gray-50">
+          <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 via-white to-blue-50 shadow-lg">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
+                  <MessageSquare className="w-4 h-4 text-white" />
                 </div>
-                <div className="font-medium text-gray-700 text-xs tracking-wide">Building Your Message</div>
+                <div className="font-semibold text-gray-800 text-sm tracking-wide">Building Your Message</div>
                 <div className="flex-1"></div>
                 {(userName || urgency) && (
-                  <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-full">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-xs text-green-700 font-medium animate-pulse">Live</span>
+                  <div className="flex items-center gap-1.5 bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-1.5 rounded-full border border-green-200 shadow-sm">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-xs text-green-700 font-semibold animate-pulse">Live</span>
                   </div>
                 )}
               </div>
               
-              <div className="bg-white p-2.5 rounded-lg border border-gray-100 shadow-sm">
-                <div className="text-sm leading-relaxed text-gray-800">
+              <div className="bg-white p-4 rounded-xl border border-blue-100 shadow-md">
+                <div className="text-sm leading-relaxed text-gray-800 font-medium">
                   "{renderLiveMessage()}"
                 </div>
               </div>
@@ -937,31 +937,48 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
       {/* Content Area */}
       <div className="px-4 pb-20">
           {currentStep === 'name' && (
-            <div className="animate-in slide-in-from-bottom-4 duration-500 text-center space-y-6">
-              <h2 className="text-xl font-bold text-gray-900">
-                What's your name?
-              </h2>
-              <div className="max-w-sm mx-auto">
-                <Input
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  placeholder="Enter your first name"
-                  className="h-14 text-lg text-center border-2 border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-xl shadow-sm"
-                  autoFocus
-                />
-                <p className="text-xs text-gray-500 mt-2">
-                  Watch it build above
-                </p>
+            <div className="animate-in slide-in-from-bottom-4 duration-500 text-center space-y-8">
+              <div className="space-y-3">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
+                  <User className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  What's your name?
+                </h2>
+                <p className="text-gray-600 text-base">Let's personalize your message</p>
+              </div>
+              
+              <div className="max-w-sm mx-auto space-y-3">
+                <div className="relative group">
+                  <Input
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                    placeholder="Enter your first name"
+                    className="text-center text-lg h-14 rounded-xl border-2 border-blue-200 focus:border-blue-500 bg-white shadow-sm transition-all duration-200 focus:shadow-md focus:scale-[1.02]"
+                    autoFocus
+                  />
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                </div>
+                <div className="flex items-center justify-center gap-2 text-sm text-blue-600">
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
+                  <span className="font-medium">Watch it build above</span>
+                </div>
               </div>
             </div>
           )}
 
           {currentStep === 'urgency' && (
-            <div className="animate-in slide-in-from-bottom-4 duration-500">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">
-                When do you need this?
-              </h2>
-              <div className="space-y-1.5">
+            <div className="animate-in slide-in-from-bottom-4 duration-500 space-y-8">
+              <div className="text-center space-y-3">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
+                  <Clock className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  When do you need this?
+                </h2>
+                <p className="text-gray-600 text-base">Help us prioritize your request</p>
+              </div>
+              <div className="space-y-3">
                 {[
                   { id: 'today', label: 'Today', desc: 'ASAP - highest priority', icon: Clock },
                   { id: 'tomorrow', label: 'Tomorrow', desc: 'Next day pickup', icon: Calendar },
@@ -995,38 +1012,43 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
         )}
 
         {currentStep === 'send' && (
-          <div className="animate-in slide-in-from-bottom-4 duration-500 text-center">
-            <div className="mb-5">
-              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                <Check className="w-8 h-8 text-green-600" />
+          <div className="animate-in slide-in-from-bottom-4 duration-500 text-center space-y-8">
+            <div className="space-y-4">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-3xl flex items-center justify-center mx-auto shadow-xl">
+                <CheckCircle className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Perfect! Your message is ready</h3>
-              <p className="text-gray-600 text-sm">
-                Tap to copy and send your personalized message
-              </p>
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold text-gray-900">Perfect! Your message is ready</h3>
+                <p className="text-gray-600 text-base max-w-sm mx-auto">
+                  Your personalized message has been crafted and is ready to send
+                </p>
+              </div>
             </div>
             
-            <Button 
-              onClick={handleSendMessage}
-              className="w-full h-14 rounded-xl text-base font-semibold bg-green-600 hover:bg-green-700 text-white transform hover:scale-[1.01] transition-all duration-200 mb-3 shadow-lg"
-              style={{ 
-                boxShadow: '0 4px 16px rgba(34, 197, 94, 0.25)'
-              }}
-            >
-              Send Message Now
-            </Button>
-            
-            <Button 
-              onClick={() => {
-                setCurrentStep('name');
-                setUserName('');
-                setUrgency('');
-              }}
-              variant="ghost"
-              className="w-full text-gray-500 hover:text-gray-700 text-sm"
-            >
-              Edit message
-            </Button>
+            <div className="space-y-4 max-w-sm mx-auto">
+              <Button 
+                onClick={handleSendMessage}
+                className="w-full h-16 rounded-xl text-lg font-semibold bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white transform hover:scale-[1.02] transition-all duration-200 shadow-xl"
+                style={{ 
+                  boxShadow: '0 8px 24px rgba(34, 197, 94, 0.3)'
+                }}
+              >
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Send Message Now
+              </Button>
+              
+              <Button 
+                onClick={() => {
+                  setCurrentStep('name');
+                  setUserName('');
+                  setUrgency('');
+                }}
+                variant="ghost"
+                className="w-full text-gray-500 hover:text-gray-700 text-base py-3 hover:bg-gray-50 rounded-xl transition-all duration-200"
+              >
+                ← Edit message
+              </Button>
+            </div>
           </div>
         )}
 
