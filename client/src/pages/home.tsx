@@ -883,9 +883,9 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Premium Message Preview - LOCKED IN VIEWPORT */}
-      <div className="sticky top-0 z-50 pt-6 px-4 bg-gray-50">
+    <div className="fixed inset-0 bg-gray-50 flex flex-col overflow-hidden">
+      {/* Premium Message Preview - COMPLETELY LOCKED */}
+      <div className="flex-shrink-0 pt-6 px-4 bg-gray-50 z-50">
         <Card className="border border-blue-200 bg-gradient-to-br from-blue-50 to-white shadow-sm">
           <CardContent className="p-3">
             <div className="flex items-center gap-2 mb-2">
@@ -911,8 +911,8 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
         </Card>
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 px-4 py-4">
+      {/* Main Content Area - CONTROLLED SCROLL */}
+      <div className="flex-1 px-4 py-4 overflow-y-auto">
         {currentStep === 'name' && (
           <div className="animate-in slide-in-from-bottom-4 duration-500 text-center">
             <h2 className="text-xl font-bold text-gray-900 mb-4">
