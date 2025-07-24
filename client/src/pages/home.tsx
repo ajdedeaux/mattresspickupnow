@@ -772,8 +772,8 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
     
     // Smart location logic
     const getLocationText = () => {
-      if (userData.zip) {
-        return `in the ${userData.zip} area`;
+      if (userData.zipCode) {
+        return `in the ${userData.zipCode} area`;
       }
       return 'in the Tampa area';
     };
@@ -824,8 +824,8 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
     
     // Smart location logic
     const getLocationText = () => {
-      if (userData.zip) {
-        return `in the ${userData.zip} area`;
+      if (userData.zipCode) {
+        return `in the ${userData.zipCode} area`;
       }
       return 'in the Tampa area';
     };
@@ -891,10 +891,10 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header - Always Visible */}
-      <div className="flex-shrink-0 px-4 py-3 border-b border-gray-200 bg-white z-50">
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50">
+      {/* Single Header - Fixed Position */}
+      <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
+        <div className="flex items-center justify-between px-4 py-3">
           <div>
             <h1 className="text-xl font-bold text-gray-900">MattressPickupNow</h1>
             <p className="text-sm text-gray-600">Sleep on it tonight</p>
@@ -907,69 +907,71 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
             Back
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* Premium Message Preview - STICKY */}
-      <div className="sticky top-0 flex-shrink-0 pt-4 px-4 bg-gray-50 z-40">
-        <Card className="border border-blue-200 bg-gradient-to-br from-blue-50 to-white shadow-sm">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center">
-                <MessageSquare className="w-3 h-3 text-white" />
-              </div>
-              <div className="font-medium text-gray-700 text-xs tracking-wide">Building Your Message</div>
-              <div className="flex-1"></div>
-              {(userName || urgency) && (
-                <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-full">
-                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-green-700 font-medium animate-pulse">Live</span>
+      {/* Main Content - Account for Fixed Header */}
+      <main className="pt-20">
+        {/* Message Builder - Fixed at Top of Content */}
+        <div className="sticky top-20 bg-gray-50 px-4 pt-4 pb-2 z-40">
+          <Card className="border border-blue-200 bg-gradient-to-br from-blue-50 to-white shadow-sm">
+            <CardContent className="p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <MessageSquare className="w-3 h-3 text-white" />
                 </div>
-              )}
-            </div>
-            
-            <div className="bg-white p-2.5 rounded-lg border border-gray-100 shadow-sm">
-              <div className="text-sm leading-relaxed text-gray-800">
-                "{renderLiveMessage()}"
+                <div className="font-medium text-gray-700 text-xs tracking-wide">Building Your Message</div>
+                <div className="flex-1"></div>
+                {(userName || urgency) && (
+                  <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-full">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-xs text-green-700 font-medium animate-pulse">Live</span>
+                  </div>
+                )}
+              </div>
+              
+              <div className="bg-white p-2.5 rounded-lg border border-gray-100 shadow-sm">
+                <div className="text-sm leading-relaxed text-gray-800">
+                  "{renderLiveMessage()}"
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Content Area - Mobile Keyboard Safe */}
+        <div className="px-4 py-6 pb-96">
+          {currentStep === 'name' && (
+            <div className="animate-in slide-in-from-bottom-4 duration-500 text-center space-y-6">
+              <h2 className="text-xl font-bold text-gray-900">
+                What's your name?
+              </h2>
+              <div className="max-w-sm mx-auto">
+                <Input
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  placeholder="Enter your first name"
+                  className="h-14 text-lg text-center border-2 border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-xl shadow-sm"
+                  autoFocus
+                />
+                <p className="text-xs text-gray-500 mt-2">
+                  Watch it build above
+                </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          )}
 
-      {/* Main Content Area - SIMPLE SCROLL */}
-      <div className="flex-1 px-4 py-6">
-        {currentStep === 'name' && (
-          <div className="animate-in slide-in-from-bottom-4 duration-500 text-center space-y-6">
-            <h2 className="text-xl font-bold text-gray-900">
-              What's your name?
-            </h2>
-            <div className="max-w-sm mx-auto">
-              <Input
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                placeholder="Enter your first name"
-                className="h-14 text-lg text-center border-2 border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-xl shadow-sm"
-                autoFocus
-              />
-              <p className="text-xs text-gray-500 mt-2">
-                Watch it build above
-              </p>
-            </div>
-          </div>
-        )}
-
-        {currentStep === 'urgency' && (
-          <div className="animate-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">
-              When do you need this?
-            </h2>
-            <div className="space-y-1.5">
-              {[
-                { id: 'today', label: 'Today', desc: 'ASAP - highest priority', icon: Clock },
-                { id: 'tomorrow', label: 'Tomorrow', desc: 'Next day pickup', icon: Calendar },
-                { id: 'week', label: 'This week', desc: 'Within a few days', icon: CalendarDays }
-              ].map((option) => (
-                <button
+          {currentStep === 'urgency' && (
+            <div className="animate-in slide-in-from-bottom-4 duration-500">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">
+                When do you need this?
+              </h2>
+              <div className="space-y-1.5">
+                {[
+                  { id: 'today', label: 'Today', desc: 'ASAP - highest priority', icon: Clock },
+                  { id: 'tomorrow', label: 'Tomorrow', desc: 'Next day pickup', icon: Calendar },
+                  { id: 'week', label: 'This week', desc: 'Within a few days', icon: CalendarDays }
+                ].map((option) => (
+                  <button
                   key={option.id}
                   type="button"
                   onClick={() => setUrgency(option.id)}
@@ -1031,19 +1033,20 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
             </Button>
           </div>
         )}
-      </div>
+        </div>
 
-      {/* Bottom Navigation */}
-      <div className="px-4 pb-6">
-        <Button 
-          onClick={onBack}
-          variant="outline"
-          className="w-full h-11 border border-gray-200 hover:border-gray-300 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to options
-        </Button>
-      </div>
+        {/* Bottom Navigation */}
+        <div className="px-4 pb-6">
+          <Button 
+            onClick={onBack}
+            variant="outline"
+            className="w-full h-11 border border-gray-200 hover:border-gray-300 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to options
+          </Button>
+        </div>
+      </main>
     </div>
   );
 };

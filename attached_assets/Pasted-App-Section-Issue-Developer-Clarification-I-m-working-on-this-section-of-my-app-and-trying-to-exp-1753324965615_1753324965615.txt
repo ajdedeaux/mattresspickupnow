@@ -1,0 +1,29 @@
+App Section Issue – Developer Clarification
+
+I’m working on this section of my app and trying to explain exactly what I’m seeing right now.
+
+Major Problems:
+	1.	Duplicate Branding:
+The brand name/logo “Mattress Pickup Now” is showing up twice. It should only be displayed once—always at the top—and consistently across every page.
+	2.	Weird Page Layering:
+It feels like there are three pages stacked in one. The screen shows the main message section, which should be locked in place. This is where the user builds their message, sees it populate live, and fills in the details. That part should be fully visible and stable.
+But behind that, it seems like there’s another screen or layer—a separate page. That’s where the issue kicks in.
+	3.	Scroll + Input Behavior Is Glitchy:
+	•	When I click into a text box and start typing (like entering a name), the layout shifts unexpectedly.
+	•	It moves elements into strange positions, breaking the alignment.
+	•	After typing, when I move to the next field, things jump back into place and look fine again.
+	•	This happens repeatedly, especially when using the keyboard—it seems to throw everything off.
+	4.	Populating Data Flow Feels Broken:
+The data isn’t populating naturally beneath the message the way it should. Everything looks fine at first glance, but as soon as interaction starts, it breaks.
+	5.	Suspected Cause:
+I think the keyboard interaction is messing with the layout and causing these UI alignment issues. The dev seems to be having trouble fixing this cleanly.
+
+⸻
+
+What I Need:
+	•	Help figuring out a reliable way to lock the main message and interactive elements in place, even when typing or using the keyboard.
+	•	A fix that prevents this jumpy behavior and weird page overlap.
+	•	I sent over screenshots to show what I’m seeing visually—use them to understand the layout and issue.
+	•	I’m almost there. This is the final piece. I just need to get this part nailed down so I can wrap it up and be done.
+
+Think creatively—look at different ways we can solve this. I need clean execution here, not a patch job.
