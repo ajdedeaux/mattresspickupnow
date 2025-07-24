@@ -360,7 +360,7 @@ const SizeStep = ({ onSelect }: { onSelect: (size: string) => void }) => {
             <Card 
               key={size.id}
               className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-blue-300"
-              onClick={() => onSelect(size.label)}
+              onClick={() => onSelect(size.name)}
             >
               <CardContent className="p-6 text-center">
                 <div className="mb-3 flex justify-center">
@@ -795,12 +795,16 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
     const comfortType = userData.comfort || 'Medium';
     const mattressSize = userData.size || 'Queen';
     
-    // Smart location logic
+    // Smart location logic - using nearest store for location context
     const getLocationText = () => {
-      if (userData.zipCode) {
-        return `in the ${userData.zipCode} area`;
+      if (nearestStore?.address) {
+        // Extract city from store address (assumes format: "123 Main St, Tampa, FL 33607")
+        const addressParts = nearestStore.address.split(', ');
+        if (addressParts.length >= 2) {
+          return `in the ${addressParts[1]} area`;
+        }
       }
-      return 'in the Tampa area';
+      return 'in your area';
     };
     
     // Smart product description with CORRECT pricing matrix
@@ -847,12 +851,16 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
     const comfortType = userData.comfort || 'Medium';
     const mattressSize = userData.size || 'Queen';
     
-    // Smart location logic
+    // Smart location logic - using nearest store for location context
     const getLocationText = () => {
-      if (userData.zipCode) {
-        return `in the ${userData.zipCode} area`;
+      if (nearestStore?.address) {
+        // Extract city from store address (assumes format: "123 Main St, Tampa, FL 33607")
+        const addressParts = nearestStore.address.split(', ');
+        if (addressParts.length >= 2) {
+          return `in the ${addressParts[1]} area`;
+        }
       }
-      return 'in the Tampa area';
+      return 'in your area';
     };
     
     // Smart product description with CORRECT pricing matrix
@@ -1286,12 +1294,16 @@ const EmailStep = ({ userData, onBack }: { userData: UserData; onBack: () => voi
     const comfortType = userData.comfort || 'Medium';
     const mattressSize = userData.size || 'Queen';
     
-    // Smart location logic
+    // Smart location logic - using nearest store for location context
     const getLocationText = () => {
-      if (userData.location?.address) {
-        return `in the ${userData.location.address} area`;
+      if (nearestStore?.address) {
+        // Extract city from store address (assumes format: "123 Main St, Tampa, FL 33607")
+        const addressParts = nearestStore.address.split(', ');
+        if (addressParts.length >= 2) {
+          return `in the ${addressParts[1]} area`;
+        }
       }
-      return 'in the Tampa area';
+      return 'in your area';
     };
     
     const getProductDescription = () => {
@@ -1352,12 +1364,16 @@ ${userName}`;
     const comfortType = userData.comfort || 'Medium';
     const mattressSize = userData.size || 'Queen';
     
-    // Smart location logic
+    // Smart location logic - using nearest store for location context
     const getLocationText = () => {
-      if (userData.location?.address) {
-        return `in the ${userData.location.address} area`;
+      if (nearestStore?.address) {
+        // Extract city from store address (assumes format: "123 Main St, Tampa, FL 33607")
+        const addressParts = nearestStore.address.split(', ');
+        if (addressParts.length >= 2) {
+          return `in the ${addressParts[1]} area`;
+        }
       }
-      return 'in the Tampa area';
+      return 'in your area';
     };
     
     const getProductDescription = () => {
@@ -1490,33 +1506,8 @@ ${userName}`;
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Email Builder Preview */}
-      <div className="px-4 pt-6 pb-4 bg-gray-50">
-        <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 via-white to-blue-50 shadow-lg">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
-                <Mail className="w-4 h-4 text-white" />
-              </div>
-              <div className="font-semibold text-gray-800 text-sm tracking-wide">Building Your Email</div>
-              <div className="flex-1"></div>
-              {(userName || urgency) && (
-                <div className="flex items-center gap-1.5 bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-1.5 rounded-full border border-green-200 shadow-sm">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-green-700 font-semibold animate-pulse">Live</span>
-                </div>
-              )}
-            </div>
-            
-            <div className="bg-white p-4 rounded-xl border border-blue-100 shadow-md">
-              {renderLiveEmail()}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Back Button */}
-      <div className="px-4 pb-4">
+      <div className="px-4 pt-4 pb-2">
         <Button 
           onClick={onBack}
           variant="ghost" 
@@ -1527,130 +1518,156 @@ ${userName}`;
         </Button>
       </div>
 
-      {/* Content Area */}
-      <div className="px-4 pb-20">
-        {currentStep === 'name' && !hasStartedInput && (
-          <div className="animate-in slide-in-from-bottom-4 duration-500 text-center space-y-6">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-gray-900">
-                What's your name?
-              </h2>
-              <p className="text-gray-600 text-base">Let's personalize your email</p>
-            </div>
-            
-            <div className="max-w-sm mx-auto space-y-4">
-              <Button
-                onClick={() => setHasStartedInput(true)}
-                className="w-full h-14 rounded-xl text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200"
-              >
-                Enter your name
-              </Button>
-              <div className="flex items-center justify-center gap-2 text-sm text-blue-600">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
-                <span className="font-medium">Watch it build above</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {currentStep === 'name' && hasStartedInput && (
-          <div className="animate-in slide-in-from-bottom-4 duration-500 text-center space-y-6">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-gray-900">
-                What's your name?
-              </h2>
-              <p className="text-gray-600 text-base">Let's personalize your email</p>
-            </div>
-            
-            <div className="max-w-sm mx-auto space-y-3">
-              <Input
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                placeholder="Enter your first name"
-                className="text-center text-lg h-14 rounded-xl border-2 border-blue-200 focus:border-blue-500 bg-white transition-all duration-200"
-                autoFocus
-              />
-              <div className="flex items-center justify-center gap-2 text-sm text-blue-600">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
-                <span className="font-medium">Watch it build above</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {currentStep === 'urgency' && (
-          <div className="animate-in slide-in-from-bottom-4 duration-500 space-y-6">
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold text-gray-900">
-                When do you need this?
-              </h2>
-              <p className="text-gray-600 text-base">Help us prioritize your request</p>
-            </div>
-            <div className="space-y-3">
-              {[
-                { id: 'today', label: 'Today', desc: 'ASAP - highest priority', icon: Clock },
-                { id: 'tomorrow', label: 'Tomorrow', desc: 'Next day pickup', icon: Calendar },
-                { id: 'week', label: 'This week', desc: 'Within a few days', icon: CalendarDays }
-              ].map((option) => (
-                <button
-                key={option.id}
-                type="button"
-                onClick={() => setUrgency(option.id)}
-                className={`w-full p-3 rounded-xl border transition-all duration-200 transform hover:scale-[1.01] ${
-                  urgency === option.id 
-                    ? 'border-blue-500 bg-blue-50 text-blue-900 shadow-md' 
-                    : 'border-gray-200 hover:border-blue-200 hover:shadow-sm bg-white'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                    urgency === option.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    <option.icon className="w-4 h-4" />
+      {/* Split Screen Layout */}
+      <div className="flex flex-col h-screen">
+        {/* Email Preview - Top Half */}
+        <div className="flex-1 px-4 pb-2">
+          <Card className="h-full border-2 border-blue-200 bg-gradient-to-br from-blue-50 via-white to-blue-50 shadow-lg">
+            <CardContent className="p-4 h-full flex flex-col">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
+                  <Mail className="w-4 h-4 text-white" />
+                </div>
+                <div className="font-semibold text-gray-800 text-sm tracking-wide">Building Your Email</div>
+                <div className="flex-1"></div>
+                {(userName || urgency) && (
+                  <div className="flex items-center gap-1.5 bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-1.5 rounded-full border border-green-200 shadow-sm">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-xs text-green-700 font-semibold animate-pulse">Live</span>
                   </div>
-                  <div className="text-left">
-                    <div className="font-semibold text-base">{option.label}</div>
-                    <div className="text-sm opacity-70">{option.desc}</div>
+                )}
+              </div>
+              
+              <div className="bg-white p-4 rounded-xl border border-blue-100 shadow-md flex-1 overflow-y-auto">
+                {renderLiveEmail()}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Input Area - Bottom Half */}
+        <div className="flex-1 px-4 pb-4">
+          {currentStep === 'name' && (
+            <Card className="h-full border-2 border-green-200 bg-gradient-to-br from-green-50 via-white to-green-50 shadow-lg">
+              <CardContent className="p-6 h-full flex flex-col justify-center">
+                <div className="text-center space-y-6">
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      What's your name?
+                    </h2>
+                    <p className="text-gray-600 text-base">Watch your email personalize above</p>
+                  </div>
+                  
+                  <div className="max-w-sm mx-auto space-y-4">
+                    <Input
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      placeholder="Enter your first name"
+                      className="text-center text-lg h-14 rounded-xl border-2 border-green-200 focus:border-green-500 bg-white transition-all duration-200"
+                      autoFocus
+                    />
+                    
+                    {userName && userName.length > 1 && (
+                      <div className="flex items-center justify-center gap-2 text-sm text-green-600 animate-in fade-in duration-500">
+                        <CheckCircle className="w-4 h-4" />
+                        <span className="font-medium">Perfect! Moving to next step...</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </button>
-            ))}
-            </div>
-          </div>
-        )}
+              </CardContent>
+            </Card>
+          )}
 
-        {currentStep === 'send' && (
-          <div className="animate-in slide-in-from-bottom-4 duration-500 text-center space-y-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center mx-auto shadow-lg">
-              <CheckCircle className="w-8 h-8 text-green-600" />
-            </div>
-            
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-gray-900">
-                Perfect! Ready to send
-              </h2>
-              <p className="text-gray-600 text-base">Your email app will open with everything pre-filled</p>
-            </div>
-            
-            <div className="max-w-sm mx-auto space-y-4">
-              <Button
-                onClick={handleSendEmail}
-                className="w-full h-14 rounded-xl text-lg font-semibold text-white transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
-                style={{
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  boxShadow: '0 8px 25px rgba(16, 185, 129, 0.35), 0 3px 10px rgba(0,0,0,0.1)'
-                }}
-              >
-                <Mail className="w-5 h-5 mr-2" />
-                Send Email
-              </Button>
-              
-              <p className="text-xs text-gray-500 leading-relaxed">
-                Opens your email app with everything pre-filled. You send it - we never email first.
-              </p>
-            </div>
-          </div>
-        )}
+          {currentStep === 'urgency' && (
+            <Card className="h-full border-2 border-blue-200 bg-gradient-to-br from-blue-50 via-white to-blue-50 shadow-lg">
+              <CardContent className="p-6 h-full flex flex-col justify-center">
+                <div className="space-y-6">
+                  <div className="text-center space-y-2">
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      When do you need this?
+                    </h2>
+                    <p className="text-gray-600 text-base">Watch your timing update above</p>
+                  </div>
+                  <div className="space-y-3">
+                    {[
+                      { id: 'today', label: 'Today', desc: 'ASAP - highest priority', icon: Clock },
+                      { id: 'tomorrow', label: 'Tomorrow', desc: 'Next day pickup', icon: Calendar },
+                      { id: 'week', label: 'This week', desc: 'Within a few days', icon: CalendarDays }
+                    ].map((option) => (
+                      <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => setUrgency(option.id)}
+                      className={`w-full p-3 rounded-xl border transition-all duration-200 transform hover:scale-[1.01] ${
+                        urgency === option.id 
+                          ? 'border-green-500 bg-green-50 text-green-900 shadow-md' 
+                          : 'border-gray-200 hover:border-green-200 hover:shadow-sm bg-white'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                          urgency === option.id ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600'
+                        }`}>
+                          <option.icon className="w-4 h-4" />
+                        </div>
+                        <div className="text-left">
+                          <div className="font-semibold text-base">{option.label}</div>
+                          <div className="text-sm opacity-70">{option.desc}</div>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                  </div>
+                  
+                  {urgency && (
+                    <div className="flex items-center justify-center gap-2 text-sm text-green-600 animate-in fade-in duration-500">
+                      <CheckCircle className="w-4 h-4" />
+                      <span className="font-medium">Perfect! Moving to send...</span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {currentStep === 'send' && (
+            <Card className="h-full border-2 border-green-200 bg-gradient-to-br from-green-50 via-white to-green-50 shadow-lg">
+              <CardContent className="p-6 h-full flex flex-col justify-center">
+                <div className="text-center space-y-6">
+                  <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                    <CheckCircle className="w-8 h-8 text-green-600" />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Perfect! Ready to send
+                    </h2>
+                    <p className="text-gray-600 text-base">Your email app will open with everything pre-filled</p>
+                  </div>
+                  
+                  <div className="max-w-sm mx-auto space-y-4">
+                    <Button
+                      onClick={handleSendEmail}
+                      className="w-full h-14 rounded-xl text-lg font-semibold text-white transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
+                      style={{
+                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                        boxShadow: '0 8px 25px rgba(16, 185, 129, 0.35), 0 3px 10px rgba(0,0,0,0.1)'
+                      }}
+                    >
+                      <Mail className="w-5 h-5 mr-2" />
+                      Send Email
+                    </Button>
+                    
+                    <p className="text-xs text-gray-500 leading-relaxed">
+                      Opens your email app with everything pre-filled. You send it - we never email first.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );
