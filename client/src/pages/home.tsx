@@ -363,8 +363,8 @@ const SizeStep = ({ onSelect }: { onSelect: (size: string) => void }) => {
               onClick={() => onSelect(size.label)}
             >
               <CardContent className="p-6 text-center">
-                <div className="mb-3 flex justify-center">
-                  <IconComponent className="w-16 h-12" />
+                <div className="mb-4 flex justify-center items-center h-24">
+                  <IconComponent />
                 </div>
                 <div className="font-bold text-lg text-gray-900">{size.name}</div>
                 <div className="text-sm text-gray-600 mt-1">{size.dimensions}</div>

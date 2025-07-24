@@ -1,31 +1,75 @@
 import React from 'react';
 
-// Clean, minimal mattress size visualization showing dimensions only
-export const TwinMattressIcon = ({ className = "w-16 h-12" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 64 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Twin - Small rectangle (narrow and tall) */}
-    <rect x="20" y="8" width="24" height="32" rx="2" fill="#f8fafc" stroke="#3b82f6" strokeWidth="2"/>
+// Proportionally accurate mattress size visualization matching your brand
+export const TwinMattressIcon = ({ className }: { className?: string }) => (
+  <svg width="70" height="90" viewBox="0 0 70 90" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    {/* Twin - 39"×75" proportions (narrow and tall) */}
+    <rect 
+      x="10" y="5" width="50" height="80" rx="8" 
+      fill="url(#twinGradient)" 
+      stroke="#3b82f6" 
+      strokeWidth="2"
+    />
+    <defs>
+      <linearGradient id="twinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#f8fafc" />
+        <stop offset="100%" stopColor="#e2e8f0" />
+      </linearGradient>
+    </defs>
   </svg>
 );
 
-export const FullMattressIcon = ({ className = "w-16 h-12" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 64 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Full - Smaller square-ish */}
-    <rect x="16" y="10" width="32" height="28" rx="2" fill="#f8fafc" stroke="#3b82f6" strokeWidth="2"/>
+export const FullMattressIcon = ({ className }: { className?: string }) => (
+  <svg width="95" height="90" viewBox="0 0 95 90" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    {/* Full - 54"×75" proportions (wider than twin) */}
+    <rect 
+      x="5" y="5" width="85" height="80" rx="8" 
+      fill="url(#fullGradient)" 
+      stroke="#3b82f6" 
+      strokeWidth="2"
+    />
+    <defs>
+      <linearGradient id="fullGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#f8fafc" />
+        <stop offset="100%" stopColor="#e2e8f0" />
+      </linearGradient>
+    </defs>
   </svg>
 );
 
-export const QueenMattressIcon = ({ className = "w-16 h-12" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 64 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* Queen - Larger rectangle */}
-    <rect x="8" y="8" width="48" height="32" rx="2" fill="#f8fafc" stroke="#3b82f6" strokeWidth="2"/>
+export const QueenMattressIcon = ({ className }: { className?: string }) => (
+  <svg width="110" height="95" viewBox="0 0 110 95" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    {/* Queen - 60"×80" proportions (standard rectangle) */}
+    <rect 
+      x="5" y="5" width="100" height="85" rx="8" 
+      fill="url(#queenGradient)" 
+      stroke="#3b82f6" 
+      strokeWidth="2"
+    />
+    <defs>
+      <linearGradient id="queenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#f8fafc" />
+        <stop offset="100%" stopColor="#e2e8f0" />
+      </linearGradient>
+    </defs>
   </svg>
 );
 
-export const KingMattressIcon = ({ className = "w-16 h-12" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 64 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* King - Big square */}
-    <rect x="4" y="6" width="56" height="36" rx="2" fill="#f8fafc" stroke="#3b82f6" strokeWidth="2"/>
+export const KingMattressIcon = ({ className }: { className?: string }) => (
+  <svg width="130" height="95" viewBox="0 0 130 95" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    {/* King - 76"×80" proportions (widest) */}
+    <rect 
+      x="5" y="5" width="120" height="85" rx="8" 
+      fill="url(#kingGradient)" 
+      stroke="#3b82f6" 
+      strokeWidth="2"
+    />
+    <defs>
+      <linearGradient id="kingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#f8fafc" />
+        <stop offset="100%" stopColor="#e2e8f0" />
+      </linearGradient>
+    </defs>
   </svg>
 );
 

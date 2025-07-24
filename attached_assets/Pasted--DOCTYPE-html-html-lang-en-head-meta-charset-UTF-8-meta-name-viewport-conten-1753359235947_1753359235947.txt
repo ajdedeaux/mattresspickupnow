@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mattress Size Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+```
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .size-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+    
+    .size-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border: 2px solid #f0f0f0;
+        transition: border-color 0.2s;
+    }
+    
+    .size-card:hover {
+        border-color: #4285f4;
+    }
+    
+    .mattress-visual {
+        margin: 0 auto 16px;
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Proportional sizing based on actual dimensions */
+    .twin .mattress-visual {
+        width: 70px;
+        height: 90px;
+    }
+    
+    .full .mattress-visual {
+        width: 95px;
+        height: 90px;
+    }
+    
+    .queen .mattress-visual {
+        width: 110px;
+        height: 95px;
+    }
+    
+    .king .mattress-visual {
+        width: 130px;
+        height: 95px;
+    }
+    
+    .size-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 4px;
+    }
+    
+    .size-dimensions {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 8px;
+    }
+    
+    .size-description {
+        font-size: 12px;
+        color: #888;
+        line-height: 1.4;
+    }
+    
+    .mobile-version {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    
+    @media (max-width: 600px) {
+        .size-grid {
+            display: none;
+        }
+        
+        .mobile-version {
+            display: grid;
+        }
+        
+        .size-card {
+            padding: 16px;
+        }
+        
+        /* Mobile adjustments */
+        .mattress-visual {
+            width: 90px;
+            height: 70px;
+        }
+        
+        .twin .mattress-visual {
+            width: 60px;
+            height: 75px;
+        }
+        
+        .full .mattress-visual {
+            width: 75px;
+            height: 75px;
+        }
+        
+        .queen .mattress-visual {
+            width: 90px;
+            height: 80px;
+        }
+        
+        .king .mattress-visual {
+            width: 105px;
+            height: 80px;
+        }
+    }
+    
+    @media (min-width: 601px) {
+        .mobile-version {
+            display: none;
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <!-- Desktop Version -->
+        <div class="size-grid">
+            <div class="size-card twin">
+                <div class="mattress-visual"></div>
+                <div class="size-title">Twin</div>
+                <div class="size-dimensions">39" × 75"</div>
+                <div class="size-description">Kids or small spaces</div>
+            </div>
+
+```
+        <div class="size-card full">
+            <div class="mattress-visual"></div>
+            <div class="size-title">Full</div>
+            <div class="size-dimensions">54" × 75"</div>
+            <div class="size-description">Single adult</div>
+        </div>
+        
+        <div class="size-card queen">
+            <div class="mattress-visual"></div>
+            <div class="size-title">Queen</div>
+            <div class="size-dimensions">60" × 80"</div>
+            <div class="size-description">Most popular size</div>
+        </div>
+        
+        <div class="size-card king">
+            <div class="mattress-visual"></div>
+            <div class="size-title">King</div>
+            <div class="size-dimensions">76" × 80"</div>
+            <div class="size-description">Luxury/master bedroom</div>
+        </div>
+    </div>
+    
+    <!-- Mobile Version -->
+    <div class="mobile-version">
+        <div class="size-card twin">
+            <div class="mattress-visual"></div>
+            <div class="size-title">Twin</div>
+            <div class="size-dimensions">39" × 75"</div>
+            <div class="size-description">Kids or small spaces</div>
+        </div>
+        
+        <div class="size-card full">
+            <div class="mattress-visual"></div>
+            <div class="size-title">Full</div>
+            <div class="size-dimensions">54" × 75"</div>
+            <div class="size-description">Single adult</div>
+        </div>
+        
+        <div class="size-card queen">
+            <div class="mattress-visual"></div>
+            <div class="size-title">Queen</div>
+            <div class="size-dimensions">60" × 80"</div>
+            <div class="size-description">Most popular size</div>
+        </div>
+        
+        <div class="size-card king">
+            <div class="mattress-visual"></div>
+            <div class="size-title">King</div>
+            <div class="size-dimensions">76" × 80"</div>
+            <div class="size-description">Luxury/master bedroom</div>
+        </div>
+    </div>
+</div>
+```
+
+</body>
+</html>
