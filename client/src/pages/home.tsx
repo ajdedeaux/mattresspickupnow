@@ -747,10 +747,10 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
   const [currentStep, setCurrentStep] = useState<'name' | 'urgency' | 'send'>('name');
   const nearestStore = userData.nearestStores[0];
   
-  // Auto-advance to next step when name is entered
+  // Auto-advance to next step when name is entered (with longer delay)
   useEffect(() => {
-    if (userName && currentStep === 'name') {
-      const timer = setTimeout(() => setCurrentStep('urgency'), 800);
+    if (userName && userName.length >= 2 && currentStep === 'name') {
+      const timer = setTimeout(() => setCurrentStep('urgency'), 1500);
       return () => clearTimeout(timer);
     }
   }, [userName, currentStep]);
@@ -758,7 +758,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
   // Auto-advance to send when urgency is selected
   useEffect(() => {
     if (urgency && currentStep === 'urgency') {
-      const timer = setTimeout(() => setCurrentStep('send'), 800);
+      const timer = setTimeout(() => setCurrentStep('send'), 1000);
       return () => clearTimeout(timer);
     }
   }, [urgency, currentStep]);
@@ -825,55 +825,57 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
   };
 
   return (
-    <div className="space-y-4 max-h-screen overflow-hidden">
-      {/* Always Visible Live Message Builder */}
-      <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 sticky top-0 z-10">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-              <MessageSquare className="w-4 h-4 text-white" />
-            </div>
-            <div className="font-semibold text-gray-900 text-sm">Building Your Message</div>
-            <div className="flex-1"></div>
-            {(userName || urgency) && (
-              <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs text-green-600 font-medium">Live</span>
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      {/* Fixed Message Preview at Top */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 p-4">
+        <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
+                <MessageSquare className="w-3 h-3 text-white" />
               </div>
-            )}
-          </div>
-          
-          <div className="bg-white p-4 rounded-lg border border-blue-200">
-            <div className="text-sm leading-relaxed font-medium">
-              "{renderLiveMessage()}"
+              <div className="font-semibold text-gray-900 text-xs">Building Your Message</div>
+              <div className="flex-1"></div>
+              {(userName || urgency) && (
+                <div className="flex items-center gap-1">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-green-600 font-medium">Live</span>
+                </div>
+              )}
             </div>
-          </div>
-        </CardContent>
-      </Card>
+            
+            <div className="bg-white p-3 rounded-lg border border-blue-200">
+              <div className="text-xs leading-relaxed font-medium">
+                "{renderLiveMessage()}"
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Progressive Step Interface */}
-      <div className="px-4">
+      {/* Main Content Area with Top Padding */}
+      <div className="flex-1 pt-32 pb-20 px-4">
         {currentStep === 'name' && (
-          <div className="animate-in slide-in-from-bottom-4 duration-500">
-            <label className="block text-lg font-bold text-gray-900 mb-3 text-center">
+          <div className="animate-in slide-in-from-bottom-4 duration-500 text-center">
+            <label className="block text-xl font-bold text-gray-900 mb-4">
               What's your name?
             </label>
             <Input
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               placeholder="Enter your first name"
-              className="h-14 text-lg text-center border-2 border-blue-200 focus:border-blue-500 rounded-xl"
+              className="h-16 text-xl text-center border-2 border-blue-200 focus:border-blue-500 rounded-xl mb-3"
               autoFocus
             />
-            <p className="text-center text-sm text-gray-600 mt-2">
-              Watch your message build as you type
+            <p className="text-sm text-gray-600">
+              Watch your message build live above
             </p>
           </div>
         )}
 
         {currentStep === 'urgency' && (
           <div className="animate-in slide-in-from-bottom-4 duration-500">
-            <label className="block text-lg font-bold text-gray-900 mb-3 text-center">
+            <label className="block text-xl font-bold text-gray-900 mb-4 text-center">
               When do you need this?
             </label>
             <div className="space-y-3">
@@ -889,7 +891,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
                   className={`w-full p-4 rounded-xl border-2 text-left transition-all duration-200 transform hover:scale-[1.02] ${
                     urgency === option.id 
                       ? 'border-blue-500 bg-blue-50 text-blue-900 shadow-lg' 
-                      : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+                      : 'border-gray-200 hover:border-gray-300 hover:shadow-md bg-white'
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -907,19 +909,19 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
 
         {currentStep === 'send' && (
           <div className="animate-in slide-in-from-bottom-4 duration-500 text-center">
-            <div className="mb-4">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Check className="w-8 h-8 text-green-600" />
+            <div className="mb-6">
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Check className="w-10 h-10 text-green-600" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Perfect! Your message is ready</h3>
-              <p className="text-sm text-gray-600">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Perfect! Your message is ready</h3>
+              <p className="text-gray-600">
                 Tap below to copy and send your personalized message
               </p>
             </div>
             
             <Button 
               onClick={handleSendMessage}
-              className="w-full h-14 rounded-xl text-base font-bold bg-green-600 hover:bg-green-700 text-white transform hover:scale-[1.02] transition-all duration-200"
+              className="w-full h-16 rounded-xl text-lg font-bold bg-green-600 hover:bg-green-700 text-white transform hover:scale-[1.02] transition-all duration-200 mb-4"
               style={{ 
                 boxShadow: '0 8px 20px rgba(34, 197, 94, 0.3), 0 2px 4px rgba(0,0,0,0.1)'
               }}
@@ -928,26 +930,30 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
             </Button>
             
             <Button 
-              onClick={() => setCurrentStep('name')}
+              onClick={() => {
+                setCurrentStep('name');
+                setUserName('');
+                setUrgency('');
+              }}
               variant="ghost"
-              className="w-full mt-3 text-gray-600"
+              className="w-full text-gray-600 text-base"
             >
               Edit message
             </Button>
           </div>
         )}
+      </div>
 
-        {/* Back button - always available */}
-        <div className="mt-6 pb-4">
-          <Button 
-            onClick={onBack}
-            variant="outline"
-            className="w-full h-10 border border-gray-200 hover:border-gray-300 rounded-lg text-sm"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back to options
-          </Button>
-        </div>
+      {/* Fixed Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+        <Button 
+          onClick={onBack}
+          variant="outline"
+          className="w-full h-12 border border-gray-200 hover:border-gray-300 rounded-lg"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to options
+        </Button>
       </div>
     </div>
   );
