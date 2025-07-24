@@ -892,9 +892,9 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Single Header - Fixed Position */}
-      <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
-        <div className="flex items-center justify-between px-4 py-3">
+      {/* Header */}
+      <div className="px-4 py-4 border-b border-gray-200 bg-white">
+        <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-gray-900">MattressPickupNow</h1>
             <p className="text-sm text-gray-600">Sleep on it tonight</p>
@@ -907,12 +907,10 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
             Back
           </button>
         </div>
-      </header>
+      </div>
 
-      {/* Main Content - Account for Fixed Header */}
-      <main className="pt-20">
-        {/* Message Builder - Fixed at Top of Content */}
-        <div className="sticky top-20 bg-gray-50 px-4 pt-4 pb-2 z-40">
+      {/* Message Builder - Sticky */}
+      <div className="sticky top-0 bg-gray-50 px-4 pt-4 pb-2 z-40">
           <Card className="border border-blue-200 bg-gradient-to-br from-blue-50 to-white shadow-sm">
             <CardContent className="p-3">
               <div className="flex items-center gap-2 mb-2">
@@ -938,8 +936,8 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
           </Card>
         </div>
 
-        {/* Content Area - Mobile Keyboard Safe */}
-        <div className="px-4 py-6 pb-96">
+      {/* Content Area */}
+      <div className="px-4 py-6">
           {currentStep === 'name' && (
             <div className="animate-in slide-in-from-bottom-4 duration-500 text-center space-y-6">
               <h2 className="text-xl font-bold text-gray-900">
@@ -1033,20 +1031,18 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
             </Button>
           </div>
         )}
-        </div>
 
         {/* Bottom Navigation */}
-        <div className="px-4 pb-6">
-          <Button 
+        <div className="mt-8 pt-8 border-t border-gray-200">
+          <button
             onClick={onBack}
-            variant="outline"
-            className="w-full h-11 border border-gray-200 hover:border-gray-300 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mx-auto"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-4 h-4" />
             Back to options
-          </Button>
+          </button>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
