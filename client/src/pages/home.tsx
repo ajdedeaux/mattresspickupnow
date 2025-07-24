@@ -765,11 +765,31 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
     }
   }, [urgency, currentStep]);
   
-  // Generate final message for sending
+  // Generate final message for sending with SMART DATA
   const generateFinalMessage = () => {
-    const comfortType = userData.comfort?.toLowerCase() || 'medium';
+    const comfortType = userData.comfort || 'Medium';
     const mattressSize = userData.size || 'Queen';
-    const location = 'Tampa area';
+    
+    // Smart location logic
+    const getLocationText = () => {
+      if (userData.zipCode) {
+        return `in the ${userData.zipCode} area`;
+      }
+      return 'in the Tampa area';
+    };
+    
+    // Smart product description with pricing
+    const getProductDescription = () => {
+      const prices = {
+        'Firm': userData.size === 'Queen' ? '$299' : '$299',
+        'Medium': userData.size === 'Queen' ? '$399' : '$399', 
+        'Soft': userData.size === 'Queen' ? '$699' : '$699',
+        'Hybrid': userData.size === 'Queen' ? '$499' : '$499'
+      };
+      
+      const price = prices[comfortType as keyof typeof prices] || '$399';
+      return `${mattressSize} ${comfortType} for ${price}`;
+    };
     
     const urgencyMap = {
       'today': 'today',
@@ -779,7 +799,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
     
     const timingText = urgency ? urgencyMap[urgency as keyof typeof urgencyMap] : 'soon';
     
-    return `Hi! My name is ${userName} and I'm in the ${location}. I just used your mattress finder and I'm interested in a ${mattressSize} ${comfortType}. I'd like to come try it ${timingText} and buy it if it's right for me. Can you help me find the best pickup location? Please get back to me right away, I'm ready to move forward!`;
+    return `Hi! My name is ${userName} and I'm ${getLocationText()}. I just used your mattress finder and I'm interested in the ${getProductDescription()} that I selected. I'd like to come try it ${timingText} and buy it if it's right for me. Can you help me find the best pickup location? Please get back to me right away, I'm ready to move forward!`;
   };
   
   const handleSendMessage = () => {
@@ -793,11 +813,31 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
     window.open(`sms:${phoneNumber}?body=${encodeURIComponent(finalMessage)}`);
   };
 
-  // LIVE message builder with REAL visual updates
+  // SMART DYNAMIC message builder with PRE-POPULATED data highlighting
   const renderLiveMessage = () => {
-    const comfortType = userData.comfort?.toLowerCase() || 'medium';
+    const comfortType = userData.comfort || 'Medium';
     const mattressSize = userData.size || 'Queen';
-    const location = 'Tampa area';
+    
+    // Smart location logic
+    const getLocationText = () => {
+      if (userData.zipCode) {
+        return `in the ${userData.zipCode} area`;
+      }
+      return 'in the Tampa area';
+    };
+    
+    // Smart product description with pricing
+    const getProductDescription = () => {
+      const prices = {
+        'Firm': userData.size === 'Queen' ? '$299' : '$299',
+        'Medium': userData.size === 'Queen' ? '$399' : '$399', 
+        'Soft': userData.size === 'Queen' ? '$699' : '$699',
+        'Hybrid': userData.size === 'Queen' ? '$499' : '$499'
+      };
+      
+      const price = prices[comfortType as keyof typeof prices] || '$399';
+      return `${mattressSize} ${comfortType} for ${price}`;
+    };
     
     const urgencyMap = {
       'today': 'today',
@@ -819,7 +859,15 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
         >
           {userName || '[YOUR NAME]'}
         </span>
-        {' '}and I'm in the {location}. I just used your mattress finder and I'm interested in a {mattressSize} {comfortType}. I'd like to come try it{' '}
+        {' '}and I'm{' '}
+        <span className="font-semibold text-gray-900 bg-yellow-100 px-2 py-1 rounded-md">
+          {getLocationText()}
+        </span>
+        . I just used your mattress finder and I'm interested in{' '}
+        <span className="font-semibold text-gray-900 bg-yellow-100 px-2 py-1 rounded-md">
+          the {getProductDescription()}
+        </span>
+        {' '}that I selected. I'd like to come try it{' '}
         <span 
           className={`transition-all duration-500 font-medium ${
             urgency 

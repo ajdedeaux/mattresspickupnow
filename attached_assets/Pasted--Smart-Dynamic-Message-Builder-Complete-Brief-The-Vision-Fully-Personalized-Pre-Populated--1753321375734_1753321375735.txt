@@ -1,0 +1,71 @@
+## Smart Dynamic Message Builder - Complete Brief
+
+### The Vision: Fully Personalized Pre-Populated Experience
+
+Transform the generic template into a personalized commitment statement using ALL their funnel data, with visual indicators showing what’s already captured vs. what they need to provide.
+
+### Dynamic Data Population Requirements:
+
+**Mattress Selection Integration:**
+
+- Pull their exact mattress choice: “Queen Medium Hybrid for $499”
+- Include specific product name if selected: “Sealy Memory Foam Queen Medium for $399”
+- Show the actual price they saw during selection
+
+**Smart Location Logic:**
+
+- ZIP code only → “in the 33606 area”
+- Precise location/city → “in downtown Tampa” or “in Westchase”
+- Current location used → “near my current location”
+- Use neighborhood/city names when API provides them
+
+### Visual Distinction Strategy:
+
+**Pre-Populated Data (Different Styling):**
+
+- Mattress selection, size, price → **Bold or highlighted background**
+- Location information → **Bold or highlighted background**
+- Static message parts → **Different color/styling to show “we got this”**
+
+**User Input Fields (Current Styling):**
+
+- Name → **Placeholder styling until filled**
+- Urgency → **Placeholder styling until selected**
+
+### Example Visual Treatment:
+
+```
+"Hi! My name is [NAME INPUT] and I'm in **the Westchase area**. 
+I just used your mattress finder and I'm interested in **the Queen 
+Medium Hybrid for $499** that I selected. I'd like to come try it 
+[URGENCY INPUT] and buy it if it's right for me. Can you help me 
+find the best pickup location? Please get back to me right away, 
+I'm ready to move forward!"
+```
+
+### Psychology Behind Visual Treatment:
+
+- **Bold/highlighted sections** = “We captured this perfectly”
+- **Regular input sections** = “Just need these 2 things from you”
+- **Clear visual separation** = “Look how much we already know vs. how little you need to add”
+
+### User Experience Flow:
+
+1. **See pre-populated data** → “Wow, they got everything right”
+1. **See minimal input needed** → “Just my name and timing? Easy!”
+1. **Fill in gaps** → Watch their personal message complete
+1. **Send** → Feel ownership of THEIR specific choice
+
+### Technical Requirements:
+
+- Pull all selection data from previous funnel steps
+- Apply location intelligence based on input method
+- Style pre-populated content differently (bold, background color, or highlight)
+- Keep user input fields in current styling until completed
+- Ensure real-time updates maintain visual distinction
+
+### The Result:
+
+A message that feels like a **personalized purchase confirmation** rather than a generic inquiry. Users see their exact selections reflected back, creating ownership and commitment before they even send the message.
+
+**This transforms casual interest into confirmed purchase intent!** 🚀​​​​​​​​​​​​​​​​
