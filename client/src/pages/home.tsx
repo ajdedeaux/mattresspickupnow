@@ -308,35 +308,35 @@ const UseCaseStep = ({ onSelect, storeCount }: { onSelect: (useCase: string) => 
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Exciting Success Header */}
+    <div className="space-y-4">
+      {/* Compact Success Header */}
       {storeCount && (
-        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl p-6 shadow-lg mb-6">
-          <div className="flex items-center justify-center space-x-2 mb-2">
-            <CheckCircle className="w-8 h-8" />
-            <span className="text-2xl font-bold">Perfect!</span>
+        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl p-3 shadow-lg mb-3">
+          <div className="flex items-center justify-center space-x-2 mb-1">
+            <CheckCircle className="w-5 h-5" />
+            <span className="text-lg font-bold">Perfect!</span>
           </div>
-          <div className="text-lg font-semibold">Found {storeCount} pickup locations nearby</div>
-          <div className="text-green-100 text-sm mt-1">Let's understand your preferences to help narrow things down</div>
+          <div className="text-sm font-semibold">Found {storeCount} pickup locations nearby</div>
+          <div className="text-green-100 text-xs">Let's understand your preferences to help narrow things down</div>
         </div>
       )}
       
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Who is this mattress for?</h2>
-        <p className="text-gray-600">This helps us recommend the perfect fit</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-1">Who is this mattress for?</h2>
+        <p className="text-gray-600 text-sm">This helps us recommend the perfect fit</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         {useCases.map((useCase) => (
           <Card 
             key={useCase.id} 
             className="cursor-pointer hover:shadow-lg transition-all duration-200 border-2 hover:border-blue-300 hover:scale-105"
             onClick={() => onSelect(useCase.id)}
           >
-            <CardContent className="p-6 text-center">
-              <useCase.icon className="w-8 h-8 mx-auto mb-3 text-blue-600" />
-              <div className="font-semibold text-gray-900">{useCase.label}</div>
-              <div className="text-sm text-gray-500 mt-1">{useCase.description}</div>
+            <CardContent className="p-4 text-center">
+              <useCase.icon className="w-6 h-6 mx-auto mb-2 text-blue-600" />
+              <div className="font-semibold text-gray-900 text-sm">{useCase.label}</div>
+              <div className="text-xs text-gray-500 mt-1">{useCase.description}</div>
             </CardContent>
           </Card>
         ))}
