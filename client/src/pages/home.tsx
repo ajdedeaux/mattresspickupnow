@@ -825,27 +825,27 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Fixed Message Preview at Top */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 p-4">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Compact Message Preview - positioned in sweet spot */}
+      <div className="pt-8 px-4">
         <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                <MessageSquare className="w-3 h-3 text-white" />
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center">
+                <MessageSquare className="w-4 h-4 text-white" />
               </div>
-              <div className="font-semibold text-gray-900 text-xs">Building Your Message</div>
+              <div className="font-semibold text-gray-900 text-sm">Building Your Message</div>
               <div className="flex-1"></div>
               {(userName || urgency) && (
                 <div className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                   <span className="text-xs text-green-600 font-medium">Live</span>
                 </div>
               )}
             </div>
             
-            <div className="bg-white p-3 rounded-lg border border-blue-200">
-              <div className="text-xs leading-relaxed font-medium">
+            <div className="bg-white p-4 rounded-lg border border-blue-200">
+              <div className="text-sm leading-relaxed font-medium">
                 "{renderLiveMessage()}"
               </div>
             </div>
@@ -853,11 +853,11 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
         </Card>
       </div>
 
-      {/* Main Content Area with Top Padding */}
-      <div className="flex-1 pt-32 pb-20 px-4">
+      {/* Main Content Area - immediate below message */}
+      <div className="flex-1 px-4 py-6">
         {currentStep === 'name' && (
           <div className="animate-in slide-in-from-bottom-4 duration-500 text-center">
-            <label className="block text-xl font-bold text-gray-900 mb-4">
+            <label className="block text-2xl font-bold text-gray-900 mb-4">
               What's your name?
             </label>
             <Input
@@ -875,7 +875,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
 
         {currentStep === 'urgency' && (
           <div className="animate-in slide-in-from-bottom-4 duration-500">
-            <label className="block text-xl font-bold text-gray-900 mb-4 text-center">
+            <label className="block text-2xl font-bold text-gray-900 mb-4 text-center">
               When do you need this?
             </label>
             <div className="space-y-3">
@@ -897,7 +897,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{option.emoji}</span>
                     <div>
-                      <div className="font-bold text-base">{option.label}</div>
+                      <div className="font-bold text-lg">{option.label}</div>
                       <div className="text-sm text-gray-600">{option.desc}</div>
                     </div>
                   </div>
@@ -913,8 +913,8 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Check className="w-10 h-10 text-green-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Perfect! Your message is ready</h3>
-              <p className="text-gray-600">
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Perfect! Your message is ready</h3>
+              <p className="text-gray-600 text-lg">
                 Tap below to copy and send your personalized message
               </p>
             </div>
@@ -936,7 +936,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
                 setUrgency('');
               }}
               variant="ghost"
-              className="w-full text-gray-600 text-base"
+              className="w-full text-gray-600 text-lg"
             >
               Edit message
             </Button>
@@ -944,8 +944,8 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
         )}
       </div>
 
-      {/* Fixed Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+      {/* Bottom Navigation */}
+      <div className="px-4 pb-6">
         <Button 
           onClick={onBack}
           variant="outline"
