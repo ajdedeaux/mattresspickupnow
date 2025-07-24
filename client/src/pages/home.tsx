@@ -347,13 +347,13 @@ const UseCaseStep = ({ onSelect, storeCount }: { onSelect: (useCase: string) => 
 
 const SizeStep = ({ onSelect }: { onSelect: (size: string) => void }) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">What size mattress do you need?</h2>
         <p className="text-gray-600">All sizes available for same-day pickup</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-4">
         {mattressSizes.map((size) => {
           const IconComponent = size.icon;
           return (
@@ -362,13 +362,13 @@ const SizeStep = ({ onSelect }: { onSelect: (size: string) => void }) => {
               className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-blue-300"
               onClick={() => onSelect(size.label)}
             >
-              <CardContent className="p-4 text-center">
-                <div className="mb-3 flex justify-center items-center h-16">
+              <CardContent className="p-6 text-center">
+                <div className="mb-3 flex justify-center">
                   <IconComponent />
                 </div>
                 <div className="font-bold text-lg text-gray-900">{size.name}</div>
                 <div className="text-sm text-gray-600 mt-1">{size.dimensions}</div>
-                <div className="text-xs text-gray-500 mt-1">{size.description}</div>
+                <div className="text-xs text-gray-500 mt-2">{size.description}</div>
               </CardContent>
             </Card>
           );
