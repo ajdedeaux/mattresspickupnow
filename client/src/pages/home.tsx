@@ -1399,8 +1399,21 @@ ${userName}`;
             className={`transition-all duration-500 font-medium ${
               userName 
                 ? 'bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-sm' 
-                : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md'
+                : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md cursor-pointer hover:bg-gray-200 hover:scale-105'
             }`}
+            onClick={() => {
+              if (!userName && currentStep !== 'name') {
+                setCurrentStep('name');
+                setHasStartedInput(true);
+                setTimeout(() => {
+                  const element = document.querySelector('input[placeholder="Enter your first name"]') as HTMLInputElement;
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    element.focus();
+                  }
+                }, 100);
+              }
+            }}
           >
             {userName || '[YOUR NAME]'}
           </span>
@@ -1419,8 +1432,19 @@ ${userName}`;
             className={`transition-all duration-500 font-medium ${
               urgency 
                 ? 'bg-green-100 text-green-900 px-2 py-1 rounded-md shadow-sm' 
-                : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md'
+                : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md cursor-pointer hover:bg-gray-200 hover:scale-105'
             }`}
+            onClick={() => {
+              if (!urgency && currentStep !== 'urgency') {
+                setCurrentStep('urgency');
+                setTimeout(() => {
+                  const element = document.querySelector('h2:contains("When do you need this?")');
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                }, 100);
+              }
+            }}
           >
             {timingText}
           </span>
@@ -1437,8 +1461,21 @@ ${userName}`;
             className={`transition-all duration-500 font-medium ${
               userName 
                 ? 'bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-sm' 
-                : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md'
+                : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md cursor-pointer hover:bg-gray-200 hover:scale-105'
             }`}
+            onClick={() => {
+              if (!userName && currentStep !== 'name') {
+                setCurrentStep('name');
+                setHasStartedInput(true);
+                setTimeout(() => {
+                  const element = document.querySelector('input[placeholder="Enter your first name"]') as HTMLInputElement;
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    element.focus();
+                  }
+                }, 100);
+              }
+            }}
           >
             {userName || '[YOUR NAME]'}
           </span>
