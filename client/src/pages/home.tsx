@@ -1402,88 +1402,105 @@ ${userName}`;
 
     return (
       <div className="text-sm text-gray-700 leading-relaxed">
-        <div className="mb-3">
-          <strong>To:</strong> <span className="text-blue-600">info@mattresspickupnow.com</span><br/>
-          <strong>Subject:</strong> Mattress Inquiry - {getProductDescription()}
+        {/* Horizontal Email Header */}
+        <div className="flex flex-col gap-2 mb-3 text-xs">
+          <div className="flex gap-2">
+            <span className="font-semibold text-gray-600 min-w-0">To:</span>
+            <span className="text-blue-600">info@mattresspickupnow.com</span>
+          </div>
+          <div className="flex gap-2">
+            <span className="font-semibold text-gray-600 min-w-0">Subject:</span>
+            <span className="text-gray-800">Mattress Inquiry - {getProductDescription()}</span>
+          </div>
         </div>
         
-        <div className="border-t pt-3">
-          Hi there!<br/><br/>
+        {/* Compact Email Body */}
+        <div className="border-t pt-3 space-y-3">
+          <div>Hi there!</div>
           
-          My name is{' '}
-          <span 
-            className={`transition-all duration-500 font-medium ${
-              userName 
-                ? 'bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-sm' 
-                : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md cursor-pointer hover:bg-gray-200 hover:scale-105'
-            }`}
-            onClick={() => {
-              if (!userName) {
-                setCurrentStep('name');
-                setHasStartedInput(true);
-                setTimeout(() => {
-                  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                }, 100);
-              }
-            }}
-          >
-            {userName || '[YOUR NAME]'}
-          </span>
-          {' '}and I'm{' '}
-          <span className="font-semibold text-gray-900 bg-yellow-100 px-2 py-1 rounded-md">
-            {getLocationText()}
-          </span>
-          . I just used your mattress finder and I'm interested in{' '}
-          <span className="font-semibold text-gray-900 bg-yellow-100 px-2 py-1 rounded-md">
-            the {getProductDescription()}
-          </span>
-          {' '}that's available for same-day pickup.<br/><br/>
+          <div>
+            My name is{' '}
+            <span 
+              className={`transition-all duration-500 font-medium ${
+                userName 
+                  ? 'bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-sm' 
+                  : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md cursor-pointer hover:bg-gray-200 hover:scale-105'
+              }`}
+              onClick={() => {
+                if (!userName) {
+                  setCurrentStep('name');
+                  setHasStartedInput(true);
+                  setTimeout(() => {
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                  }, 100);
+                }
+              }}
+            >
+              {userName || '[YOUR NAME]'}
+            </span>
+            {' '}and I'm{' '}
+            <span className="font-semibold text-gray-900 bg-yellow-100 px-2 py-1 rounded-md">
+              {getLocationText()}
+            </span>
+            . I just used your mattress finder and I'm interested in{' '}
+            <span className="font-semibold text-gray-900 bg-yellow-100 px-2 py-1 rounded-md">
+              the {getProductDescription()}
+            </span>
+            {' '}that's available for same-day pickup.
+          </div>
           
-          I'd like to come try it{' '}
-          <span 
-            className={`transition-all duration-500 font-medium ${
-              urgency 
-                ? 'bg-green-100 text-green-900 px-2 py-1 rounded-md shadow-sm' 
-                : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md cursor-pointer hover:bg-gray-200 hover:scale-105'
-            }`}
-            onClick={() => {
-              if (!urgency) {
-                setCurrentStep('urgency');
-                setTimeout(() => {
-                  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                }, 100);
-              }
-            }}
-          >
-            {timingText}
-          </span>
-          {' '}and buy it if it's right for me. Could you please send me:<br/>
-          - Store location and hours<br/>
-          - Availability confirmation<br/>
-          - Any current promotions<br/>
-          - Best time to visit and try it out<br/><br/>
+          <div>
+            I'd like to come try it{' '}
+            <span 
+              className={`transition-all duration-500 font-medium ${
+                urgency 
+                  ? 'bg-green-100 text-green-900 px-2 py-1 rounded-md shadow-sm' 
+                  : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md cursor-pointer hover:bg-gray-200 hover:scale-105'
+              }`}
+              onClick={() => {
+                if (!urgency) {
+                  setCurrentStep('urgency');
+                  setTimeout(() => {
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                  }, 100);
+                }
+              }}
+            >
+              {timingText}
+            </span>
+            {' '}and buy it if it's right for me. Could you please send me:
+          </div>
+
+          <div className="ml-4 text-gray-600 space-y-1">
+            <div>- Store location and hours</div>
+            <div>- Availability confirmation</div>
+            <div>- Any current promotions</div>
+            <div>- Best time to visit and try it out</div>
+          </div>
           
-          I'm ready to make a decision quickly if it's the right fit!<br/><br/>
+          <div>I'm ready to make a decision quickly if it's the right fit!</div>
           
-          Thank you,<br/>
-          <span 
-            className={`transition-all duration-500 font-medium ${
-              userName 
-                ? 'bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-sm' 
-                : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md cursor-pointer hover:bg-gray-200 hover:scale-105'
-            }`}
-            onClick={() => {
-              if (!userName) {
-                setCurrentStep('name');
-                setHasStartedInput(true);
-                setTimeout(() => {
-                  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                }, 100);
-              }
-            }}
-          >
-            {userName || '[YOUR NAME]'}
-          </span>
+          <div>
+            Thank you,<br/>
+            <span 
+              className={`transition-all duration-500 font-medium ${
+                userName 
+                  ? 'bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-sm' 
+                  : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md cursor-pointer hover:bg-gray-200 hover:scale-105'
+              }`}
+              onClick={() => {
+                if (!userName) {
+                  setCurrentStep('name');
+                  setHasStartedInput(true);
+                  setTimeout(() => {
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                  }, 100);
+                }
+              }}
+            >
+              {userName || '[YOUR NAME]'}
+            </span>
+          </div>
         </div>
       </div>
     );
@@ -1505,12 +1522,10 @@ ${userName}`;
               </div>
               <div className="font-semibold text-gray-800 text-sm tracking-wide">Building Your Email</div>
               <div className="flex-1"></div>
-              {(userName || urgency) && (
-                <div className="flex items-center gap-1.5 bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-1.5 rounded-full border border-green-200 shadow-sm">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-green-700 font-semibold animate-pulse">Live</span>
-                </div>
-              )}
+              <div className="flex items-center gap-1.5 bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-1.5 rounded-full border border-green-200 shadow-sm">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs text-green-700 font-semibold animate-pulse">Live</span>
+              </div>
             </div>
             
             <div className="bg-white p-4 rounded-xl border border-blue-100 shadow-md">
@@ -1520,17 +1535,7 @@ ${userName}`;
         </Card>
       </div>
 
-      {/* Back Button */}
-      <div className="px-4 pb-4">
-        <Button 
-          onClick={onBack}
-          variant="ghost" 
-          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-2"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to options
-        </Button>
-      </div>
+
 
       {/* Content Area */}
       <div className="px-4 pb-20">
@@ -1632,9 +1637,9 @@ ${userName}`;
             
             <div className="space-y-2">
               <h2 className="text-2xl font-bold text-gray-900">
-                Perfect! Ready to send
+                Perfect! Your email is ready
               </h2>
-              <p className="text-gray-600 text-base">Your email app will open with everything pre-filled</p>
+              <p className="text-gray-600 text-base">Your personalized message has been crafted and is ready to send</p>
             </div>
             
             <div className="max-w-sm mx-auto space-y-4">
@@ -1650,9 +1655,14 @@ ${userName}`;
                 Send Email
               </Button>
               
-              <p className="text-xs text-gray-500 leading-relaxed">
-                Opens your email app with everything pre-filled. You send it - we never email first.
-              </p>
+              <Button
+                onClick={() => setCurrentStep('name')}
+                variant="ghost"
+                className="w-full text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Edit message
+              </Button>
             </div>
           </div>
         )}
