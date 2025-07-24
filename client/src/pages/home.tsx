@@ -891,9 +891,9 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-50 flex flex-col overflow-hidden mobile-viewport">
-      {/* Header */}
-      <div className="flex-shrink-0 px-4 py-4 border-b border-gray-200 bg-white">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header - Always Visible */}
+      <div className="flex-shrink-0 px-4 py-3 border-b border-gray-200 bg-white z-50">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-gray-900">MattressPickupNow</h1>
@@ -909,8 +909,8 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
         </div>
       </div>
 
-      {/* Premium Message Preview - COMPLETELY LOCKED */}
-      <div className="flex-shrink-0 pt-6 px-4 bg-gray-50 z-50">
+      {/* Premium Message Preview - STICKY */}
+      <div className="sticky top-0 flex-shrink-0 pt-4 px-4 bg-gray-50 z-40">
         <Card className="border border-blue-200 bg-gradient-to-br from-blue-50 to-white shadow-sm">
           <CardContent className="p-3">
             <div className="flex items-center gap-2 mb-2">
@@ -936,39 +936,25 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
         </Card>
       </div>
 
-      {/* Main Content Area - MOBILE KEYBOARD OPTIMIZED */}
-      <div className="flex-1 px-4 py-4 overflow-y-auto" style={{ minHeight: 'calc(100vh - 280px)' }}>
+      {/* Main Content Area - SIMPLE SCROLL */}
+      <div className="flex-1 px-4 py-6">
         {currentStep === 'name' && (
-          <div className="animate-in slide-in-from-bottom-4 duration-500 text-center min-h-[50vh] flex flex-col justify-center">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">
+          <div className="animate-in slide-in-from-bottom-4 duration-500 text-center space-y-6">
+            <h2 className="text-xl font-bold text-gray-900">
               What's your name?
             </h2>
-            <Input
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              placeholder="Enter your first name"
-              className="h-14 text-lg text-center border-2 border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-xl mb-4 shadow-sm mobile-input-focus"
-              autoFocus
-              onFocus={(e) => {
-                // Smart mobile keyboard adjustment
-                setTimeout(() => {
-                  const element = e.target;
-                  const rect = element.getBoundingClientRect();
-                  const viewportHeight = window.visualViewport?.height || window.innerHeight;
-                  
-                  // If input is in lower half or potentially hidden by keyboard
-                  if (rect.top > viewportHeight * 0.5) {
-                    element.scrollIntoView({ 
-                      behavior: 'smooth', 
-                      block: 'center'
-                    });
-                  }
-                }, 100);
-              }}
-            />
-            <p className="text-xs text-gray-500">
-              Watch it build above
-            </p>
+            <div className="max-w-sm mx-auto">
+              <Input
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                placeholder="Enter your first name"
+                className="h-14 text-lg text-center border-2 border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-xl shadow-sm"
+                autoFocus
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                Watch it build above
+              </p>
+            </div>
           </div>
         )}
 
