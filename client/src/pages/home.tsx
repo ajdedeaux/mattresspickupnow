@@ -32,6 +32,7 @@ import {
   Shield,
   DollarSign
 } from 'lucide-react';
+import { mattressSizes } from '@/components/MattressSizeIcons';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -345,13 +346,6 @@ const UseCaseStep = ({ onSelect, storeCount }: { onSelect: (useCase: string) => 
 };
 
 const SizeStep = ({ onSelect }: { onSelect: (size: string) => void }) => {
-  const sizes = [
-    { id: 'twin', label: 'Twin', dimensions: '39" × 75"', description: 'Kids or small spaces' },
-    { id: 'full', label: 'Full', dimensions: '54" × 75"', description: 'Single adult' },
-    { id: 'queen', label: 'Queen', dimensions: '60" × 80"', description: 'Most popular size' },
-    { id: 'king', label: 'King', dimensions: '76" × 80"', description: 'Luxury/master bedroom' }
-  ];
-
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -360,20 +354,29 @@ const SizeStep = ({ onSelect }: { onSelect: (size: string) => void }) => {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        {sizes.map((size) => (
-          <Card 
-            key={size.id}
-            className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-blue-300"
-            onClick={() => onSelect(size.label)}
-          >
-            <CardContent className="p-6 text-center">
-              <Bed className="w-8 h-8 mx-auto mb-3 text-blue-600" />
-              <div className="font-bold text-lg text-gray-900">{size.label}</div>
-              <div className="text-sm text-gray-600 mt-1">{size.dimensions}</div>
-              <div className="text-xs text-gray-500 mt-2">{size.description}</div>
-            </CardContent>
-          </Card>
-        ))}
+        {mattressSizes.map((size) => {
+          const IconComponent = size.icon;
+          return (
+            <Card 
+              key={size.id}
+              className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-blue-300"
+              onClick={() => onSelect(size.label)}
+            >
+              <CardContent className="p-4 text-center">
+                <div className="mb-3 flex justify-center">
+                  <IconComponent className="w-20 h-16" />
+                </div>
+                <div className="font-bold text-lg text-gray-900">{size.name}</div>
+                <div className="text-sm text-gray-600 mt-1">{size.dimensions}</div>
+                <div className="text-xs text-gray-500 mt-2">{size.description}</div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+      
+      <div className="text-center text-xs text-gray-400 mt-4">
+        Visual guides show typical usage - all sizes fit comfortably in most vehicles
       </div>
     </div>
   );
