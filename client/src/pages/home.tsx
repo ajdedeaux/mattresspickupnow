@@ -30,7 +30,8 @@ import {
   Calendar,
   CalendarDays,
   Shield,
-  DollarSign
+  DollarSign,
+  Car
 } from 'lucide-react';
 import { mattressSizes } from '@/components/MattressSizeIcons';
 import { useMutation } from '@tanstack/react-query';
@@ -189,7 +190,7 @@ const LocationStep = ({ onLocationFound, isLoading }: {
         {/* Trust badges below tagline */}
         {!inputFocused && (
           <div className="mb-4 transition-opacity duration-300">
-            <div className="flex justify-center items-center space-x-4 mb-3">
+            <div className="flex justify-center items-center space-x-3 mb-3">
               <div className="flex items-center space-x-1 text-xs text-gray-600">
                 <Clock className="w-3 h-3" />
                 <span>Same-day pickup</span>
@@ -200,7 +201,11 @@ const LocationStep = ({ onLocationFound, isLoading }: {
               </div>
               <div className="flex items-center space-x-1 text-xs text-gray-600">
                 <DollarSign className="w-3 h-3" />
-                <span>Price match</span>
+                <span>Price match guarantee</span>
+              </div>
+              <div className="flex items-center space-x-1 text-xs text-gray-600">
+                <Car className="w-3 h-3" />
+                <span>Fits in the car</span>
               </div>
             </div>
             <p className="text-gray-600">Let's find a location near you</p>
