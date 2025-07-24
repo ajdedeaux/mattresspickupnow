@@ -362,9 +362,9 @@ const SizeStep = ({ onSelect }: { onSelect: (size: string) => void }) => {
               className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-blue-300"
               onClick={() => onSelect(size.label)}
             >
-              <CardContent className="p-4 text-center">
+              <CardContent className="p-6 text-center">
                 <div className="mb-3 flex justify-center">
-                  <IconComponent className="w-20 h-16" />
+                  <IconComponent className="w-16 h-12" />
                 </div>
                 <div className="font-bold text-lg text-gray-900">{size.name}</div>
                 <div className="text-sm text-gray-600 mt-1">{size.dimensions}</div>
@@ -374,10 +374,7 @@ const SizeStep = ({ onSelect }: { onSelect: (size: string) => void }) => {
           );
         })}
       </div>
-      
-      <div className="text-center text-xs text-gray-400 mt-4">
-        Visual guides show typical usage - all sizes fit comfortably in most vehicles
-      </div>
+
     </div>
   );
 };
