@@ -909,8 +909,8 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
         </div>
       </div>
 
-      {/* Message Builder - Sticky */}
-      <div className="sticky top-0 bg-gray-50 px-4 pt-4 pb-2 z-40">
+      {/* Message Builder - Fixed at Top */}
+      <div className="px-4 pt-4 pb-2 bg-gray-50">
           <Card className="border border-blue-200 bg-gradient-to-br from-blue-50 to-white shadow-sm">
             <CardContent className="p-3">
               <div className="flex items-center gap-2 mb-2">
@@ -937,7 +937,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
         </div>
 
       {/* Content Area */}
-      <div className="px-4 py-6">
+      <div className="px-4 pb-20">
           {currentStep === 'name' && (
             <div className="animate-in slide-in-from-bottom-4 duration-500 text-center space-y-6">
               <h2 className="text-xl font-bold text-gray-900">
