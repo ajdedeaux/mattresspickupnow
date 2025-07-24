@@ -1,0 +1,40 @@
+## Email Builder Requirements & Context
+
+### Current Implementation Issues:
+
+The email builder is missing the core personalization that makes the text message builder so effective. It’s not pulling in the dynamic data from their funnel journey - their specific mattress selection, price, location, etc. This defeats the purpose of creating a truly personalized experience that reinforces their commitment to the exact product they selected.
+
+### The Core Concept:
+
+Transform the traditional “give us your info and we’ll email you” approach into “build your personalized inquiry email.” Users should see their exact selections (mattress type, price, location) pre-populated in the email preview, with only minimal additional input required from them.
+
+### Streamlined Data Collection Strategy:
+
+**Remove the email input field entirely.** This is the key insight - we don’t need to ask for their email address because we’ll capture it automatically when they send the email from their own email client. This eliminates friction and makes the process feel more natural.
+
+**Simplified input requirements:**
+
+- Name input (for personalization)
+- Urgency selection (for qualification)
+- That’s it
+
+### The Psychology Behind This Approach:
+
+When users see their specific product selection highlighted in the email preview (e.g., “the Queen Medium Hybrid for $399 that I selected”), it creates ownership and reinforces their purchase intent. They’re not just inquiring about mattresses generally - they’re following up on their specific choice.
+
+### The Technical Flow:
+
+1. User inputs name → Email personalizes in real-time
+1. User selects urgency → Email updates with their timeline
+1. User hits “Send Email” → Their email client opens with complete message
+1. They send from their own email → You receive inbound inquiry with their email address in the “From” field
+
+### Why This Works Better:
+
+- **Zero friction** - Minimal input required
+- **Natural capture** - Their email comes through organically
+- **Higher intent** - Pre-populated product details create commitment
+- **Compliance advantage** - They’re initiating contact, not you
+- **Professional appearance** - Looks like a legitimate business inquiry, not a lead form
+
+The goal is to maintain the same magical real-time building experience as the text message version, but optimized for email inquiries with even less user effort required.​​​​​​​​​​​​​​​​
