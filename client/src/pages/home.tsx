@@ -762,6 +762,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
   const [userName, setUserName] = useState('');
   const [urgency, setUrgency] = useState('');
   const [currentStep, setCurrentStep] = useState<'name' | 'urgency' | 'send'>('name');
+  const [hasStartedInput, setHasStartedInput] = useState(false);
   const nearestStore = userData.nearestStores[0];
   
   // Auto-advance to next step when name is entered (with longer delay)
@@ -936,7 +937,31 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
 
       {/* Content Area */}
       <div className="px-4 pb-20">
-          {currentStep === 'name' && (
+          {currentStep === 'name' && !hasStartedInput && (
+            <div className="animate-in slide-in-from-bottom-4 duration-500 text-center space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  What's your name?
+                </h2>
+                <p className="text-gray-600 text-base">Let's personalize your message</p>
+              </div>
+              
+              <div className="max-w-sm mx-auto space-y-4">
+                <Button
+                  onClick={() => setHasStartedInput(true)}
+                  className="w-full h-14 rounded-xl text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200"
+                >
+                  Enter your name
+                </Button>
+                <div className="flex items-center justify-center gap-2 text-sm text-blue-600">
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
+                  <span className="font-medium">Watch it build above</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 'name' && hasStartedInput && (
             <div className="animate-in slide-in-from-bottom-4 duration-500 text-center space-y-6">
               <div className="space-y-2">
                 <h2 className="text-2xl font-bold text-gray-900">
@@ -1028,6 +1053,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
                   setCurrentStep('name');
                   setUserName('');
                   setUrgency('');
+                  setHasStartedInput(false);
                 }}
                 variant="ghost"
                 className="w-full text-gray-500 hover:text-gray-700 text-base py-3 hover:bg-gray-50 rounded-xl transition-all duration-200"
@@ -1038,16 +1064,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
           </div>
         )}
 
-        {/* Bottom Navigation */}
-        <div className="mt-8 pt-8 border-t border-gray-200">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mx-auto"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to options
-          </button>
-        </div>
+
       </div>
     </div>
   );
