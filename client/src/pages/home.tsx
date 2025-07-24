@@ -87,7 +87,7 @@ const LocationStep = ({ onLocationFound, isLoading }: {
       const locationResponse = await fetch('/api/resolve-location', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ zipCode: zipToSubmit })
+        body: JSON.stringify({ zip: zipToSubmit })
       });
       
       const locationData = await locationResponse.json();
