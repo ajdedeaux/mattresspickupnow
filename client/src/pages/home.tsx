@@ -809,114 +809,108 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Create your message</h2>
-        <p className="text-gray-600">Watch it build as you personalize it</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-1">Create your message</h2>
+        <p className="text-gray-600 text-sm">Watch it build live</p>
       </div>
 
-      {/* Live Message Preview - Prominent Position */}
-      <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
-        <CardContent className="p-6">
-          <div className="text-center mb-4">
-            <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
-              <MessageSquare className="w-6 h-6 text-white" />
-            </div>
-            <div className="font-semibold text-gray-900 text-lg">Your Personalized Message</div>
-          </div>
-          <div className="bg-white p-5 rounded-xl border border-blue-200 shadow-sm">
-            <div className="text-sm leading-relaxed font-medium">
-              "{renderLiveMessage()}"
-            </div>
-            {userName && (
-              <div className="mt-3 flex items-center gap-2 text-xs text-blue-600">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                Name added! Message updated
-              </div>
-            )}
-            {urgency && (
-              <div className="mt-2 flex items-center gap-2 text-xs text-green-600">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                Urgency set! Message personalized
-              </div>
-            )}
-          </div>
-          <div className="text-center mt-3">
-            <span className="text-xs text-blue-600 font-medium">
-              {!userName && !urgency ? (
-                "👆 Start typing to see your message build live"
-              ) : userName && urgency ? (
-                "🎉 Perfect! Your message is ready to send"
-              ) : (
-                "⚡ Keep going - watch it update in real-time"
-              )}
-            </span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Form Fields - Clean and Minimal */}
-      <div className="space-y-4">
+      {/* Compact Form Fields First */}
+      <div className="space-y-3">
         <div>
-          <label className="block text-base font-semibold text-gray-900 mb-3">What's your name?</label>
+          <label className="block text-sm font-semibold text-gray-900 mb-2">What's your name?</label>
           <Input
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
             placeholder="Enter your first name"
-            className="h-12 text-base border-2 border-gray-200 focus:border-blue-500 rounded-xl"
+            className="h-10 text-sm border-2 border-gray-200 focus:border-blue-500 rounded-lg"
           />
         </div>
         
         <div>
-          <label className="block text-base font-semibold text-gray-900 mb-3">When do you need this?</label>
-          <div className="space-y-3">
+          <label className="block text-sm font-semibold text-gray-900 mb-2">When do you need this?</label>
+          <div className="grid grid-cols-1 gap-2">
             {[
-              { id: 'today', label: 'Today', desc: 'ASAP - highest priority' },
-              { id: 'tomorrow', label: 'Tomorrow', desc: 'Next day pickup' },
-              { id: 'week', label: 'This week', desc: 'Within a few days' }
+              { id: 'today', label: 'Today', desc: 'ASAP' },
+              { id: 'tomorrow', label: 'Tomorrow', desc: 'Next day' },
+              { id: 'week', label: 'This week', desc: 'Few days' }
             ].map((option) => (
               <button
                 key={option.id}
                 type="button"
                 onClick={() => setUrgency(option.id)}
-                className={`w-full p-4 rounded-xl border-2 text-left transition-all duration-200 ${
+                className={`w-full p-3 rounded-lg border-2 text-left transition-all duration-200 ${
                   urgency === option.id 
-                    ? 'border-blue-500 bg-blue-50 text-blue-900 shadow-md' 
-                    : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                    ? 'border-blue-500 bg-blue-50 text-blue-900' 
+                    : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <div className="font-semibold">{option.label}</div>
-                <div className="text-sm text-gray-600 mt-1">{option.desc}</div>
+                <div className="font-semibold text-sm">{option.label}</div>
+                <div className="text-xs text-gray-600">{option.desc}</div>
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Action Button */}
-      <div className="space-y-3">
+      {/* Compact Live Preview */}
+      <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+              <MessageSquare className="w-4 h-4 text-white" />
+            </div>
+            <div className="font-semibold text-gray-900 text-sm">Live Preview</div>
+            <div className="flex-1"></div>
+            {(userName || urgency) && (
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs text-green-600 font-medium">Updating</span>
+              </div>
+            )}
+          </div>
+          
+          <div className="bg-white p-3 rounded-lg border border-blue-200">
+            <div className="text-xs leading-relaxed">
+              "{renderLiveMessage()}"
+            </div>
+          </div>
+          
+          <div className="text-center mt-2">
+            <span className="text-xs text-blue-600 font-medium">
+              {!userName && !urgency ? (
+                "Start typing above to see live updates"
+              ) : userName && urgency ? (
+                "Perfect! Ready to send"
+              ) : (
+                "Keep going - watch it update"
+              )}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Action Buttons */}
+      <div className="space-y-2">
         <Button 
           onClick={handleSendMessage}
           disabled={!userName || !urgency}
-          className={`w-full h-14 rounded-xl text-base font-semibold transition-all duration-200 transform ${
+          className={`w-full h-12 rounded-xl text-sm font-semibold transition-all duration-200 ${
             !userName || !urgency
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-green-600 hover:bg-green-700 text-white hover:scale-[1.02] hover:-translate-y-0.5'
+              : 'bg-green-600 hover:bg-green-700 text-white'
           }`}
-          style={{ 
-            boxShadow: (!userName || !urgency) ? 'none' : '0 8px 20px rgba(34, 197, 94, 0.3), 0 2px 4px rgba(0,0,0,0.1)'
-          }}
         >
-          {(!userName || !urgency) ? 'Complete your message above' : 'Send Message'}
+          {(!userName || !urgency) ? 'Complete info above' : 'Send Message'}
         </Button>
 
         <Button 
           onClick={onBack}
           variant="outline"
-          className="w-full h-12 border-2 border-gray-200 hover:border-gray-300 rounded-xl"
+          className="w-full h-10 border border-gray-200 hover:border-gray-300 rounded-lg text-sm"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to options
+          <ArrowLeft className="w-4 h-4 mr-1" />
+          Back
         </Button>
       </div>
     </div>
