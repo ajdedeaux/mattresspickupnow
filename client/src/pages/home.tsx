@@ -182,7 +182,10 @@ const LocationStep = ({ onLocationFound, isLoading }: {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-3">Let's find your pickup location</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-3">
+          Try it. Like it. Buy it.<br />
+          Let's find a location near you
+        </h2>
         {!inputFocused && (
           <p className="text-gray-600 transition-opacity duration-300">More precise location = closer pickup options</p>
         )}
