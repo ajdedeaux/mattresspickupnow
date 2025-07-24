@@ -891,7 +891,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-50 flex flex-col overflow-hidden">
+    <div className="fixed inset-0 bg-gray-50 flex flex-col overflow-hidden mobile-viewport">
       {/* Header */}
       <div className="flex-shrink-0 px-4 py-4 border-b border-gray-200 bg-white">
         <div className="flex items-center justify-between">
@@ -936,19 +936,35 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
         </Card>
       </div>
 
-      {/* Main Content Area - CONTROLLED SCROLL */}
-      <div className="flex-1 px-4 py-4 overflow-y-auto">
+      {/* Main Content Area - MOBILE KEYBOARD OPTIMIZED */}
+      <div className="flex-1 px-4 py-4 overflow-y-auto" style={{ minHeight: 'calc(100vh - 280px)' }}>
         {currentStep === 'name' && (
-          <div className="animate-in slide-in-from-bottom-4 duration-500 text-center">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
+          <div className="animate-in slide-in-from-bottom-4 duration-500 text-center min-h-[50vh] flex flex-col justify-center">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
               What's your name?
             </h2>
             <Input
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               placeholder="Enter your first name"
-              className="h-14 text-lg text-center border-2 border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-xl mb-2 shadow-sm"
+              className="h-14 text-lg text-center border-2 border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-xl mb-4 shadow-sm mobile-input-focus"
               autoFocus
+              onFocus={(e) => {
+                // Smart mobile keyboard adjustment
+                setTimeout(() => {
+                  const element = e.target;
+                  const rect = element.getBoundingClientRect();
+                  const viewportHeight = window.visualViewport?.height || window.innerHeight;
+                  
+                  // If input is in lower half or potentially hidden by keyboard
+                  if (rect.top > viewportHeight * 0.5) {
+                    element.scrollIntoView({ 
+                      behavior: 'smooth', 
+                      block: 'center'
+                    });
+                  }
+                }, 100);
+              }}
             />
             <p className="text-xs text-gray-500">
               Watch it build above
