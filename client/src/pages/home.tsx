@@ -742,38 +742,102 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
 };
 
 const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void }) => {
+  const [userName, setUserName] = useState('');
+  const [urgency, setUrgency] = useState('');
   const nearestStore = userData.nearestStores[0];
   
-  // Generate personalized, dynamic SMS message with all funnel data
-  const generateSMSMessage = () => {
+  // Generate dynamic SMS message with live updates
+  const generateLiveSMSMessage = () => {
     const comfortType = userData.comfort?.toLowerCase() || 'medium';
     const mattressSize = userData.size || 'Queen';
-    const useContext = userData.useCase || 'myself';
+    const location = 'Tampa area'; // From coordinates/stores
     
-    // Create natural, conversational message that gives business everything they need
-    return `Hi! Just went through your mattress finder - interested in the ${mattressSize} ${comfortType} for ${useContext}. Can I come try it today? What locations have immediate pickup availability?`;
+    // Name part
+    const namePart = userName ? userName : '[YOUR NAME]';
+    
+    // Urgency-specific text
+    const urgencyText = {
+      'today': { timing: 'today', followup: 'this afternoon', urgency: 'right away' },
+      'tomorrow': { timing: 'tomorrow', followup: 'tomorrow morning', urgency: 'as soon as possible' },
+      'week': { timing: 'this week', followup: 'when convenient', urgency: 'when you get a chance' }
+    };
+    
+    const urgencyData = urgencyText[urgency as keyof typeof urgencyText] || {
+      timing: '[WHEN]',
+      followup: '[TIME PREFERENCE]', 
+      urgency: '[RESPONSE SPEED]'
+    };
+    
+    return `Hi! My name is ${namePart} and I'm in the ${location}. I just used your mattress finder and I'm interested in a ${mattressSize} ${comfortType} that I can pick up ${urgencyData.timing}. I see there are locations near me - can I come try it ${urgencyData.followup}? Please get back to me ${urgencyData.urgency}, I'm ready to pick this up!`;
   };
 
-  const smsMessage = generateSMSMessage();
+  const liveMessage = generateLiveSMSMessage();
   
   const handleCopyAndText = () => {
-    navigator.clipboard.writeText(smsMessage);
+    if (!userName || !urgency) {
+      alert('Please fill in your name and when you need this');
+      return;
+    }
+    
+    navigator.clipboard.writeText(liveMessage);
     const phoneNumber = nearestStore?.phone?.replace(/\D/g, '') || '';
-    window.open(`sms:${phoneNumber}?body=${encodeURIComponent(smsMessage)}`);
+    window.open(`sms:${phoneNumber}?body=${encodeURIComponent(liveMessage)}`);
   };
 
   return (
     <div className="space-y-4">
       <div className="text-center">
-        <h2 className="text-xl font-bold text-gray-900 mb-1">Ready to text!</h2>
-        <p className="text-gray-600 text-sm">Your personalized message</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-1">Customize your message</h2>
+        <p className="text-gray-600 text-sm">Watch it update as you fill it out</p>
       </div>
 
-      <Card>
+      {/* Quick Info Collection */}
+      <div className="space-y-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-900 mb-1">What's your name?</label>
+          <Input
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            placeholder="Enter your first name"
+            className="h-10"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-900 mb-1">When do you need this?</label>
+          <div className="grid grid-cols-1 gap-2">
+            {[
+              { id: 'today', label: 'Today/Tonight', desc: 'Need it ASAP' },
+              { id: 'tomorrow', label: 'Tomorrow', desc: 'Next day pickup' },
+              { id: 'week', label: 'This week', desc: 'Within a few days' }
+            ].map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => setUrgency(option.id)}
+                className={`p-3 rounded-lg border text-left transition-all ${
+                  urgency === option.id 
+                    ? 'border-blue-500 bg-blue-50 text-blue-900' 
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="font-medium text-sm">{option.label}</div>
+                <div className="text-xs text-gray-600">{option.desc}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Live Text Preview */}
+      <Card className="border-2 border-blue-200">
         <CardContent className="p-4">
-          <div className="font-medium text-gray-900 mb-2 text-sm">Message Preview:</div>
-          <div className="bg-gray-50 p-3 rounded-lg text-gray-700 text-sm">
-            "{smsMessage}"
+          <div className="font-medium text-gray-900 mb-2 text-sm">Live Message Preview:</div>
+          <div className="bg-gray-50 p-3 rounded-lg text-gray-700 text-sm leading-relaxed">
+            "{liveMessage}"
+          </div>
+          <div className="text-xs text-blue-600 mt-2">
+            ✨ Message updates as you type and select options above
           </div>
         </CardContent>
       </Card>
@@ -781,7 +845,7 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
       <Card className="bg-blue-50 border-blue-200">
         <CardContent className="p-4">
           <div className="text-center">
-            <div className="font-medium text-gray-900 text-sm">Text this to:</div>
+            <div className="font-medium text-gray-900 text-sm">Send to:</div>
             <div className="text-lg font-bold text-blue-600 mt-1">{nearestStore?.phone}</div>
             <div className="text-xs text-gray-500 mt-1">{nearestStore?.name}</div>
           </div>
@@ -791,10 +855,11 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
       <div className="space-y-3">
         <Button 
           onClick={handleCopyAndText}
-          className="w-full h-12 bg-green-600 hover:bg-green-700 text-white rounded-xl"
+          disabled={!userName || !urgency}
+          className="w-full h-12 bg-green-600 hover:bg-green-700 text-white rounded-xl disabled:bg-gray-300"
         >
           <MessageSquare className="w-4 h-4 mr-2" />
-          Copy & Text Now
+          {(!userName || !urgency) ? 'Complete info above' : 'Copy & Send Message'}
         </Button>
 
         <Button 
