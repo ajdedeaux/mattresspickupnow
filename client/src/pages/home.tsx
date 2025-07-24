@@ -586,6 +586,20 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
   const nearestStore = userData.nearestStores[0];
   const [isFlipped, setIsFlipped] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [hasPlayedOnce, setHasPlayedOnce] = useState(false);
+  
+  // Auto-play video once on component mount
+  useEffect(() => {
+    if (!hasPlayedOnce) {
+      const timer = setTimeout(() => {
+        setIsFlipped(true);
+        setIsVideoPlaying(true);
+        setHasPlayedOnce(true);
+      }, 500); // Small delay for smooth entry
+      
+      return () => clearTimeout(timer);
+    }
+  }, [hasPlayedOnce]);
   
   return (
     <div className="space-y-4">
@@ -620,7 +634,7 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
                   🤔🤔🤔
                 </div>
                 <div className="text-base font-semibold opacity-90 group-hover:opacity-100 transition-opacity duration-300">
-                  Tap to see the proof
+                  {hasPlayedOnce ? 'Tap to replay' : 'Tap to see the proof'}
                 </div>
                 <div className="absolute inset-0 ring-2 ring-transparent group-hover:ring-blue-400/50 rounded-lg transition-all duration-300"></div>
               </div>
@@ -634,6 +648,7 @@ const ConfirmationStep = ({ userData, onSMSOption, onFormOption }: {
                     if (video && isVideoPlaying) {
                       video.play().catch(() => {});
                       video.onended = () => {
+                        // Auto-flip back after video ends to save bandwidth
                         setTimeout(() => {
                           setIsFlipped(false);
                           setIsVideoPlaying(false);
