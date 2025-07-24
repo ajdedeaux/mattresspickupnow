@@ -1,14 +1,14 @@
 import React from 'react';
 
-// Proportionally accurate mattress size visualization matching your brand
+// Compact, proportionally accurate mattress size visualization
 export const TwinMattressIcon = ({ className }: { className?: string }) => (
-  <svg width="70" height="90" viewBox="0 0 70 90" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+  <svg width="40" height="52" viewBox="0 0 40 52" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
     {/* Twin - 39"×75" proportions (narrow and tall) */}
     <rect 
-      x="10" y="5" width="50" height="80" rx="8" 
+      x="8" y="4" width="24" height="44" rx="4" 
       fill="url(#twinGradient)" 
       stroke="#3b82f6" 
-      strokeWidth="2"
+      strokeWidth="1.5"
     />
     <defs>
       <linearGradient id="twinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -20,13 +20,13 @@ export const TwinMattressIcon = ({ className }: { className?: string }) => (
 );
 
 export const FullMattressIcon = ({ className }: { className?: string }) => (
-  <svg width="95" height="90" viewBox="0 0 95 90" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+  <svg width="54" height="50" viewBox="0 0 54 50" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
     {/* Full - 54"×75" proportions (wider than twin) */}
     <rect 
-      x="5" y="5" width="85" height="80" rx="8" 
+      x="4" y="4" width="46" height="42" rx="4" 
       fill="url(#fullGradient)" 
       stroke="#3b82f6" 
-      strokeWidth="2"
+      strokeWidth="1.5"
     />
     <defs>
       <linearGradient id="fullGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -38,13 +38,13 @@ export const FullMattressIcon = ({ className }: { className?: string }) => (
 );
 
 export const QueenMattressIcon = ({ className }: { className?: string }) => (
-  <svg width="110" height="95" viewBox="0 0 110 95" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+  <svg width="60" height="52" viewBox="0 0 60 52" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
     {/* Queen - 60"×80" proportions (standard rectangle) */}
     <rect 
-      x="5" y="5" width="100" height="85" rx="8" 
+      x="4" y="4" width="52" height="44" rx="4" 
       fill="url(#queenGradient)" 
       stroke="#3b82f6" 
-      strokeWidth="2"
+      strokeWidth="1.5"
     />
     <defs>
       <linearGradient id="queenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -56,13 +56,13 @@ export const QueenMattressIcon = ({ className }: { className?: string }) => (
 );
 
 export const KingMattressIcon = ({ className }: { className?: string }) => (
-  <svg width="130" height="95" viewBox="0 0 130 95" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+  <svg width="72" height="52" viewBox="0 0 72 52" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
     {/* King - 76"×80" proportions (widest) */}
     <rect 
-      x="5" y="5" width="120" height="85" rx="8" 
+      x="4" y="4" width="64" height="44" rx="4" 
       fill="url(#kingGradient)" 
       stroke="#3b82f6" 
-      strokeWidth="2"
+      strokeWidth="1.5"
     />
     <defs>
       <linearGradient id="kingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
