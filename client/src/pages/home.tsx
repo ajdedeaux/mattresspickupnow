@@ -183,11 +183,10 @@ const LocationStep = ({ onLocationFound, isLoading }: {
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-3">
-          Try it. Like it. Buy it.<br />
-          Let's find a location near you
+          Try it. Like it. Buy it.
         </h2>
         {!inputFocused && (
-          <p className="text-gray-600 transition-opacity duration-300">More precise location = closer pickup options</p>
+          <p className="text-gray-600 transition-opacity duration-300">Let's find a location near you</p>
         )}
       </div>
 
@@ -250,6 +249,13 @@ const LocationStep = ({ onLocationFound, isLoading }: {
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 <span className="text-sm">Finding options near {zipCode}...</span>
               </div>
+            </div>
+          )}
+          
+          {/* Explanation text below ZIP input */}
+          {!inputFocused && !autoSubmitting && (
+            <div className="text-center">
+              <p className="text-xs text-gray-500">More precise location = closer pickup options</p>
             </div>
           )}
         </div>
