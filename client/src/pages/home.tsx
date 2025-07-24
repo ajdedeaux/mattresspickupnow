@@ -1401,30 +1401,27 @@ ${userName}`;
     const timingText = urgency ? urgencyMap[urgency as keyof typeof urgencyMap] : '[WHEN]';
 
     return (
-      <div className="text-sm text-gray-700 leading-relaxed">
-        {/* Horizontal Email Header */}
-        <div className="flex flex-col gap-2 mb-3 text-xs">
-          <div className="flex gap-2">
-            <span className="font-semibold text-gray-600 min-w-0">To:</span>
+      <div className="text-sm text-gray-700 leading-snug">
+        {/* Super Compact Header - Single Line */}
+        <div className="flex flex-wrap gap-x-4 gap-y-1 mb-2 text-xs text-gray-600">
+          <div className="flex gap-1">
+            <span className="font-semibold">To:</span>
             <span className="text-blue-600">info@mattresspickupnow.com</span>
           </div>
-          <div className="flex gap-2">
-            <span className="font-semibold text-gray-600 min-w-0">Subject:</span>
+          <div className="flex gap-1">
+            <span className="font-semibold">Subject:</span>
             <span className="text-gray-800">Mattress Inquiry - {getProductDescription()}</span>
           </div>
         </div>
         
-        {/* Compact Email Body */}
-        <div className="border-t pt-3 space-y-3">
-          <div>Hi there!</div>
-          
-          <div>
-            My name is{' '}
+        {/* Ultra-Compact Email Body */}
+        <div className="border-t pt-2 space-y-2">
+          <div>Hi there! My name is{' '}
             <span 
               className={`transition-all duration-500 font-medium ${
                 userName 
-                  ? 'bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-sm' 
-                  : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md cursor-pointer hover:bg-gray-200 hover:scale-105'
+                  ? 'bg-blue-100 text-blue-900 px-1.5 py-0.5 rounded shadow-sm' 
+                  : 'text-gray-400 italic bg-gray-100 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-200 hover:scale-105'
               }`}
               onClick={() => {
                 if (!userName) {
@@ -1439,23 +1436,22 @@ ${userName}`;
               {userName || '[YOUR NAME]'}
             </span>
             {' '}and I'm{' '}
-            <span className="font-semibold text-gray-900 bg-yellow-100 px-2 py-1 rounded-md">
+            <span className="font-semibold text-gray-900 bg-yellow-100 px-1.5 py-0.5 rounded">
               {getLocationText()}
             </span>
             . I just used your mattress finder and I'm interested in{' '}
-            <span className="font-semibold text-gray-900 bg-yellow-100 px-2 py-1 rounded-md">
+            <span className="font-semibold text-gray-900 bg-yellow-100 px-1.5 py-0.5 rounded">
               the {getProductDescription()}
             </span>
             {' '}that's available for same-day pickup.
           </div>
           
-          <div>
-            I'd like to come try it{' '}
+          <div>I'd like to come try it{' '}
             <span 
               className={`transition-all duration-500 font-medium ${
                 urgency 
-                  ? 'bg-green-100 text-green-900 px-2 py-1 rounded-md shadow-sm' 
-                  : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md cursor-pointer hover:bg-gray-200 hover:scale-105'
+                  ? 'bg-green-100 text-green-900 px-1.5 py-0.5 rounded shadow-sm' 
+                  : 'text-gray-400 italic bg-gray-100 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-200 hover:scale-105'
               }`}
               onClick={() => {
                 if (!urgency) {
@@ -1468,25 +1464,15 @@ ${userName}`;
             >
               {timingText}
             </span>
-            {' '}and buy it if it's right for me. Could you please send me:
-          </div>
-
-          <div className="ml-4 text-gray-600 space-y-1">
-            <div>- Store location and hours</div>
-            <div>- Availability confirmation</div>
-            <div>- Any current promotions</div>
-            <div>- Best time to visit and try it out</div>
+            {' '}and buy it if it's right for me. Could you please send me: store location/hours, availability confirmation, current promotions, and best time to visit?
           </div>
           
-          <div>I'm ready to make a decision quickly if it's the right fit!</div>
-          
-          <div>
-            Thank you,<br/>
+          <div>I'm ready to make a decision quickly if it's the right fit! Thank you,{' '}
             <span 
               className={`transition-all duration-500 font-medium ${
                 userName 
-                  ? 'bg-blue-100 text-blue-900 px-2 py-1 rounded-md shadow-sm' 
-                  : 'text-gray-400 italic bg-gray-100 px-2 py-1 rounded-md cursor-pointer hover:bg-gray-200 hover:scale-105'
+                  ? 'bg-blue-100 text-blue-900 px-1.5 py-0.5 rounded shadow-sm' 
+                  : 'text-gray-400 italic bg-gray-100 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-200 hover:scale-105'
               }`}
               onClick={() => {
                 if (!userName) {
