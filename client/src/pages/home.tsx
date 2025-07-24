@@ -182,11 +182,29 @@ const LocationStep = ({ onLocationFound, isLoading }: {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-3">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">
           Try it. Like it. Buy it.
         </h2>
+        
+        {/* Trust badges below tagline */}
         {!inputFocused && (
-          <p className="text-gray-600 transition-opacity duration-300">Let's find a location near you</p>
+          <div className="mb-4 transition-opacity duration-300">
+            <div className="flex justify-center items-center space-x-4 mb-3">
+              <div className="flex items-center space-x-1 text-xs text-gray-600">
+                <Clock className="w-3 h-3" />
+                <span>Same-day pickup</span>
+              </div>
+              <div className="flex items-center space-x-1 text-xs text-gray-600">
+                <Shield className="w-3 h-3" />
+                <span>120-night trial</span>
+              </div>
+              <div className="flex items-center space-x-1 text-xs text-gray-600">
+                <DollarSign className="w-3 h-3" />
+                <span>Price match</span>
+              </div>
+            </div>
+            <p className="text-gray-600">Let's find a location near you</p>
+          </div>
         )}
       </div>
 
@@ -260,6 +278,21 @@ const LocationStep = ({ onLocationFound, isLoading }: {
           )}
         </div>
       </div>
+
+      {/* Social proof section */}
+      {!inputFocused && !autoSubmitting && (
+        <div className="text-center mt-6 pt-4 border-t border-gray-100">
+          <div className="flex items-center justify-center space-x-2 mb-2">
+            <div className="flex text-yellow-400">
+              {[...Array(5)].map((_, i) => (
+                <span key={i} className="text-sm">⭐</span>
+              ))}
+            </div>
+            <span className="text-sm font-medium text-gray-700">4.9/5</span>
+          </div>
+          <p className="text-xs text-gray-500">Join 2,000+ happy customers who found their perfect mattress</p>
+        </div>
+      )}
 
       {/* Bottom spacing to keep content visible above keyboard */}
       <div className="h-20"></div>
