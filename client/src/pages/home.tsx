@@ -1709,7 +1709,7 @@ export default function Home() {
         <div className="max-w-md mx-auto px-6 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-gray-900">MattressPickupNow</h1>
-            <p className="text-sm text-gray-600">Why wait?</p>
+            <p className="text-base text-gray-600">Why wait? Get it today.</p>
           </div>
           {currentStep > 1 && currentStep !== 7 && (
             <Button onClick={goBack} variant="ghost" size="sm">
