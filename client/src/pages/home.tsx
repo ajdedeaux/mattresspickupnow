@@ -712,7 +712,16 @@ const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption, 
       <div className="flex justify-center space-x-12 pt-8">
         {/* Call */}
         <button 
-          onClick={() => window.open(`tel:${nearestStore?.phone || '+18135550100'}`, '_self')}
+          onClick={() => {
+            const refCodeText = referenceCode ? `Don't forget to mention your reference code: ${referenceCode}` : '';
+            const confirmMessage = referenceCode 
+              ? `Ready to call? ${refCodeText}\n\nClick OK to dial now.`
+              : 'Ready to call? Click OK to dial now.';
+            
+            if (confirm(confirmMessage)) {
+              window.open(`tel:${nearestStore?.phone || '+18135550100'}`, '_self');
+            }
+          }}
           className="flex flex-col items-center group transition-all duration-200 transform hover:scale-110 active:scale-95"
         >
           <div className="w-20 h-20 bg-green-600 hover:bg-green-700 rounded-2xl flex items-center justify-center mb-3 shadow-lg group-hover:shadow-xl transition-all duration-200"
@@ -753,7 +762,7 @@ const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption, 
   );
 };
 
-const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void }) => {
+const SMSStep = ({ userData, onBack, referenceCode }: { userData: UserData; onBack: () => void; referenceCode?: string | null }) => {
   const [userName, setUserName] = useState('');
   const [urgency, setUrgency] = useState('');
   const [currentStep, setCurrentStep] = useState<'name' | 'urgency' | 'send'>('name');
@@ -818,7 +827,8 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
     
     const timingText = urgency ? urgencyMap[urgency as keyof typeof urgencyMap] : 'soon';
     
-    return `Hi! My name is ${userName} and I'm ${getLocationText()}. I just used your mattress finder and I'm interested in the ${getProductDescription()}. I'd like to come try it ${timingText} and buy it if it's right for me. Can you help me find the best pickup location? Please get back to me right away, I'm ready to move forward!`;
+    const refCodeText = referenceCode ? ` My reference code is ${referenceCode}.` : '';
+    return `Hi! My name is ${userName} and I'm ${getLocationText()}. I just used your mattress finder and I'm interested in the ${getProductDescription()}.${refCodeText} I'd like to come try it ${timingText} and buy it if it's right for me. Can you help me find the best pickup location? Please get back to me right away, I'm ready to move forward!`;
   };
   
   const handleSendMessage = () => {
@@ -894,6 +904,14 @@ const SMSStep = ({ userData, onBack }: { userData: UserData; onBack: () => void 
         <span className="font-semibold text-gray-900 bg-yellow-100 px-2 py-1 rounded-md">
           the {getProductDescription()}
         </span>
+        {referenceCode && (
+          <>
+            . My reference code is{' '}
+            <span className="font-bold text-blue-900 bg-blue-100 px-2 py-1 rounded-md">
+              {referenceCode}
+            </span>
+          </>
+        )}
         . I'd like to come try it{' '}
         <span 
           className={`transition-all duration-500 font-medium ${
@@ -1252,7 +1270,7 @@ const FormStep = ({ userData, onSubmit, isLoading, onBack }: {
   );
 };
 
-const EmailStep = ({ userData, onBack }: { userData: UserData; onBack: () => void }) => {
+const EmailStep = ({ userData, onBack, referenceCode }: { userData: UserData; onBack: () => void; referenceCode?: string | null }) => {
   const [userName, setUserName] = useState('');
   const [urgency, setUrgency] = useState('');
   const [currentStep, setCurrentStep] = useState<'name' | 'urgency' | 'send'>('name');
@@ -1317,9 +1335,10 @@ const EmailStep = ({ userData, onBack }: { userData: UserData; onBack: () => voi
     const timingText = urgency ? urgencyMap[urgency as keyof typeof urgencyMap] : 'soon';
     
     const subject = `Mattress Inquiry - ${getProductDescription()}`;
+    const refCodeText = referenceCode ? `\n\nMy reference code is ${referenceCode}.` : '';
     const body = `Hi there!
 
-My name is ${userName} and I'm ${getLocationText()}. I just used your mattress finder and I'm interested in the ${getProductDescription()} that's available for same-day pickup.
+My name is ${userName} and I'm ${getLocationText()}. I just used your mattress finder and I'm interested in the ${getProductDescription()} that's available for same-day pickup.${refCodeText}
 
 I'd like to come try it ${timingText} and buy it if it's right for me. Could you please send me:
 - Store location and hours
@@ -1430,6 +1449,14 @@ ${userName}`;
               the {getProductDescription()}
             </span>
             {' '}that's available for same-day pickup.
+            {referenceCode && (
+              <>
+                {' '}My reference code is{' '}
+                <span className="font-bold text-blue-900 bg-blue-100 px-1.5 py-0.5 rounded">
+                  {referenceCode}
+                </span>.
+              </>
+            )}
           </div>
           
           <div>I'd like to come try it{' '}
@@ -1905,7 +1932,7 @@ export default function Home() {
         )}
         
         {currentStep === 6 && (
-          <SMSStep userData={userSelections} onBack={() => setCurrentStep(5)} />
+          <SMSStep userData={userSelections} onBack={() => setCurrentStep(5)} referenceCode={referenceCode} />
         )}
         
         {currentStep === 7 && (
@@ -1930,6 +1957,10 @@ export default function Home() {
               Help someone else find a mattress
             </Button>
           </div>
+        )}
+        
+        {currentStep === 8 && (
+          <EmailStep userData={userSelections} onBack={() => setCurrentStep(5)} referenceCode={referenceCode} />
         )}
         
         {currentStep === 8 && (
