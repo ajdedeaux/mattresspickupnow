@@ -622,8 +622,8 @@ const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption }
       </div>
 
       {/* Compact Video Section */}
-      <div className="rounded-xl overflow-hidden mb-4 w-48 mx-auto">
-        <div className="w-full h-64 relative perspective-1000">
+      <div className="rounded-xl overflow-hidden mb-4 w-72 mx-auto">
+        <div className="w-full h-80 relative perspective-1000">
           <div 
             className={`w-full h-full relative transition-transform duration-700 transform-style-preserve-3d cursor-pointer ${
               isFlipped ? 'rotate-y-180' : ''
