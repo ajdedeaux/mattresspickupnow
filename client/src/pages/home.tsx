@@ -227,7 +227,7 @@ const LocationStep = ({ onLocationFound, isLoading }: {
                 <span>120-night trial</span>
               </div>
             </div>
-            <p className="text-gray-700 font-medium">Find your location</p>
+            <p className="text-gray-700 font-medium">Find a location nearby</p>
           </div>
         )}
       </div>
