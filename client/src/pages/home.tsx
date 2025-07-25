@@ -68,6 +68,69 @@ const contactSchema = z.object({
 });
 
 // Step components
+const CustomerQuoteRotator = () => {
+  const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
+  
+  const quotes = [
+    {
+      text: "We thought we'd just go in to get information but left with a mattress",
+      author: "Blake B."
+    },
+    {
+      text: "We didn't have to shop around—we found exactly what we needed on the first visit",
+      author: "Cyrus D."
+    },
+    {
+      text: "Made our shopping experience a breeze",
+      author: "Heather G."
+    },
+    {
+      text: "Got a great deal, next day delivery. Quick and efficient",
+      author: "Heather W."
+    }
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentQuoteIndex((prev) => (prev + 1) % quotes.length);
+    }, 4000); // Change every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [quotes.length]);
+
+  return (
+    <div className="text-center mt-8 pt-6 border-t border-gray-100 space-y-4">
+      <div className="flex items-center justify-center space-x-2 text-sm text-gray-600 mb-3">
+        <span>⭐⭐⭐⭐⭐</span>
+        <span>4.9/5</span>
+        <span>•</span>
+        <span>2,000+ customers</span>
+      </div>
+      
+      {/* Clean rotating quote */}
+      <div className="px-6 py-4">
+        <div className="relative h-16 overflow-hidden">
+          <div 
+            className="absolute inset-0 transition-transform duration-700 ease-in-out"
+            style={{ transform: `translateY(-${currentQuoteIndex * 100}%)` }}
+          >
+            {quotes.map((quote, index) => (
+              <div key={index} className="h-16 flex flex-col justify-center">
+                <p className="text-gray-700 italic text-base leading-relaxed mb-1">
+                  "{quote.text}"
+                </p>
+                <p className="text-gray-500 text-sm font-medium">
+                  — {quote.author}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const LocationStep = ({ onLocationFound, isLoading }: { 
   onLocationFound: (stores: Store[], coordinates: { lat: number; lng: number }) => void;
   isLoading: boolean;
@@ -275,53 +338,9 @@ const LocationStep = ({ onLocationFound, isLoading }: {
         </div>
       </div>
 
-      {/* Authentic customer stories carousel */}
+      {/* Clean rotating customer quote */}
       {!inputFocused && !autoSubmitting && (
-        <div className="text-center mt-8 pt-6 border-t border-gray-100 space-y-4">
-          <div className="flex items-center justify-center space-x-2 text-sm text-gray-600 mb-3">
-            <span>⭐⭐⭐⭐⭐</span>
-            <span>4.9/5</span>
-            <span>•</span>
-            <span>2,000+ customers</span>
-          </div>
-          
-          {/* Auto-scrolling customer reviews */}
-          <div className="relative overflow-hidden mx-4">
-            <div className="flex animate-scroll-reviews hover:animation-paused space-x-4">
-              {/* Blake B - Try it. Like it. Buy it. story */}
-              <div className="bg-blue-50 rounded-lg p-3 border border-blue-100 min-w-[280px] flex-shrink-0">
-                <div className="text-xs text-blue-600 font-medium mb-1">Blake B. - Recent Customer</div>
-                <div className="text-sm text-gray-700 leading-relaxed">
-                  "We thought we'd just go in to get information but left with a mattress because we truly felt like he helped us make the perfect choice."
-                </div>
-              </div>
-              
-              {/* Cyrus - No shopping around story */}
-              <div className="bg-green-50 rounded-lg p-3 border border-green-100 min-w-[280px] flex-shrink-0">
-                <div className="text-xs text-green-600 font-medium mb-1">Cyrus D. - Happy Customer</div>
-                <div className="text-sm text-gray-700 leading-relaxed">
-                  "We didn't have to shop around—we found exactly what we needed on the first visit!"
-                </div>
-              </div>
-              
-              {/* Heather W - Speed story */}
-              <div className="bg-purple-50 rounded-lg p-3 border border-purple-100 min-w-[280px] flex-shrink-0">
-                <div className="text-xs text-purple-600 font-medium mb-1">Heather W. - Today's Customer</div>
-                <div className="text-sm text-gray-700 leading-relaxed">
-                  "Great experience! Got a great deal, next day delivery. Quick and efficient."
-                </div>
-              </div>
-              
-              {/* Duplicate first review for seamless loop */}
-              <div className="bg-blue-50 rounded-lg p-3 border border-blue-100 min-w-[280px] flex-shrink-0">
-                <div className="text-xs text-blue-600 font-medium mb-1">Blake B. - Recent Customer</div>
-                <div className="text-sm text-gray-700 leading-relaxed">
-                  "We thought we'd just go in to get information but left with a mattress because we truly felt like he helped us make the perfect choice."
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <CustomerQuoteRotator />
       )}
 
       {/* Bottom spacing to keep content visible above keyboard */}

@@ -119,13 +119,7 @@
     animation: pulseSoft 2s infinite;
   }
   
-  .animate-scroll-reviews {
-    animation: scrollReviews 15s linear infinite;
-  }
-  
-  .hover\:animation-paused:hover {
-    animation-play-state: paused;
-  }
+
 }
 
 @keyframes fadeIn {
@@ -143,10 +137,7 @@
   50% { opacity: 0.8; }
 }
 
-@keyframes scrollReviews {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
+
 
 /* Custom button gradient styles */
 .btn-primary-gradient {
