@@ -1384,13 +1384,13 @@ ${userName}`;
     const getProductDescription = () => {
       const getPriceBySize = (comfortType: string, size: string) => {
         const priceMatrix = {
-          'Twin': { 'Firm': '$199', 'Medium': '$249', 'Soft': '$449', 'Hybrid': '$349' },
-          'Full': { 'Firm': '$249', 'Medium': '$299', 'Soft': '$549', 'Hybrid': '$399' },
-          'Queen': { 'Firm': '$299', 'Medium': '$399', 'Soft': '$699', 'Hybrid': '$499' },
-          'King': { 'Firm': '$449', 'Medium': '$549', 'Soft': '$899', 'Hybrid': '$699' }
+          'Twin': { 'Firm': '$199.99', 'Medium': '$299.99', 'Soft': '$549.99', 'Hybrid': '$399.99' },
+          'Full': { 'Firm': '$249.99', 'Medium': '$349.99', 'Soft': '$599.99', 'Hybrid': '$449.99' },
+          'Queen': { 'Firm': '$299.99', 'Medium': '$399.99', 'Soft': '$699.99', 'Hybrid': '$499.99' },
+          'King': { 'Firm': '$399.99', 'Medium': '$499.99', 'Soft': '$799.99', 'Hybrid': '$599.99' }
         };
         
-        return priceMatrix[size as keyof typeof priceMatrix]?.[comfortType as keyof typeof priceMatrix['Twin']] || '$399';
+        return priceMatrix[size as keyof typeof priceMatrix]?.[comfortType as keyof typeof priceMatrix['Twin']] || '$399.99';
       };
       
       const price = getPriceBySize(comfortType, mattressSize);
@@ -1961,10 +1961,6 @@ export default function Home() {
         
         {currentStep === 8 && (
           <EmailStep userData={userSelections} onBack={() => setCurrentStep(5)} referenceCode={referenceCode} />
-        )}
-        
-        {currentStep === 8 && (
-          <EmailStep userData={userSelections} onBack={() => setCurrentStep(5)} />
         )}
         
         {currentStep === 9 && (
