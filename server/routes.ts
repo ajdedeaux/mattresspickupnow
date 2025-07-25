@@ -399,10 +399,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Calculate price based on size and type per master spec
       const mattressOptions = [
-        { id: "F", sizes: { "Twin": "$199", "Full": "$249", "Queen": "$299", "King": "$349" } },
-        { id: "M", sizes: { "Twin": "$299", "Full": "$349", "Queen": "$399", "King": "$449" } },
-        { id: "S", sizes: { "Twin": "$497", "Full": "$597", "Queen": "$697", "King": "$797" } },
-        { id: "H", sizes: { "Twin": "$399", "Full": "$449", "Queen": "$499", "King": "$549" } }
+        { id: "F", sizes: { "Twin": "$199.99", "Full": "$249.99", "Queen": "$299.99", "King": "$399.99" } },
+        { id: "M", sizes: { "Twin": "$299.99", "Full": "$349.99", "Queen": "$399.99", "King": "$499.99" } },
+        { id: "S", sizes: { "Twin": "$549.99", "Full": "$599.99", "Queen": "$699.99", "King": "$799.99" } },
+        { id: "H", sizes: { "Twin": "$399.99", "Full": "$449.99", "Queen": "$499.99", "King": "$599.99" } }
       ];
       const selectedOption = mattressOptions.find(opt => opt.id === validatedData.mattressType);
       const price = selectedOption?.sizes[validatedData.mattressSize] || "Contact for pricing";

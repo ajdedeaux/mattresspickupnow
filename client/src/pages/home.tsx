@@ -863,13 +863,13 @@ const SMSStep = ({ userData, onBack, referenceCode }: { userData: UserData; onBa
     const getProductDescription = () => {
       const getPriceBySize = (comfortType: string, size: string) => {
         const priceMatrix = {
-          'Twin': { 'Firm': '$199', 'Medium': '$249', 'Soft': '$449', 'Hybrid': '$349' },
-          'Full': { 'Firm': '$249', 'Medium': '$299', 'Soft': '$549', 'Hybrid': '$399' },
-          'Queen': { 'Firm': '$299', 'Medium': '$399', 'Soft': '$699', 'Hybrid': '$499' },
-          'King': { 'Firm': '$449', 'Medium': '$549', 'Soft': '$899', 'Hybrid': '$699' }
+          'Twin': { 'Firm': '$199.99', 'Medium': '$299.99', 'Soft': '$549.99', 'Hybrid': '$399.99' },
+          'Full': { 'Firm': '$249.99', 'Medium': '$349.99', 'Soft': '$599.99', 'Hybrid': '$449.99' },
+          'Queen': { 'Firm': '$299.99', 'Medium': '$399.99', 'Soft': '$699.99', 'Hybrid': '$499.99' },
+          'King': { 'Firm': '$399.99', 'Medium': '$499.99', 'Soft': '$799.99', 'Hybrid': '$599.99' }
         };
         
-        return priceMatrix[size as keyof typeof priceMatrix]?.[comfortType as keyof typeof priceMatrix['Twin']] || '$399';
+        return priceMatrix[size as keyof typeof priceMatrix]?.[comfortType as keyof typeof priceMatrix['Twin']] || '$399.99';
       };
       
       const price = getPriceBySize(comfortType, mattressSize);
@@ -1313,13 +1313,13 @@ const EmailStep = ({ userData, onBack, referenceCode }: { userData: UserData; on
     const getProductDescription = () => {
       const getPriceBySize = (comfortType: string, size: string) => {
         const priceMatrix = {
-          'Twin': { 'Firm': '$199', 'Medium': '$249', 'Soft': '$449', 'Hybrid': '$349' },
-          'Full': { 'Firm': '$249', 'Medium': '$299', 'Soft': '$549', 'Hybrid': '$399' },
-          'Queen': { 'Firm': '$299', 'Medium': '$399', 'Soft': '$699', 'Hybrid': '$499' },
-          'King': { 'Firm': '$449', 'Medium': '$549', 'Soft': '$899', 'Hybrid': '$699' }
+          'Twin': { 'Firm': '$199.99', 'Medium': '$299.99', 'Soft': '$549.99', 'Hybrid': '$399.99' },
+          'Full': { 'Firm': '$249.99', 'Medium': '$349.99', 'Soft': '$599.99', 'Hybrid': '$449.99' },
+          'Queen': { 'Firm': '$299.99', 'Medium': '$399.99', 'Soft': '$699.99', 'Hybrid': '$499.99' },
+          'King': { 'Firm': '$399.99', 'Medium': '$499.99', 'Soft': '$799.99', 'Hybrid': '$599.99' }
         };
         
-        return priceMatrix[size as keyof typeof priceMatrix]?.[comfortType as keyof typeof priceMatrix['Twin']] || '$399';
+        return priceMatrix[size as keyof typeof priceMatrix]?.[comfortType as keyof typeof priceMatrix['Twin']] || '$399.99';
       };
       
       const price = getPriceBySize(comfortType, mattressSize);
@@ -1757,10 +1757,10 @@ export default function Home() {
     
     // Track firmness preference and calculate pricing
     const mattressOptions = [
-      { id: "F", name: "Firm", sizes: { "Twin": "$199", "Full": "$249", "Queen": "$299", "King": "$349" } },
-      { id: "M", name: "Medium", sizes: { "Twin": "$299", "Full": "$349", "Queen": "$399", "King": "$449" } },
-      { id: "S", name: "Soft", sizes: { "Twin": "$497", "Full": "$597", "Queen": "$697", "King": "$797" } },
-      { id: "H", name: "Hybrid", sizes: { "Twin": "$399", "Full": "$449", "Queen": "$499", "King": "$549" } }
+      { id: "F", name: "Firm", sizes: { "Twin": "$199.99", "Full": "$249.99", "Queen": "$299.99", "King": "$399.99" } },
+      { id: "M", name: "Medium", sizes: { "Twin": "$299.99", "Full": "$349.99", "Queen": "$399.99", "King": "$499.99" } },
+      { id: "S", name: "Soft", sizes: { "Twin": "$549.99", "Full": "$599.99", "Queen": "$699.99", "King": "$799.99" } },
+      { id: "H", name: "Hybrid", sizes: { "Twin": "$399.99", "Full": "$449.99", "Queen": "$499.99", "King": "$599.99" } }
     ];
     
     const selectedOption = mattressOptions.find(opt => opt.id === comfort);

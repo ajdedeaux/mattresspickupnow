@@ -167,10 +167,10 @@ function getMattressDetails(mattressType: string) {
 
 function getPrice(mattressType: string, mattressSize: string) {
   const pricing = {
-    "F": { "Twin": "$199", "Full": "$269", "Queen": "$299", "King": "$369" },
-    "M": { "Twin": "$249", "Full": "$359", "Queen": "$399", "King": "$469" },
-    "S": { "Twin": "$549", "Full": "$649", "Queen": "$697", "King": "$799" },
-    "H": { "Twin": "$399", "Full": "$449", "Queen": "$499", "King": "$599" }
+    "F": { "Twin": "$199.99", "Full": "$249.99", "Queen": "$299.99", "King": "$399.99" },
+    "M": { "Twin": "$299.99", "Full": "$349.99", "Queen": "$399.99", "King": "$499.99" },
+    "S": { "Twin": "$549.99", "Full": "$599.99", "Queen": "$699.99", "King": "$799.99" },
+    "H": { "Twin": "$399.99", "Full": "$449.99", "Queen": "$499.99", "King": "$599.99" }
   };
   
   const typeMap = pricing[mattressType as keyof typeof pricing];
