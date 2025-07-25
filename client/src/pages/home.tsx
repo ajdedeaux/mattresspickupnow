@@ -635,17 +635,17 @@ const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption }
               }
             }}
           >
-            {/* Front Side - Custom Design */}
+            {/* Front Side - Premium Design */}
             <div className="absolute inset-0 w-full h-full backface-hidden rounded-lg overflow-hidden group hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
-              <div className="w-full h-full bg-gradient-to-br from-blue-800 via-blue-700 to-blue-900 text-white flex flex-col items-center justify-center text-center p-6 relative">
-                <div className="text-2xl font-bold mb-2 tracking-wide" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
-                  A MATTRESS in a PRIUS?
+              <div className="w-full h-full bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white flex flex-col items-center justify-center text-center p-6 relative" style={{ boxShadow: '0 12px 40px rgba(66, 133, 244, 0.3)' }}>
+                <div className="text-lg font-semibold mb-2 opacity-95" style={{ letterSpacing: '-0.3px' }}>
+                  No truck? No problem.
                 </div>
-                <div className="text-4xl mb-4">
-                  🤔🤔🤔
+                <div className="text-2xl font-bold mb-4" style={{ letterSpacing: '-0.5px' }}>
+                  Fits in a Prius.
                 </div>
-                <div className="text-base font-semibold opacity-90 group-hover:opacity-100 transition-opacity duration-300">
-                  Tap to see the proof
+                <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center border-2 border-white border-opacity-30" style={{ backdropFilter: 'blur(10px)' }}>
+                  <div className="text-white text-xl ml-1">▶</div>
                 </div>
                 <div className="absolute inset-0 ring-2 ring-transparent group-hover:ring-blue-400/50 rounded-lg transition-all duration-300"></div>
               </div>
