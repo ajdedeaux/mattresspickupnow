@@ -199,6 +199,7 @@ The application is designed for rapid deployment with minimal configuration, foc
 - Requires intentional tap on "Enter your name" button to begin input flow
 - Removed redundant bottom navigation when top back button is visible
 - Follows consistent UX pattern across all application steps
+- Fixed "Edit message" glitch: now properly resets to clean "Enter your name" button state instead of auto-advancing
 
 ### January 2025 - Premium UI Polish & Clean Design Implementation
 

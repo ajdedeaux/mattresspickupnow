@@ -1619,7 +1619,10 @@ ${userName}`;
               </Button>
               
               <Button
-                onClick={() => setCurrentStep('name')}
+                onClick={() => {
+                  setCurrentStep('name');
+                  setHasStartedInput(false);
+                }}
                 variant="ghost"
                 className="w-full text-gray-600 hover:text-gray-800 transition-colors"
               >
