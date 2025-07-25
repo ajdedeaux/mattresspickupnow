@@ -671,7 +671,7 @@ const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption }
                   playsInline
                   className="w-full h-full object-cover"
                 >
-                  <source src="/attached_assets/FIts_in_a_prius_1753418283905.mp4" type="video/mp4" />
+                  <source src="/attached_assets/Fits_in_a_prius_1753467502826.mp4" type="video/mp4" />
                 </video>
               ) : (
                 <div className="absolute inset-0 bg-blue-600 flex items-center justify-center">
