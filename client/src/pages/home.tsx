@@ -69,35 +69,6 @@ const contactSchema = z.object({
 
 // Step components
 const CustomerQuoteRotator = () => {
-  const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
-  
-  const quotes = [
-    {
-      text: "We thought we'd just go in to get information but left with a mattress",
-      author: "Blake B."
-    },
-    {
-      text: "We didn't have to shop around—we found exactly what we needed on the first visit",
-      author: "Cyrus D."
-    },
-    {
-      text: "Made our shopping experience a breeze",
-      author: "Heather G."
-    },
-    {
-      text: "Got a great deal, next day delivery. Quick and efficient",
-      author: "Heather W."
-    }
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentQuoteIndex((prev) => (prev + 1) % quotes.length);
-    }, 4000); // Change every 4 seconds
-
-    return () => clearInterval(interval);
-  }, [quotes.length]);
-
   return (
     <div className="text-center mt-8 pt-6 border-t border-gray-100 space-y-4">
       <div className="flex items-center justify-center space-x-2 text-sm text-gray-600 mb-3">
@@ -107,25 +78,14 @@ const CustomerQuoteRotator = () => {
         <span>2,000+ customers</span>
       </div>
       
-      {/* Clean rotating quote */}
+      {/* Static premium quote */}
       <div className="px-6 py-4">
-        <div className="relative h-16 overflow-hidden">
-          <div 
-            className="absolute inset-0 transition-transform duration-700 ease-in-out"
-            style={{ transform: `translateY(-${currentQuoteIndex * 100}%)` }}
-          >
-            {quotes.map((quote, index) => (
-              <div key={index} className="h-16 flex flex-col justify-center">
-                <p className="text-gray-700 italic text-base leading-relaxed mb-1">
-                  "{quote.text}"
-                </p>
-                <p className="text-gray-500 text-sm font-medium">
-                  — {quote.author}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <p className="text-gray-700 italic text-base leading-relaxed mb-2 max-w-sm mx-auto">
+          "We didn't have to shop around—we found exactly what we needed on the first visit!"
+        </p>
+        <p className="text-gray-500 text-sm font-medium">
+          — Verified Customer
+        </p>
       </div>
     </div>
   );
