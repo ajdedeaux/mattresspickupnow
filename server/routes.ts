@@ -10,12 +10,13 @@ import { z } from "zod";
 import express from "express";
 
 // Mock data function for development (avoids Google API charges)
+// SMS messages route to Twilio automation system for instant intelligent responses
 function getMockMattressFirmStores(lat: number, lng: number) {
   return [
     {
       name: 'Mattress Firm Westshore Plaza',
       address: '1234 Main St, Tampa, FL 33607',
-      phone: '(813) 555-0100',
+      phone: '(855) 515-9604',  // Twilio automation number for instant responses
       hours: 'Wednesday: 10:00 AM – 8:00 PM',
       distance: 2.1,
       rating: 4.2,
@@ -25,7 +26,7 @@ function getMockMattressFirmStores(lat: number, lng: number) {
     {
       name: 'Mattress Firm Town Center',
       address: '5678 Oak Ave, Tampa, FL 33609',
-      phone: '(813) 555-0200',
+      phone: '(855) 515-9604',  // Twilio automation number for instant responses
       hours: 'Wednesday: 10:00 AM – 9:00 PM',
       distance: 3.5,
       rating: 4.0,
@@ -35,7 +36,7 @@ function getMockMattressFirmStores(lat: number, lng: number) {
     {
       name: 'Mattress Firm Crossroads',
       address: '9012 Pine Rd, Tampa, FL 33611',
-      phone: '(813) 555-0300',
+      phone: '(855) 515-9604',  // Twilio automation number for instant responses
       hours: 'Wednesday: 10:00 AM – 8:00 PM',
       distance: 4.8,
       rating: 4.3,
