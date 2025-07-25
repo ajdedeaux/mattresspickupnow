@@ -1252,11 +1252,11 @@ const EmailStep = ({ userData, onBack }: { userData: UserData; onBack: () => voi
   
   // Auto-advance to next step when name is entered
   useEffect(() => {
-    if (userName && userName.length >= 2 && currentStep === 'name') {
+    if (userName && userName.length >= 2 && currentStep === 'name' && hasStartedInput) {
       const timer = setTimeout(() => setCurrentStep('urgency'), 1500);
       return () => clearTimeout(timer);
     }
-  }, [userName, currentStep]);
+  }, [userName, currentStep, hasStartedInput]);
   
   // Auto-advance to send when urgency is selected
   useEffect(() => {
@@ -1621,6 +1621,8 @@ ${userName}`;
               <Button
                 onClick={() => {
                   setCurrentStep('name');
+                  setUserName('');
+                  setUrgency('');
                   setHasStartedInput(false);
                 }}
                 variant="ghost"
