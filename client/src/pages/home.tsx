@@ -275,7 +275,7 @@ const LocationStep = ({ onLocationFound, isLoading }: {
         </div>
       </div>
 
-      {/* Authentic customer stories */}
+      {/* Authentic customer stories carousel */}
       {!inputFocused && !autoSubmitting && (
         <div className="text-center mt-8 pt-6 border-t border-gray-100 space-y-4">
           <div className="flex items-center justify-center space-x-2 text-sm text-gray-600 mb-3">
@@ -285,11 +285,40 @@ const LocationStep = ({ onLocationFound, isLoading }: {
             <span>2,000+ customers</span>
           </div>
           
-          {/* Featured authentic review that matches "Try it. Like it. Buy it." */}
-          <div className="bg-blue-50 rounded-lg p-3 mx-4 border border-blue-100">
-            <div className="text-xs text-blue-600 font-medium mb-1">Blake B. - Recent Customer</div>
-            <div className="text-sm text-gray-700 leading-relaxed">
-              "We thought we'd just go in to get information but left with a mattress because we truly felt like he helped us make the perfect choice."
+          {/* Auto-scrolling customer reviews */}
+          <div className="relative overflow-hidden mx-4">
+            <div className="flex animate-scroll-reviews hover:animation-paused space-x-4">
+              {/* Blake B - Try it. Like it. Buy it. story */}
+              <div className="bg-blue-50 rounded-lg p-3 border border-blue-100 min-w-[280px] flex-shrink-0">
+                <div className="text-xs text-blue-600 font-medium mb-1">Blake B. - Recent Customer</div>
+                <div className="text-sm text-gray-700 leading-relaxed">
+                  "We thought we'd just go in to get information but left with a mattress because we truly felt like he helped us make the perfect choice."
+                </div>
+              </div>
+              
+              {/* Cyrus - No shopping around story */}
+              <div className="bg-green-50 rounded-lg p-3 border border-green-100 min-w-[280px] flex-shrink-0">
+                <div className="text-xs text-green-600 font-medium mb-1">Cyrus D. - Happy Customer</div>
+                <div className="text-sm text-gray-700 leading-relaxed">
+                  "We didn't have to shop around—we found exactly what we needed on the first visit!"
+                </div>
+              </div>
+              
+              {/* Heather W - Speed story */}
+              <div className="bg-purple-50 rounded-lg p-3 border border-purple-100 min-w-[280px] flex-shrink-0">
+                <div className="text-xs text-purple-600 font-medium mb-1">Heather W. - Today's Customer</div>
+                <div className="text-sm text-gray-700 leading-relaxed">
+                  "Great experience! Got a great deal, next day delivery. Quick and efficient."
+                </div>
+              </div>
+              
+              {/* Duplicate first review for seamless loop */}
+              <div className="bg-blue-50 rounded-lg p-3 border border-blue-100 min-w-[280px] flex-shrink-0">
+                <div className="text-xs text-blue-600 font-medium mb-1">Blake B. - Recent Customer</div>
+                <div className="text-sm text-gray-700 leading-relaxed">
+                  "We thought we'd just go in to get information but left with a mattress because we truly felt like he helped us make the perfect choice."
+                </div>
+              </div>
             </div>
           </div>
         </div>
