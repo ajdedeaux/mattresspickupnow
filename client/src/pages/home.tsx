@@ -275,14 +275,22 @@ const LocationStep = ({ onLocationFound, isLoading }: {
         </div>
       </div>
 
-      {/* Simplified social proof */}
+      {/* Authentic customer stories */}
       {!inputFocused && !autoSubmitting && (
-        <div className="text-center mt-8 pt-6 border-t border-gray-100">
-          <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
+        <div className="text-center mt-8 pt-6 border-t border-gray-100 space-y-4">
+          <div className="flex items-center justify-center space-x-2 text-sm text-gray-600 mb-3">
             <span>⭐⭐⭐⭐⭐</span>
             <span>4.9/5</span>
             <span>•</span>
             <span>2,000+ customers</span>
+          </div>
+          
+          {/* Featured authentic review that matches "Try it. Like it. Buy it." */}
+          <div className="bg-blue-50 rounded-lg p-3 mx-4 border border-blue-100">
+            <div className="text-xs text-blue-600 font-medium mb-1">Blake B. - Recent Customer</div>
+            <div className="text-sm text-gray-700 leading-relaxed">
+              "We thought we'd just go in to get information but left with a mattress because we truly felt like he helped us make the perfect choice."
+            </div>
           </div>
         </div>
       )}
