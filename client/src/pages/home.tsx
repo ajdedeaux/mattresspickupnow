@@ -591,11 +591,12 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
   );
 };
 
-const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption }: {
+const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption, referenceCode }: {
   userData: UserData;
   onSMSOption: () => void;
   onEmailOption: () => void;
   onFormOption: () => void;
+  referenceCode?: string | null;
 }) => {
   const nearestStore = userData.nearestStores[0];
   const [isFlipped, setIsFlipped] = useState(false);
@@ -620,6 +621,13 @@ const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption }
       {/* Simplified Header */}
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Ready to get your mattress?</h2>
+        {referenceCode && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4 mx-auto max-w-xs">
+            <p className="text-xs text-blue-700 font-medium mb-1">Your Reference Code</p>
+            <p className="text-lg font-bold text-blue-900">{referenceCode}</p>
+            <p className="text-xs text-blue-600">24-hour price lock active</p>
+          </div>
+        )}
       </div>
 
       {/* Compact Video Section */}
@@ -1651,6 +1659,7 @@ export default function Home() {
     nearestStores: []
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [referenceCode, setReferenceCode] = useState<string | null>(null);
   const { toast } = useToast();
   
   // Customer profile tracking for N8N automation
@@ -1737,6 +1746,10 @@ export default function Home() {
         model,
         finalPrice: price
       });
+      
+      // Generate reference code now that the core selection is complete
+      const newReferenceCode = await generateReferenceCode();
+      setReferenceCode(newReferenceCode);
     } catch (error) {
       console.warn('Failed to update profile with comfort selection:', error);
     }
@@ -1800,6 +1813,7 @@ export default function Home() {
       coordinates: { lat: 0, lng: 0 },
       nearestStores: []
     });
+    setReferenceCode(null);
   };
 
   // Wrapper functions to track contact method selection
@@ -1886,6 +1900,7 @@ export default function Home() {
             onSMSOption={handleSMSOption}
             onEmailOption={handleEmailOption}
             onFormOption={handleFormOption}
+            referenceCode={referenceCode}
           />
         )}
         
@@ -1900,6 +1915,13 @@ export default function Home() {
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Perfect! We've got you covered.</h2>
+              {referenceCode && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-blue-700 font-medium mb-1">Your Reference Code</p>
+                  <p className="text-xl font-bold text-blue-900">{referenceCode}</p>
+                  <p className="text-xs text-blue-600 mt-1">Save this for your records</p>
+                </div>
+              )}
               <p className="text-gray-600">
                 Expect a text within 15 minutes with your exact mattress match and pickup details.
               </p>
