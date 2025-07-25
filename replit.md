@@ -144,7 +144,29 @@ The application is designed for rapid deployment with minimal configuration, foc
 
 ## Recent Changes
 
-### January 2025 - Clean Branded Customer Quotes & Perfect Tagline (Latest)
+### January 2025 - N8N Automation Integration & Customer Profile Tracking System (Latest)
+
+**Comprehensive Customer Journey Tracking:**
+- Implemented complete customer profile tracking system with unique tracking IDs generated on app entry
+- Built reference code generation (MP-XXXX format) for seamless N8N automation integration
+- Added real-time profile updates at each funnel step: ZIP code → Demographics → Size → Firmness → Contact Method
+- Comprehensive API endpoints for customer profile CRUD operations and CSV export for data ownership
+
+**N8N Automation Ready Infrastructure:**
+- Customer profile context provider manages tracking throughout entire user journey
+- Reference code generation triggered when profile is complete with 24-hour price lock
+- Webhook endpoint for N8N automation to receive complete customer data packages
+- CSV export functionality for Google Sheets integration and CRM data ownership
+- Complete customer data capture: tracking ID, reference code, selections, pricing, location, contact preferences
+
+**Advanced User Flow Integration:**
+- Automatic ZIP code tracking when location is entered (GPS or manual)
+- Demographics tracking during use case selection (personal, business, etc.)
+- Mattress size and firmness selections tracked with calculated pricing
+- Contact method preference tracking (SMS, email, form) for personalized follow-up
+- Complete customer profile ready for N8N automation processing with all user selections
+
+### January 2025 - Clean Branded Customer Quotes & Perfect Tagline
 
 **Revolutionary Tagline Implementation:**
 - Updated header tagline to "Why wait? Get it today." for perfect visual balance

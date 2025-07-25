@@ -1,4 +1,4 @@
-import { leads, type Lead, type InsertLead, users, type User, type InsertUser, locationSearches, type LocationSearch, type InsertLocationSearch } from "@shared/schema";
+import { leads, type Lead, type InsertLead, users, type User, type InsertUser, locationSearches, type LocationSearch, type InsertLocationSearch, customerProfiles, type CustomerProfile, type InsertCustomerProfile } from "@shared/schema";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -9,23 +9,36 @@ export interface IStorage {
   getAllLeads(): Promise<Lead[]>;
   createLocationSearch(search: InsertLocationSearch & { leadId: string }): Promise<LocationSearch>;
   getLocationSearchByLeadId(leadId: string): Promise<LocationSearch | undefined>;
+  // Customer Profile methods for N8N automation
+  createCustomerProfile(trackingId: string): Promise<CustomerProfile>;
+  updateCustomerProfile(trackingId: string, updates: Partial<InsertCustomerProfile>): Promise<CustomerProfile | undefined>;
+  getCustomerProfileByTrackingId(trackingId: string): Promise<CustomerProfile | undefined>;
+  getCustomerProfileByReferenceCode(referenceCode: string): Promise<CustomerProfile | undefined>;
+  generateReferenceCode(trackingId: string): Promise<string>;
+  getAllCustomerProfiles(): Promise<CustomerProfile[]>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private leads: Map<number, Lead>;
   private locationSearches: Map<number, LocationSearch>;
+  private customerProfiles: Map<number, CustomerProfile>;
   private currentUserId: number;
   private currentLeadId: number;
   private currentLocationSearchId: number;
+  private currentCustomerProfileId: number;
+  private referenceCodeCounter: number;
 
   constructor() {
     this.users = new Map();
     this.leads = new Map();
     this.locationSearches = new Map();
+    this.customerProfiles = new Map();
     this.currentUserId = 1;
     this.currentLeadId = 1;
     this.currentLocationSearchId = 1;
+    this.currentCustomerProfileId = 1;
+    this.referenceCodeCounter = 1000; // Start at MP-1000 for better appearance
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -95,6 +108,87 @@ export class MemStorage implements IStorage {
     return Array.from(this.locationSearches.values()).find(
       (search) => search.leadId === leadId,
     );
+  }
+
+  // Customer Profile methods for N8N automation
+  async createCustomerProfile(trackingId: string): Promise<CustomerProfile> {
+    const id = this.currentCustomerProfileId++;
+    
+    const profile: CustomerProfile = {
+      id,
+      trackingId,
+      referenceCode: null,
+      name: null,
+      zipCode: null,
+      demographics: null,
+      mattressSize: null,
+      firmness: null,
+      model: null,
+      finalPrice: null,
+      coordinates: null,
+      nearestStores: null,
+      profileComplete: false,
+      contactMethod: null,
+      status: "active",
+      priceLockExpiry: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    this.customerProfiles.set(id, profile);
+    return profile;
+  }
+
+  async updateCustomerProfile(trackingId: string, updates: Partial<InsertCustomerProfile>): Promise<CustomerProfile | undefined> {
+    const profile = Array.from(this.customerProfiles.values()).find(
+      (p) => p.trackingId === trackingId,
+    );
+    
+    if (!profile) return undefined;
+    
+    const updatedProfile: CustomerProfile = {
+      ...profile,
+      ...updates,
+      updatedAt: new Date(),
+    };
+    
+    this.customerProfiles.set(profile.id, updatedProfile);
+    return updatedProfile;
+  }
+
+  async getCustomerProfileByTrackingId(trackingId: string): Promise<CustomerProfile | undefined> {
+    return Array.from(this.customerProfiles.values()).find(
+      (profile) => profile.trackingId === trackingId,
+    );
+  }
+
+  async getCustomerProfileByReferenceCode(referenceCode: string): Promise<CustomerProfile | undefined> {
+    return Array.from(this.customerProfiles.values()).find(
+      (profile) => profile.referenceCode === referenceCode,
+    );
+  }
+
+  async generateReferenceCode(trackingId: string): Promise<string> {
+    const referenceCode = `MP-${this.referenceCodeCounter++}`;
+    
+    // Update the profile with the reference code and mark as complete
+    const profile = await this.getCustomerProfileByTrackingId(trackingId);
+    if (profile) {
+      const priceLockExpiry = new Date();
+      priceLockExpiry.setHours(priceLockExpiry.getHours() + 24); // 24-hour price lock
+      
+      await this.updateCustomerProfile(trackingId, {
+        referenceCode,
+        profileComplete: true,
+        priceLockExpiry,
+      });
+    }
+    
+    return referenceCode;
+  }
+
+  async getAllCustomerProfiles(): Promise<CustomerProfile[]> {
+    return Array.from(this.customerProfiles.values());
   }
 }
 

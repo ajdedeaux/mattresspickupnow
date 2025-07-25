@@ -138,6 +138,46 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
+// Customer Profile Tracking Table - NEW for N8N automation
+export const customerProfiles = pgTable("customer_profiles", {
+  id: serial("id").primaryKey(),
+  trackingId: text("tracking_id").notNull().unique(), // UUID generated on app entry
+  referenceCode: text("reference_code").unique(), // MP-XXXX format, generated when profile complete
+  name: text("name"), // collected in contact flow
+  zipCode: text("zip_code"), // collected on page 1
+  demographics: text("demographics"), // personal, business, etc. from page 2
+  mattressSize: text("mattress_size"), // Twin, Full, Queen, King from page 3
+  firmness: text("firmness"), // Firm, Medium, Soft, Hybrid from page 4
+  model: text("model"), // specific model name
+  finalPrice: text("final_price"), // calculated price with any discounts
+  coordinates: json("coordinates").$type<{ lat: number; lng: number }>(),
+  nearestStores: json("nearest_stores").$type<Array<{
+    name: string;
+    phone: string;
+    address: string;
+    distance: number;
+  }>>(),
+  profileComplete: boolean("profile_complete").default(false),
+  contactMethod: text("contact_method"), // text, call, email
+  status: text("status").notNull().default("active"), // active, contacted, converted, expired
+  priceLockExpiry: timestamp("price_lock_expiry"), // 24 hour price lock
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCustomerProfileSchema = createInsertSchema(customerProfiles).omit({
+  id: true,
+  trackingId: true,
+  referenceCode: true,
+  createdAt: true,
+  updatedAt: true,
+  profileComplete: true,
+  priceLockExpiry: true,
+});
+
+export type InsertCustomerProfile = z.infer<typeof insertCustomerProfileSchema>;
+export type CustomerProfile = typeof customerProfiles.$inferSelect;
+
 // Store types for Google Maps integration
 export const storeSchema = z.object({
   id: z.string(),

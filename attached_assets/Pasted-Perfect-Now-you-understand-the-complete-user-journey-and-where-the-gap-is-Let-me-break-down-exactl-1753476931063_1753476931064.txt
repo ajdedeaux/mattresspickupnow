@@ -1,0 +1,96 @@
+Perfect! Now you understand the complete user journey and where the gap is. Let me break down exactly what you need to tell your AI dev agent.
+
+## The Missing Piece: User Tracking & Reference Code Generation
+
+### Current Problem:
+- Users go through app → select preferences → reach contact page
+- But there's NO unique reference code generated 
+- No data package created for your automation to lookup
+- Manual entry required (which kills the business model)
+
+### What Needs to Be Built:
+
+## User Journey Data Flow:
+```
+App Entry → Generate UUID immediately → Track all selections → 
+Complete Profile → Generate Reference Code → Display to User → 
+Store in Database → Ready for Automation
+```
+
+## Instructions for Your AI Dev Agent:
+
+**"I need you to build a user tracking and reference code system for my mattress app. Here's exactly what needs to happen:
+
+### 1. Data Capture Throughout App Flow
+- **Page 1 (ZIP entry):** Generate unique tracking ID, store ZIP code
+- **Page 2 (Demographics):** Add who it's for to user profile  
+- **Page 3 (Size selection):** Add size preference to profile
+- **Page 4 (Firmness/Model):** Add firmness + calculate final price
+- **Final Page:** Generate reference code + complete data package
+
+### 2. Reference Code Generation
+- **When:** After firmness selection (when profile is complete)
+- **Format:** MP-XXXX (e.g., MP-1234, MP-5678)  
+- **Display:** Show prominently before contact options
+- **Purpose:** Customer uses this when they contact us
+
+### 3. Data Package Creation
+Create complete customer record with:
+```json
+{
+  "reference_code": "MP-1234",
+  "timestamp": "2025-01-27T15:30:00Z",
+  "name": "[collected in contact flow]",
+  "zip_code": "33647", 
+  "demographics": "personal",
+  "size": "Queen",
+  "firmness": "Medium", 
+  "model": "Sealy Memory Foam Medium",
+  "price": "$399.99",
+  "status": "active"
+}
+```
+
+### 4. Integration Points Needed
+- **Webhook endpoint** to send data to n8n automation
+- **Google Sheets integration** to store customer records  
+- **Reference code display** on contact page
+- **Contact flow modification** to include reference code
+
+### 5. Contact Flow Updates
+
+**Text Option:**
+- Show reference code prominently  
+- Pre-populate message: "Hi! My reference code is MP-1234. I'm interested in the Queen Medium mattress for $399. I'm in the Tampa area and need help finding pickup locations today."
+
+**Call Option:**  
+- Display reference code prominently
+- Instructions: "When you call, provide this reference code: MP-1234"
+- Still show phone number for dialing
+
+**Email Option:**
+- Pre-populate subject: "Mattress Pickup Request - Reference MP-1234"
+- Pre-populate body with all details
+
+### 6. Backend Requirements
+- Database to store customer profiles
+- API endpoint to receive data from app
+- Integration with Google Sheets for automation
+- Reference code generation algorithm
+
+### 7. Price Lock Feature
+- Display selected mattress and locked price
+- "Your price: $399 - locked for 24 hours with code MP-1234"
+- Creates urgency and professional appearance"
+
+## This Solves Your Automation Gap
+
+Once built, your n8n automation will:
+1. Receive customer contact with reference code
+2. Look up complete profile automatically  
+3. Send instant response with personalized info
+4. No manual data entry required
+
+**The key insight:** You need the app to CREATE the customer records that your automation READS. Right now you're manually creating what the app should be generating automatically.
+
+Want me to help you refine these instructions or add any specific technical requirements?

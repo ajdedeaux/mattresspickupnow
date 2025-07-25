@@ -36,6 +36,7 @@ import {
 import { mattressSizes } from '@/components/MattressSizeIcons';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
+import { useCustomerProfile } from '@/contexts/CustomerProfileContext';
 
 // Types
 interface Store {
@@ -92,7 +93,7 @@ const CustomerQuoteRotator = () => {
 };
 
 const LocationStep = ({ onLocationFound, isLoading }: { 
-  onLocationFound: (stores: Store[], coordinates: { lat: number; lng: number }) => void;
+  onLocationFound: (stores: Store[], coordinates: { lat: number; lng: number }, zipCode?: string) => void;
   isLoading: boolean;
 }) => {
   const [zipCode, setZipCode] = useState('');
@@ -134,7 +135,7 @@ const LocationStep = ({ onLocationFound, isLoading }: {
       const storesData = await storesResponse.json();
       
       if (storesData.success && storesData.stores.length > 0) {
-        onLocationFound(storesData.stores, locationData.coordinates);
+        onLocationFound(storesData.stores, locationData.coordinates, zipToSubmit);
       } else {
         toast({ title: 'No stores found', description: 'No pickup locations found in that area' });
       }
@@ -1651,6 +1652,9 @@ export default function Home() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  
+  // Customer profile tracking for N8N automation
+  const { profile, updateProfile, generateReferenceCode } = useCustomerProfile();
 
   const submitLead = useMutation({
     mutationFn: async (data: any) => {
@@ -1665,34 +1669,109 @@ export default function Home() {
     }
   });
 
-  const handleLocationFound = (stores: Store[], coordinates: { lat: number; lng: number }) => {
+  const handleLocationFound = async (stores: Store[], coordinates: { lat: number; lng: number }, zipCode?: string) => {
     setUserSelections(prev => ({ ...prev, nearestStores: stores, coordinates }));
+    
+    // Track ZIP code and location in customer profile
+    try {
+      await updateProfile({
+        zipCode: zipCode || null,
+        coordinates,
+        nearestStores: stores
+      });
+    } catch (error) {
+      console.warn('Failed to update profile with location data:', error);
+    }
+    
     setCurrentStep(2);
   };
 
-  const handleUseCaseSelect = (useCase: string) => {
+  const handleUseCaseSelect = async (useCase: string) => {
     setUserSelections(prev => ({ ...prev, useCase }));
+    
+    // Track demographics/use case in customer profile
+    try {
+      await updateProfile({
+        demographics: useCase
+      });
+    } catch (error) {
+      console.warn('Failed to update profile with use case:', error);
+    }
+    
     setCurrentStep(3);
   };
 
-  const handleSizeSelect = (size: string) => {
+  const handleSizeSelect = async (size: string) => {
     setUserSelections(prev => ({ ...prev, size }));
+    
+    // Track mattress size in customer profile
+    try {
+      await updateProfile({
+        mattressSize: size
+      });
+    } catch (error) {
+      console.warn('Failed to update profile with size:', error);
+    }
+    
     setCurrentStep(4);
   };
 
-  const handleComfortSelect = (comfort: string) => {
+  const handleComfortSelect = async (comfort: string) => {
     setUserSelections(prev => ({ ...prev, comfort }));
+    
+    // Track firmness preference and calculate pricing
+    const mattressOptions = [
+      { id: "F", name: "Firm", sizes: { "Twin": "$199", "Full": "$249", "Queen": "$299", "King": "$349" } },
+      { id: "M", name: "Medium", sizes: { "Twin": "$299", "Full": "$349", "Queen": "$399", "King": "$449" } },
+      { id: "S", name: "Soft", sizes: { "Twin": "$497", "Full": "$597", "Queen": "$697", "King": "$797" } },
+      { id: "H", name: "Hybrid", sizes: { "Twin": "$399", "Full": "$449", "Queen": "$499", "King": "$549" } }
+    ];
+    
+    const selectedOption = mattressOptions.find(opt => opt.id === comfort);
+    const price = selectedOption?.sizes[userSelections.size as keyof typeof selectedOption.sizes] || "Contact for pricing";
+    const model = `${userSelections.size} ${selectedOption?.name || comfort}`;
+    
+    try {
+      await updateProfile({
+        firmness: comfort,
+        model,
+        finalPrice: price
+      });
+    } catch (error) {
+      console.warn('Failed to update profile with comfort selection:', error);
+    }
+    
     setCurrentStep(5);
   };
 
-  const handleFormSubmit = (contactInfo: any) => {
-    const finalData = {
-      ...userSelections,
-      contactInfo,
-      leadSource: 'web'
-    };
-    
-    submitLead.mutate(finalData);
+  const handleFormSubmit = async (contactInfo: any) => {
+    try {
+      // Update customer profile with contact information and method
+      await updateProfile({
+        name: contactInfo.name,
+        contactMethod: 'form'
+      });
+      
+      // Generate reference code for N8N automation
+      const referenceCode = await generateReferenceCode();
+      
+      const finalData = {
+        ...userSelections,
+        contactInfo,
+        leadSource: 'web',
+        referenceCode, // Include reference code for tracking
+        trackingId: profile?.trackingId // Include tracking ID
+      };
+      
+      submitLead.mutate(finalData);
+    } catch (error) {
+      console.error('Failed to process form submission:', error);
+      toast({ 
+        title: 'Error', 
+        description: 'Something went wrong processing your request. Please try again.', 
+        variant: 'destructive' 
+      });
+    }
   };
 
   const goBack = () => {
@@ -1721,6 +1800,34 @@ export default function Home() {
       coordinates: { lat: 0, lng: 0 },
       nearestStores: []
     });
+  };
+
+  // Wrapper functions to track contact method selection
+  const handleSMSOption = async () => {
+    try {
+      await updateProfile({ contactMethod: 'text' });
+    } catch (error) {
+      console.warn('Failed to update profile with SMS contact method:', error);
+    }
+    setCurrentStep(6);
+  };
+
+  const handleEmailOption = async () => {
+    try {
+      await updateProfile({ contactMethod: 'email' });
+    } catch (error) {
+      console.warn('Failed to update profile with email contact method:', error);
+    }
+    setCurrentStep(8);
+  };
+
+  const handleFormOption = async () => {
+    try {
+      await updateProfile({ contactMethod: 'form' });
+    } catch (error) {
+      console.warn('Failed to update profile with form contact method:', error);
+    }
+    setCurrentStep(9);
   };
 
   return (
@@ -1776,9 +1883,9 @@ export default function Home() {
         {currentStep === 5 && (
           <ConfirmationStep 
             userData={userSelections}
-            onSMSOption={() => setCurrentStep(6)}
-            onEmailOption={() => setCurrentStep(8)}
-            onFormOption={() => setCurrentStep(9)}
+            onSMSOption={handleSMSOption}
+            onEmailOption={handleEmailOption}
+            onFormOption={handleFormOption}
           />
         )}
         

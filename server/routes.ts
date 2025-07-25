@@ -604,6 +604,263 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // === CUSTOMER PROFILE TRACKING API - N8N AUTOMATION ===
+  
+  // Create initial customer profile (tracking ID generated on app entry)
+  app.post("/api/customer-profiles", async (req, res) => {
+    try {
+      const trackingId = `TRK_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const profile = await storage.createCustomerProfile(trackingId);
+      
+      console.log(`📋 New customer profile created: ${trackingId}`);
+      
+      res.status(201).json({
+        success: true,
+        trackingId,
+        profile
+      });
+      
+    } catch (error) {
+      console.error("Error creating customer profile:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to create customer profile"
+      });
+    }
+  });
+
+  // Update customer profile (called at each step of the funnel)
+  app.put("/api/customer-profiles/:trackingId", async (req, res) => {
+    try {
+      const { trackingId } = req.params;
+      const updates = req.body;
+      
+      const updatedProfile = await storage.updateCustomerProfile(trackingId, updates);
+      
+      if (!updatedProfile) {
+        return res.status(404).json({
+          success: false,
+          message: "Customer profile not found"
+        });
+      }
+      
+      console.log(`📋 Customer profile updated: ${trackingId}`);
+      console.log(`   Updates: ${JSON.stringify(updates)}`);
+      
+      res.json({
+        success: true,
+        profile: updatedProfile
+      });
+      
+    } catch (error) {
+      console.error("Error updating customer profile:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to update customer profile"
+      });
+    }
+  });
+
+  // Generate reference code (called when profile is complete)
+  app.post("/api/customer-profiles/:trackingId/reference-code", async (req, res) => {
+    try {
+      const { trackingId } = req.params;
+      
+      const profile = await storage.getCustomerProfileByTrackingId(trackingId);
+      if (!profile) {
+        return res.status(404).json({
+          success: false,
+          message: "Customer profile not found"
+        });
+      }
+      
+      const referenceCode = await storage.generateReferenceCode(trackingId);
+      
+      console.log(`🎯 Reference code generated: ${referenceCode} for tracking ID: ${trackingId}`);
+      
+      res.json({
+        success: true,
+        referenceCode,
+        priceLockExpiry: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+      });
+      
+    } catch (error) {
+      console.error("Error generating reference code:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to generate reference code"
+      });
+    }
+  });
+
+  // Get customer profile by tracking ID
+  app.get("/api/customer-profiles/:trackingId", async (req, res) => {
+    try {
+      const { trackingId } = req.params;
+      
+      const profile = await storage.getCustomerProfileByTrackingId(trackingId);
+      
+      if (!profile) {
+        return res.status(404).json({
+          success: false,
+          message: "Customer profile not found"
+        });
+      }
+      
+      res.json({
+        success: true,
+        profile
+      });
+      
+    } catch (error) {
+      console.error("Error getting customer profile:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to get customer profile"
+      });
+    }
+  });
+
+  // Get customer profile by reference code (for N8N automation lookup)
+  app.get("/api/customer-profiles/lookup/:referenceCode", async (req, res) => {
+    try {
+      const { referenceCode } = req.params;
+      
+      const profile = await storage.getCustomerProfileByReferenceCode(referenceCode);
+      
+      if (!profile) {
+        return res.status(404).json({
+          success: false,
+          message: "Customer profile not found for reference code"
+        });
+      }
+      
+      console.log(`🔍 Profile lookup by reference code: ${referenceCode}`);
+      
+      res.json({
+        success: true,
+        profile
+      });
+      
+    } catch (error) {
+      console.error("Error looking up customer profile:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to lookup customer profile"
+      });
+    }
+  });
+
+  // Export all customer profiles for Google Sheets integration
+  app.get("/api/customer-profiles/export", async (req, res) => {
+    try {
+      const profiles = await storage.getAllCustomerProfiles();
+      
+      // CSV headers for N8N/Google Sheets
+      const csvHeaders = [
+        'Reference Code', 'Tracking ID', 'Name', 'ZIP Code', 'Demographics',
+        'Mattress Size', 'Firmness', 'Model', 'Final Price', 'Contact Method',
+        'Profile Complete', 'Status', 'Price Lock Expiry', 'Created At', 'Updated At'
+      ];
+      
+      // Convert profiles to CSV format
+      const csvRows = profiles.map(profile => [
+        profile.referenceCode || '',
+        profile.trackingId,
+        profile.name || '',
+        profile.zipCode || '',
+        profile.demographics || '',
+        profile.mattressSize || '',
+        profile.firmness || '',
+        profile.model || '',
+        profile.finalPrice || '',
+        profile.contactMethod || '',
+        profile.profileComplete ? 'Yes' : 'No',
+        profile.status,
+        profile.priceLockExpiry?.toISOString() || '',
+        profile.createdAt.toISOString(),
+        profile.updatedAt.toISOString()
+      ]);
+      
+      // Generate CSV content
+      const csvContent = [
+        csvHeaders.join(','),
+        ...csvRows.map(row => row.map(field => `"${field}"`).join(','))
+      ].join('\n');
+      
+      // Set appropriate headers for CSV download
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="customer-profiles-${new Date().toISOString().split('T')[0]}.csv"`);
+      
+      res.send(csvContent);
+      
+    } catch (error) {
+      console.error("Customer profiles export error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to export customer profiles"
+      });
+    }
+  });
+
+  // Webhook endpoint for N8N automation to receive complete customer data
+  app.post("/api/webhook/n8n", async (req, res) => {
+    try {
+      const { referenceCode, contactMethod, customerMessage } = req.body;
+      
+      // Look up the customer profile
+      const profile = await storage.getCustomerProfileByReferenceCode(referenceCode);
+      
+      if (!profile) {
+        return res.status(404).json({
+          success: false,
+          message: "Customer profile not found"
+        });
+      }
+      
+      // Update contact method if provided
+      if (contactMethod) {
+        await storage.updateCustomerProfile(profile.trackingId, { contactMethod });
+      }
+      
+      // Log the webhook for N8N automation
+      console.log(`🔗 N8N Webhook triggered:`);
+      console.log(`   Reference Code: ${referenceCode}`);
+      console.log(`   Customer: ${profile.name || 'Unknown'}`);
+      console.log(`   Product: ${profile.mattressSize} ${profile.firmness} - ${profile.finalPrice}`);
+      console.log(`   Contact Method: ${contactMethod}`);
+      
+      // Send complete customer data package to N8N
+      res.json({
+        success: true,
+        customerData: {
+          referenceCode: profile.referenceCode,
+          trackingId: profile.trackingId,
+          name: profile.name,
+          zipCode: profile.zipCode,
+          demographics: profile.demographics,
+          mattressSize: profile.mattressSize,
+          firmness: profile.firmness,
+          model: profile.model,
+          finalPrice: profile.finalPrice,
+          contactMethod: contactMethod || profile.contactMethod,
+          coordinates: profile.coordinates,
+          nearestStores: profile.nearestStores,
+          priceLockExpiry: profile.priceLockExpiry,
+          createdAt: profile.createdAt
+        },
+        message: "Customer data package ready for automation"
+      });
+      
+    } catch (error) {
+      console.error("N8N webhook error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Webhook processing failed"
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
