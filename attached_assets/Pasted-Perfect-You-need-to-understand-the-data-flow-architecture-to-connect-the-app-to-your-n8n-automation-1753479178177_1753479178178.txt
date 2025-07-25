@@ -1,0 +1,49 @@
+Perfect! You need to understand the data flow architecture to connect the app to your n8n automation. Here's the prompt to send to your AI coding agent:
+
+**"I need to understand exactly how and where customer data is being stored as users progress through the app. Please provide a complete technical breakdown of the data storage and tracking system you've built:
+Data Storage Analysis Needed:
+1. Where is data being stored?
+
+Is it using localStorage, sessionStorage, React state, or a database?
+Show me the exact storage mechanism and location
+How persistent is this data? (page refresh, browser close, etc.)
+
+2. Data Flow Documentation:
+
+Show me the exact customer profile object structure being created
+When and where does each piece of data get added to the profile?
+Trace the data flow from ZIP entry → demographics → size → firmness → reference code generation
+
+3. Reference Code System:
+
+Where exactly is the reference code stored after generation?
+How is it tied to the customer profile data?
+Can I access this data externally via API or export?
+
+4. Integration Points:
+
+Do you have any webhooks or API endpoints set up to send data externally?
+Can you show me how to connect this to Google Sheets automatically?
+What would I need to integrate this with n8n automation?
+
+5. Current Data Access:
+
+How can I view/export the customer profiles that are being created?
+Is there an admin panel or way to see all customer data?
+Can you show me exactly what data is available when someone completes the flow?
+
+6. Missing Connections:
+
+What needs to be built to automatically send customer data to my Google Sheets?
+How can I set up real-time data transfer to my n8n automation system?
+What API endpoints or webhooks do I need?
+
+Please provide:
+
+Code snippets showing the data storage implementation
+Sample customer profile object with real data
+Step-by-step data flow from app start to completion
+Integration recommendations for connecting to external systems
+Any database tables/schemas if using a database
+
+This information is critical for connecting the app to my automated lead processing system."
