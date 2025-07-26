@@ -155,9 +155,17 @@ The application is designed for rapid deployment with minimal configuration, foc
 **N8N Automation Ready Infrastructure:**
 - Customer profile context provider manages tracking throughout entire user journey
 - Reference code generation triggered when profile is complete with 24-hour price lock
-- Webhook endpoint for N8N automation to receive complete customer data packages
+- **LIVE WEBHOOK INTEGRATION:** Automatic POST to https://ajdedeaux.app.n8n.cloud/webhook/lead-complete when customer completes profile
+- Fire-and-forget webhook delivery with error handling and logging
 - CSV export functionality for Google Sheets integration and CRM data ownership
 - Complete customer data capture: tracking ID, reference code, selections, pricing, location, contact preferences
+
+**Webhook Payload Structure:**
+- referenceCode (MP-XXXX format)
+- trackingId (unique customer identifier)
+- zipCode, mattressSize, firmness, finalPrice
+- demographics, contactMethod (always "sms")
+- priceLockExpiry (24-hour window)
 
 **Advanced User Flow Integration:**
 - Automatic ZIP code tracking when location is entered (GPS or manual)

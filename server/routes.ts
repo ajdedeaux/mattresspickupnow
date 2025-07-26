@@ -8,6 +8,7 @@ import { GoogleMapsService } from "./services/google-maps.js";
 import { adminNotificationService } from "./services/admin-notifications.js";
 import { z } from "zod";
 import express from "express";
+import axios from "axios";
 
 // Mock data function for development (avoids Google API charges)
 // SMS messages route to Twilio automation system for instant intelligent responses
@@ -678,6 +679,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const referenceCode = await storage.generateReferenceCode(trackingId);
       
       console.log(`🎯 Reference code generated: ${referenceCode} for tracking ID: ${trackingId}`);
+      
+      // Get the updated profile with reference code and price lock expiry
+      const updatedProfile = await storage.getCustomerProfileByTrackingId(trackingId);
+      
+      // Send customer data to n8n webhook (fire and forget)
+      if (updatedProfile) {
+        const webhookPayload = {
+          referenceCode: updatedProfile.referenceCode,
+          trackingId: updatedProfile.trackingId,
+          zipCode: updatedProfile.zipCode,
+          mattressSize: updatedProfile.mattressSize,
+          firmness: updatedProfile.firmness,
+          finalPrice: updatedProfile.finalPrice,
+          demographics: updatedProfile.demographics,
+          contactMethod: "sms", // Always SMS for now as requested
+          priceLockExpiry: updatedProfile.priceLockExpiry
+        };
+        
+        // Fire and forget POST to n8n webhook
+        axios.post('https://ajdedeaux.app.n8n.cloud/webhook/lead-complete', webhookPayload, {
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 5000 // 5 second timeout
+        }).then(() => {
+          console.log(`🔗 N8N webhook triggered for ${referenceCode}`);
+        }).catch((error) => {
+          console.error(`❌ N8N webhook failed for ${referenceCode}:`, error.message);
+        });
+      }
       
       res.json({
         success: true,
