@@ -44,7 +44,7 @@ Your ${lead.mattressSize} ${mattressOption.name} is ready for pickup:
 
 📍 ${store?.name || 'Mattress Firm Tampa'}
 ${store?.address || '5678 Oak Ave, Tampa FL 33612'}
-📞 ${store?.phone || '(813) 555-0124'}
+📞 ${store?.phone || '(855) 515-9604'}
 ⏰ Open until ${store?.hours || '9 PM'}
 
 🚗 Just ${store?.distance || '2.1'} miles away - fits in your back seat!
@@ -89,8 +89,8 @@ Common questions:
 ❓ "Can I test it first?" - YES! Try before you buy  
 ❓ "Is the price still good?" - YES! ${price} locked in
 
-Need help? Call/text: (813) 555-9999
-Store direct: ${store?.phone || '(813) 555-0124'}
+Need help? Call/text: (855) 515-9604
+Store direct: ${store?.phone || '(855) 515-9604'}
 
 Ready when you are!`;
 }
@@ -193,7 +193,7 @@ export async function triggerSMSAutomation(lead: Lead, store: any) {
   try {
     // 1. Send immediate owner alert
     const ownerAlert = generateOwnerAlert(lead, store);
-    await sendSMS(process.env.OWNER_PHONE || "8135559999", ownerAlert, "owner_alert", lead.leadId);
+    await sendSMS(process.env.OWNER_PHONE || "8555159604", ownerAlert, "owner_alert", lead.leadId);
     
     // 2. Send customer confirmation
     const customerConfirmation = generateCustomerConfirmation(lead, store);

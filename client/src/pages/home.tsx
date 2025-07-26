@@ -719,7 +719,7 @@ const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption, 
               : 'Ready to call? Click OK to dial now.';
             
             if (confirm(confirmMessage)) {
-              window.open(`tel:${nearestStore?.phone || '+18135550100'}`, '_self');
+              window.open(`tel:${nearestStore?.phone || '+18555159604'}`, '_self');
             }
           }}
           className="flex flex-col items-center group transition-all duration-200 transform hover:scale-110 active:scale-95"
