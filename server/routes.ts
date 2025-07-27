@@ -744,44 +744,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Send customer data to Make webhook (fire and forget)
       if (updatedProfile) {
+        // Use real customer location data
+        const customerLocation = updatedProfile.coordinates;
+        const primaryStore = updatedProfile.nearestStores?.[0];
+        
         const webhookPayload = {
           referenceCode: updatedProfile.referenceCode || "N/A",
           trackingId: updatedProfile.trackingId || "N/A",
           createdAt: updatedProfile.createdAt?.toISOString() || new Date().toISOString(),
 
           zipCode: updatedProfile.zipCode || "N/A",
-          locationInfo: {
-            city: "Tampa", // TODO: Extract from Google Maps API when wired up
-            state: "FL",
-            latitude: 27.9506,
-            longitude: -82.4572,
+          locationInfo: customerLocation ? {
+            zipCode: updatedProfile.zipCode,
+            latitude: customerLocation.lat,
+            longitude: customerLocation.lng,
             timezone: "America/New_York"
+          } : {
+            zipCode: updatedProfile.zipCode || "N/A",
+            latitude: null,
+            longitude: null,
+            timezone: "Unknown"
           },
 
-          storeInfo: {
-            storeId: "TF-1185",
-            storeName: "Tampa Midtown",
-            salesRep: "AJ Dedeaux"
-          },
-          warehouseInfo: {
-            name: "Tampa Bay Regional",
-            availability: "In Stock"
+          storeInfo: primaryStore ? {
+            name: primaryStore.name,
+            address: primaryStore.address,
+            phone: primaryStore.phone,
+            distance: primaryStore.distance
+          } : {
+            name: "Store lookup required",
+            address: "TBD",
+            phone: "(855) 515-9604",
+            distance: null
           },
 
           mattressSize: updatedProfile.mattressSize || "N/A",
           firmness: updatedProfile.firmness || "N/A",
-          mattressModel: "Tempur-ProAdapt", // TODO: Map from firmness selection
+          mattressModel: updatedProfile.model || `${updatedProfile.mattressSize} ${updatedProfile.firmness}`,
           finalPrice: updatedProfile.finalPrice || "N/A",
 
           demographics: updatedProfile.demographics || "N/A",
-          contactMethod: "sms",
-          quoteSource: "Mattress Discount Locator",
+          contactMethod: updatedProfile.contactMethod || "sms",
 
-          priceLockExpiry: updatedProfile.priceLockExpiry?.toISOString() || "N/A",
-          priceLockStatus: "active",
-
-          aiTags: ["hot lead", "luxury seeker", "prefers in-stock"],
-          notes: "Customer mentioned neck pain and prefers memory foam."
+          priceLockExpiry: updatedProfile.priceLockExpiry?.toISOString() || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          priceLockStatus: "active"
         };
         
         // Fire and forget POST to Make webhook with detailed logging
