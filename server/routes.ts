@@ -698,7 +698,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
         
         // Fire and forget POST to n8n webhook
-        axios.post('https://ajdedeaux.app.n8n.cloud/webhook/be832109-9242-4f5b-a5a1-0151f96dab35', webhookPayload, {
+        axios.post('https://ajdedeaux.app.n8n.cloud/webhook-test/be832109-9242-4f5b-a5a1-0151f96dab35', webhookPayload, {
           headers: { 'Content-Type': 'application/json' },
           timeout: 5000 // 5 second timeout
         }).then(() => {
