@@ -107,7 +107,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!geocodeResult.success) {
         return res.status(400).json({
           success: false,
-          message: geocodeResult.message || "Could not resolve location"
+          message: "Could not resolve location"
         });
       }
       
@@ -123,7 +123,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const leadId = `ZIP${Date.now()}`;
         await storage.createLocationSearch({
           leadId,
-          inputMethod: "zip_code",
+          inputMethod: "zip",
           inputValue: searchTerm.trim(),
           coordinates: geocodeResult.coordinates,
           nearbyStores: storesResult.stores.map(store => ({
@@ -137,7 +137,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           zipCodeTag: searchTerm.length === 5 ? searchTerm.trim() : null,
           sourceTracking: "zip_code_geocoded_filtered_mattress_firm_only",
           storeMatches: storesResult.stores.length,
-          geoLocationMetadata: { address: geocodeResult.address }
+          geoLocationMetadata: {}
         });
       }
 
@@ -180,7 +180,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!storesResult.success) {
         return res.status(500).json({
           success: false,
-          message: storesResult.message || "Could not find nearby stores"
+          message: "Could not find nearby stores"
         });
       }
 
@@ -356,21 +356,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const leadData = {
           name: contactInfo?.name || '',
           phone: contactInfo?.phone || '',
-          email: contactInfo?.email || null,
-          mattressType,
-          mattressSize: size,
-          budgetRange: 'under_800',
-          urgency: 'today',
+          email: contactInfo?.email || '',
+          mattressType: mattressType as "M" | "F" | "S" | "H",
+          mattressSize: size as "Twin" | "Full" | "Queen" | "King",
+          budgetRange: 'under_400' as "under_400" | "400_799" | "800_plus",
+          urgency: 'today' as "today" | "this_week",
           useCase,
-          zipCode: '00000',
-          leadId,
-          priority: 'medium',
-          price,
-          persona: 'practical_no_nonsense',
-          routingTier: 'self_service'
+          zipCode: '00000'
         };
         
-        const lead = await storage.createLead(leadData);
+        // Skip legacy lead creation for funnel leads - they use the customer profile system instead
+        console.log('📋 Funnel lead data prepared (using customer profile system):', leadData);
         
         console.log('✅ Funnel lead created:', { leadId, useCase, size, comfort, price });
         
@@ -725,14 +721,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
           notes: "Customer mentioned neck pain and prefers memory foam."
         };
         
-        // Fire and forget POST to Make webhook
+        // Fire and forget POST to Make webhook with detailed logging
+        console.log(`🔗 Sending webhook payload to Make for ${referenceCode}:`, JSON.stringify(webhookPayload, null, 2));
+        
         axios.post('https://hook.us2.make.com/xmw2ahcia681bvopgp5esp37i2pu2hn4', webhookPayload, {
           headers: { 'Content-Type': 'application/json' },
           timeout: 5000 // 5 second timeout
-        }).then(() => {
-          console.log(`🔗 Make webhook triggered for ${referenceCode}`);
+        }).then((response) => {
+          console.log(`✅ Make webhook SUCCESS for ${referenceCode} - Status: ${response.status}, Data: ${response.data}`);
         }).catch((error) => {
-          console.error(`❌ Make webhook failed for ${referenceCode}:`, error.message);
+          console.error(`❌ Make webhook FAILED for ${referenceCode}:`, {
+            message: error.message,
+            status: error.response?.status,
+            data: error.response?.data,
+            url: error.config?.url
+          });
         });
       }
       
