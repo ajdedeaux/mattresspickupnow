@@ -67,6 +67,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ status: "OK", timestamp: new Date().toISOString() });
   });
 
+  // Direct webhook test endpoint for Make debugging
+  app.post("/api/fire-webhook", async (req, res) => {
+    console.log("🔥 FIRING TEST WEBHOOK TO MAKE");
+    
+    const testPayload = {
+      test: "manual webhook fire",
+      timestamp: new Date().toISOString(),
+      referenceCode: "MP-TEST-" + Date.now(),
+      trackingId: "TRK_TEST_" + Date.now(),
+      zipCode: "33607",
+      mattressSize: "Queen",
+      firmness: "Medium",
+      finalPrice: "$399.99",
+      locationInfo: {
+        city: "Tampa",
+        state: "FL",
+        latitude: 27.9506,
+        longitude: -82.4572,
+        timezone: "America/New_York"
+      },
+      storeInfo: {
+        storeId: "TF-1185",
+        storeName: "Tampa Midtown",
+        salesRep: "AJ Dedeaux"
+      }
+    };
+    
+    try {
+      console.log("📤 Sending test payload to Make:", JSON.stringify(testPayload, null, 2));
+      
+      const response = await axios.post('https://hook.us2.make.com/xmw2ahcia681bvopgp5esp37i2pu2hn4', testPayload, {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 5000
+      });
+      
+      console.log("✅ TEST WEBHOOK SUCCESS - Status:", response.status, "Data:", response.data);
+      
+      res.json({
+        success: true,
+        message: "Test webhook fired to Make",
+        payload: testPayload,
+        makeResponse: response.data
+      });
+    } catch (error: any) {
+      console.error("❌ TEST WEBHOOK FAILED:", error.message);
+      res.json({
+        success: false,
+        message: "Test webhook failed",
+        error: error.message
+      });
+    }
+  });
+
   // Resolve location to coordinates
   app.post("/api/resolve-location", async (req, res) => {
     try {
