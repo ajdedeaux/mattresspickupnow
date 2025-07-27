@@ -1768,17 +1768,23 @@ export default function Home() {
     const model = `${userSelections.size} ${selectedOption?.name || comfort}`;
     
     try {
+      console.log('🎯 CUSTOMER SELECTED COMFORT:', comfort, 'SIZE:', userSelections.size, 'PRICE:', price);
+      
       await updateProfile({
         firmness: comfort,
         model,
         finalPrice: price
       });
+      console.log('✅ Profile updated with comfort selection');
       
       // Generate reference code now that the core selection is complete
+      console.log('🔥 ABOUT TO GENERATE REFERENCE CODE AND FIRE WEBHOOK');
       const newReferenceCode = await generateReferenceCode();
+      console.log('🎉 REFERENCE CODE GENERATED:', newReferenceCode);
       setReferenceCode(newReferenceCode);
+      console.log('✨ Reference code set in state - webhook should have fired!');
     } catch (error) {
-      console.warn('Failed to update profile with comfort selection:', error);
+      console.error('❌ ERROR in comfort selection process:', error);
     }
     
     setCurrentStep(5);

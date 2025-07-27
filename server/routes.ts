@@ -715,15 +715,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Generate reference code (called when profile is complete)
   app.post("/api/customer-profiles/:trackingId/reference-code", async (req, res) => {
     try {
+      console.log(`🚀 REFERENCE CODE GENERATION STARTED for tracking ID: ${req.params.trackingId}`);
       const { trackingId } = req.params;
       
       const profile = await storage.getCustomerProfileByTrackingId(trackingId);
       if (!profile) {
+        console.log(`❌ PROFILE NOT FOUND for tracking ID: ${trackingId}`);
         return res.status(404).json({
           success: false,
           message: "Customer profile not found"
         });
       }
+      
+      console.log(`📋 PROFILE FOUND:`, {
+        trackingId: profile.trackingId,
+        zipCode: profile.zipCode,
+        mattressSize: profile.mattressSize,
+        firmness: profile.firmness,
+        finalPrice: profile.finalPrice
+      });
       
       const referenceCode = await storage.generateReferenceCode(trackingId);
       
@@ -775,20 +785,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
         
         // Fire and forget POST to Make webhook with detailed logging
-        console.log(`🔗 Sending webhook payload to Make for ${referenceCode}:`, JSON.stringify(webhookPayload, null, 2));
+        console.log(`🔗 FIRING WEBHOOK TO MAKE for ${referenceCode}`);
+        console.log(`📤 WEBHOOK PAYLOAD:`, JSON.stringify(webhookPayload, null, 2));
+        console.log(`🎯 WEBHOOK URL: https://hook.us2.make.com/xmw2ahcia681bvopgp5esp37i2pu2hn4`);
         
         axios.post('https://hook.us2.make.com/xmw2ahcia681bvopgp5esp37i2pu2hn4', webhookPayload, {
           headers: { 'Content-Type': 'application/json' },
           timeout: 5000 // 5 second timeout
         }).then((response) => {
-          console.log(`✅ Make webhook SUCCESS for ${referenceCode} - Status: ${response.status}, Data: ${response.data}`);
+          console.log(`🎉 MAKE WEBHOOK SUCCESS for ${referenceCode}!`);
+          console.log(`   Status: ${response.status}`);
+          console.log(`   Response: ${response.data}`);
+          console.log(`   ✅ WEBHOOK DELIVERED TO MAKE SUCCESSFULLY!`);
         }).catch((error) => {
-          console.error(`❌ Make webhook FAILED for ${referenceCode}:`, {
-            message: error.message,
-            status: error.response?.status,
-            data: error.response?.data,
-            url: error.config?.url
-          });
+          console.error(`💥 MAKE WEBHOOK FAILED for ${referenceCode}:`);
+          console.error(`   Error: ${error.message}`);
+          console.error(`   Status: ${error.response?.status}`);
+          console.error(`   Response: ${error.response?.data}`);
+          console.error(`   URL: ${error.config?.url}`);
         });
       }
       
