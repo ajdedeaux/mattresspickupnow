@@ -683,28 +683,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get the updated profile with reference code and price lock expiry
       const updatedProfile = await storage.getCustomerProfileByTrackingId(trackingId);
       
-      // Send customer data to n8n webhook (fire and forget)
+      // Send customer data to Make webhook (fire and forget)
       if (updatedProfile) {
         const webhookPayload = {
-          referenceCode: updatedProfile.referenceCode,
-          trackingId: updatedProfile.trackingId,
-          zipCode: updatedProfile.zipCode,
-          mattressSize: updatedProfile.mattressSize,
-          firmness: updatedProfile.firmness,
-          finalPrice: updatedProfile.finalPrice,
-          demographics: updatedProfile.demographics,
-          contactMethod: "sms", // Always SMS for now as requested
-          priceLockExpiry: updatedProfile.priceLockExpiry
+          referenceCode: updatedProfile.referenceCode || "N/A",
+          trackingId: updatedProfile.trackingId || "N/A",
+          createdAt: updatedProfile.createdAt?.toISOString() || new Date().toISOString(),
+
+          zipCode: updatedProfile.zipCode || "N/A",
+          locationInfo: {
+            city: "Tampa", // TODO: Extract from Google Maps API when wired up
+            state: "FL",
+            latitude: 27.9506,
+            longitude: -82.4572,
+            timezone: "America/New_York"
+          },
+
+          storeInfo: {
+            storeId: "TF-1185",
+            storeName: "Tampa Midtown",
+            salesRep: "AJ Dedeaux"
+          },
+          warehouseInfo: {
+            name: "Tampa Bay Regional",
+            availability: "In Stock"
+          },
+
+          mattressSize: updatedProfile.mattressSize || "N/A",
+          firmness: updatedProfile.firmness || "N/A",
+          mattressModel: "Tempur-ProAdapt", // TODO: Map from firmness selection
+          finalPrice: updatedProfile.finalPrice || "N/A",
+
+          demographics: updatedProfile.demographics || "N/A",
+          contactMethod: "sms",
+          quoteSource: "Mattress Discount Locator",
+
+          priceLockExpiry: updatedProfile.priceLockExpiry?.toISOString() || "N/A",
+          priceLockStatus: "active",
+
+          aiTags: ["hot lead", "luxury seeker", "prefers in-stock"],
+          notes: "Customer mentioned neck pain and prefers memory foam."
         };
         
-        // Fire and forget POST to n8n webhook
-        axios.post('https://ajdedeaux.app.n8n.cloud/webhook-test/be832109-9242-4f5b-a5a1-0151f96dab35', webhookPayload, {
+        // Fire and forget POST to Make webhook
+        axios.post('https://hook.us2.make.com/xmw2ahcia681bvopgp5esp37i2pu2hn4', webhookPayload, {
           headers: { 'Content-Type': 'application/json' },
           timeout: 5000 // 5 second timeout
         }).then(() => {
-          console.log(`🔗 N8N webhook triggered for ${referenceCode}`);
+          console.log(`🔗 Make webhook triggered for ${referenceCode}`);
         }).catch((error) => {
-          console.error(`❌ N8N webhook failed for ${referenceCode}:`, error.message);
+          console.error(`❌ Make webhook failed for ${referenceCode}:`, error.message);
         });
       }
       
