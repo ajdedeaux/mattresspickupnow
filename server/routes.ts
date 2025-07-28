@@ -10,6 +10,37 @@ import { z } from "zod";
 import express from "express";
 import axios from "axios";
 
+// Helper functions for correct pricing and model mapping
+function getCorrectModelName(firmness: string | undefined, existingModel: string | undefined): string {
+  if (existingModel && (existingModel.includes('By Sealy') || existingModel === 'Basic Hybrid')) {
+    return existingModel;
+  }
+  
+  const modelMap: Record<string, string> = {
+    'F': 'By Sealy Firm',
+    'M': 'By Sealy Medium', 
+    'S': 'By Sealy Soft',
+    'H': 'Basic Hybrid'
+  };
+  
+  return modelMap[firmness || ''] || existingModel || 'Contact for details';
+}
+
+function getCorrectPrice(size: string | undefined, firmness: string | undefined, existingPrice: string | undefined): string {
+  if (existingPrice && existingPrice !== 'Contact for pricing' && existingPrice.includes('$')) {
+    return existingPrice;
+  }
+  
+  const priceMatrix: Record<string, Record<string, string>> = {
+    'F': { 'Twin': '$199.99', 'Full': '$249.99', 'Queen': '$299.99', 'King': '$399.99' },
+    'M': { 'Twin': '$299.99', 'Full': '$349.99', 'Queen': '$399.99', 'King': '$499.99' },
+    'S': { 'Twin': '$549.99', 'Full': '$599.99', 'Queen': '$699.99', 'King': '$799.99' },
+    'H': { 'Twin': '$399.99', 'Full': '$449.99', 'Queen': '$499.99', 'King': '$599.99' }
+  };
+  
+  return priceMatrix[firmness || '']?.[size || ''] || 'Contact for pricing';
+}
+
 // Mock data function for development (avoids Google API charges)
 // SMS messages route to Twilio automation system for instant intelligent responses
 function getMockMattressFirmStores(lat: number, lng: number) {
@@ -780,8 +811,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
           mattressSize: updatedProfile.mattressSize || "N/A",
           firmness: updatedProfile.firmness || "N/A",
-          mattressModel: updatedProfile.model || `${updatedProfile.mattressSize} ${updatedProfile.firmness}`,
-          finalPrice: updatedProfile.finalPrice || "N/A",
+          mattressModel: getCorrectModelName(updatedProfile.firmness, updatedProfile.model),
+          finalPrice: getCorrectPrice(updatedProfile.mattressSize, updatedProfile.firmness, updatedProfile.finalPrice),
 
           demographics: updatedProfile.demographics || "N/A",
           contactMethod: updatedProfile.contactMethod || "sms",
