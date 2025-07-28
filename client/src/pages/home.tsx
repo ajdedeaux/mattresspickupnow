@@ -1755,17 +1755,37 @@ export default function Home() {
   const handleComfortSelect = async (comfort: string) => {
     setUserSelections(prev => ({ ...prev, comfort }));
     
-    // Track firmness preference and calculate pricing
+    // Track firmness preference and calculate pricing with proper model names
     const mattressOptions = [
-      { id: "F", name: "Firm", sizes: { "Twin": "$199.99", "Full": "$249.99", "Queen": "$299.99", "King": "$399.99" } },
-      { id: "M", name: "Medium", sizes: { "Twin": "$299.99", "Full": "$349.99", "Queen": "$399.99", "King": "$499.99" } },
-      { id: "S", name: "Soft", sizes: { "Twin": "$549.99", "Full": "$599.99", "Queen": "$699.99", "King": "$799.99" } },
-      { id: "H", name: "Hybrid", sizes: { "Twin": "$399.99", "Full": "$449.99", "Queen": "$499.99", "King": "$599.99" } }
+      { 
+        id: "F", 
+        name: "Firm", 
+        model: "By Sealy Firm",
+        sizes: { "Twin": "$199.99", "Full": "$249.99", "Queen": "$299.99", "King": "$399.99" } 
+      },
+      { 
+        id: "M", 
+        name: "Medium", 
+        model: "By Sealy Medium",
+        sizes: { "Twin": "$299.99", "Full": "$349.99", "Queen": "$399.99", "King": "$499.99" } 
+      },
+      { 
+        id: "S", 
+        name: "Soft", 
+        model: "By Sealy Soft",
+        sizes: { "Twin": "$549.99", "Full": "$599.99", "Queen": "$699.99", "King": "$799.99" } 
+      },
+      { 
+        id: "H", 
+        name: "Hybrid", 
+        model: "Basic Hybrid",
+        sizes: { "Twin": "$399.99", "Full": "$449.99", "Queen": "$499.99", "King": "$599.99" } 
+      }
     ];
     
     const selectedOption = mattressOptions.find(opt => opt.id === comfort);
     const price = selectedOption?.sizes[userSelections.size as keyof typeof selectedOption.sizes] || "Contact for pricing";
-    const model = `${userSelections.size} ${selectedOption?.name || comfort}`;
+    const model = selectedOption?.model || `${userSelections.size} ${selectedOption?.name || comfort}`;
     
     try {
       console.log('🎯 CUSTOMER SELECTED COMFORT:', comfort, 'SIZE:', userSelections.size, 'PRICE:', price);
