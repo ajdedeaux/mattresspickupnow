@@ -144,7 +144,47 @@ The application is designed for rapid deployment with minimal configuration, foc
 
 ## Recent Changes
 
-### January 2025 - N8N Automation Integration & Customer Profile Tracking System (Latest)
+### July 2025 - Updated Webhook Implementation & Dedicated Warehouse Search (Latest)
+
+**Updated Webhook Trigger Point:**
+- Webhook now fires after Step 9 (reference code generation + video display) instead of complete customer journey
+- Captures leads at peak engagement moment with all essential data for immediate store coordination
+- Field name corrected from "demographic" to "who_its_for" to match app language consistency
+- Uses "NA" values for customer_name and urgency_level (collected during outreach phase)
+
+**Dedicated Warehouse Search Implementation:**
+- Added separate `/api/nearby-warehouses` endpoint for specific warehouse discovery
+- Implemented 2-tier warehouse search strategy with 80km radius (larger than store searches)
+- Enhanced data structure with warehouse-specific metadata (warehouseType, inventoryCapacity, serviceRadius)
+- Store name extraction functionality added for inventory search integration
+
+**Enhanced Market Intelligence:**
+- Complete location data structure with store ranking, market density analysis
+- Separate warehouse object in API responses as specified in original requirements
+- Business intelligence metadata including service area indicators and distance categorization
+- Ready for production Google API reconnection with comprehensive error handling
+
+**Updated Webhook Payload Structure:**
+```json
+{
+  "customer_data": {
+    "reference_code": "MP-XXXX",
+    "who_its_for": "Me|My Child|Guest Room|etc",
+    "mattress_size": "Queen",
+    "mattress_model": "Medium", 
+    "locked_price": "$399.99",
+    "customer_name": "NA",
+    "urgency_level": "NA"
+  },
+  "location_data": {
+    "mattress_firm_stores": [...],
+    "mattress_firm_warehouse": {...},
+    "search_metadata": {...}
+  }
+}
+```
+
+### January 2025 - N8N Automation Integration & Customer Profile Tracking System
 
 **Comprehensive Customer Journey Tracking:**
 - Implemented complete customer profile tracking system with unique tracking IDs generated on app entry

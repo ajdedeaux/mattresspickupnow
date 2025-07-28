@@ -197,6 +197,147 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Updated webhook implementation - triggers after Step 9 (reference code generation)
+  app.post("/api/test-make-webhook", async (req, res) => {
+    try {
+      const webhookUrl = "https://hook.us2.make.com/xmw2ahcia681bvopgp5esp37i2pu2hn4";
+      
+      // Simulate data from completed app flow through Step 9
+      const testZip = "33607";
+      const testReferenceCode = `MP-${Date.now().toString().slice(-4)}`;
+      
+      // Step 1: Location intelligence (existing implementation)
+      const geocodeResult = {
+        success: true,
+        coordinates: { lat: 27.9506, lng: -82.4572 },
+        address: `Tampa Bay Area near ${testZip}`
+      };
+      
+      const storesResult = {
+        success: true,
+        stores: getMockMattressFirmStores(geocodeResult.coordinates.lat, geocodeResult.coordinates.lng)
+      };
+      
+      const warehousesResult = {
+        success: true,
+        warehouses: getMockMattressFirmWarehouses(geocodeResult.coordinates.lat, geocodeResult.coordinates.lng)
+      };
+      
+      // Customer selections from app flow (Step 2-8)
+      const customerSelections = {
+        who_its_for: "Me", // Step 2 selection (Me, My Child, Guest Room, Dorm Room, Airbnb, Other)
+        size: "Queen", // Step 3 selection (Twin, Full, Queen, King)
+        model: "Medium", // Step 6 selection (Firm, Medium, Hybrid, Soft)
+        price: getCorrectPrice("Queen", "M", undefined), // Use existing pricing matrix
+        reference_code: testReferenceCode,
+        timestamp: new Date().toISOString()
+      };
+      
+      // Complete webhook payload - triggered after Step 9
+      const webhookPayload = {
+        // Test metadata
+        test_mode: true,
+        timestamp: new Date().toISOString(),
+        step: "reference_code_generated",
+        
+        // Customer data available after Step 9
+        customer_data: {
+          reference_code: customerSelections.reference_code,
+          who_its_for: customerSelections.who_its_for, // Changed from "demographic"
+          mattress_size: customerSelections.size,
+          mattress_model: customerSelections.model,
+          locked_price: customerSelections.price,
+          customer_name: "NA", // Will collect during outreach
+          urgency_level: "NA", // Will collect during outreach
+          generation_timestamp: customerSelections.timestamp
+        },
+        
+        // Step 1: Complete location intelligence
+        location_data: {
+          user_input: testZip,
+          search_timestamp: new Date().toISOString(),
+          
+          // Stores array - sorted nearest to furthest
+          mattress_firm_stores: storesResult.stores.map((store, index) => ({
+            rank: index + 1,
+            full_name: store.name,
+            store_location_name: store.storeName || store.name.replace('Mattress Firm ', ''),
+            address: store.address,
+            phone: store.phone,
+            hours: store.hours || "Mon-Sat 10-9, Sun 11-7",
+            distance_miles: store.distance,
+            place_id: store.placeId,
+            location: store.location
+          })),
+          
+          // Single warehouse object
+          mattress_firm_warehouse: warehousesResult.warehouses.length > 0 ? {
+            name: warehousesResult.warehouses[0].name,
+            warehouse_location_name: warehousesResult.warehouses[0].warehouseName,
+            address: warehousesResult.warehouses[0].address,
+            phone: warehousesResult.warehouses[0].phone,
+            distance_miles: warehousesResult.warehouses[0].distance,
+            service_area_indicator: warehousesResult.warehouses[0].distance < 20 ? "urban" : "regional"
+          } : null,
+          
+          // Search metadata
+          search_metadata: {
+            stores_found: storesResult.stores.length,
+            warehouse_found: warehousesResult.warehouses.length > 0,
+            user_input_preserved: testZip,
+            market_density: storesResult.stores.length > 3 ? "high" : "medium",
+            furthest_store_distance: Math.max(...storesResult.stores.map(s => s.distance)),
+            warehouse_distance_category: warehousesResult.warehouses[0]?.distance < 20 ? "close" : "regional"
+          }
+        },
+        
+        // Webhook routing metadata
+        webhook_metadata: {
+          source: "reference_code_generated",
+          make_scenario_trigger: "start_store_coordination",
+          automation_ready: true,
+          next_step: "podium_store_contact"
+        }
+      };
+      
+      console.log(`🎯 WEBHOOK TRIGGERED: Reference code generated`);
+      console.log(`Reference Code: ${customerSelections.reference_code}`);
+      console.log(`Customer: Wants ${customerSelections.size} ${customerSelections.model} for ${customerSelections.who_its_for}`);
+      console.log(`Price Locked: ${customerSelections.price}`);
+      console.log(`Stores Available: ${storesResult.stores.length}`);
+      console.log(`Ready for store coordination!`);
+      
+      // Send to Make webhook
+      const webhookResponse = await axios.post(webhookUrl, webhookPayload, {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 5000
+      });
+      
+      console.log("✅ STEP 9 WEBHOOK SUCCESS - Status:", webhookResponse.status, "Data:", webhookResponse.data);
+      
+      return res.json({
+        success: true,
+        message: "Reference code webhook sent to Make",
+        reference_code: customerSelections.reference_code,
+        trigger_point: "after_step_9_reference_code_generated",
+        data_sent: webhookPayload,
+        webhook_response: {
+          status: webhookResponse.status,
+          ok: webhookResponse.status === 200,
+          response: webhookResponse.data
+        }
+      });
+      
+    } catch (error: any) {
+      console.error('Reference code webhook error:', error);
+      res.status(500).json({
+        success: false,
+        message: "Reference code webhook test failed",
+        error: error.message
+      });
+    }
+  });
+
   // Resolve location to coordinates
   app.post("/api/resolve-location", async (req, res) => {
     try {

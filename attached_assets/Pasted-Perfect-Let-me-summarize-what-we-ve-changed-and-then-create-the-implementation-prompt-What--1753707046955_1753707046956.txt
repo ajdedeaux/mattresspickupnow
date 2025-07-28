@@ -1,0 +1,236 @@
+Perfect! Let me summarize what we've changed and then create the implementation prompt.
+
+## 🔄 What We've Changed From Original Plan
+
+### **Webhook Trigger Timing**
+- **Before**: After complete customer journey (name, urgency, etc.)
+- **Now**: After Step 9 (reference code + video) - peak engagement moment
+
+### **Field Naming**  
+- **Before**: `"demographic"` (confusing)
+- **Now**: `"who_its_for"` (matches your app language)
+
+### **Data Completeness Strategy**
+- **Before**: Wait for all customer data before webhook
+- **Now**: Capture essential data immediately, use "NA" for missing fields
+
+### **Customer Information**
+- **Before**: Required name and urgency before webhook
+- **Now**: `"customer_name": "NA"` and `"urgency_level": "NA"` - collect during outreach
+
+### **Pricing Source**
+- **Before**: Assumed external pricing
+- **Now**: Use your app's existing pricing matrix integration
+
+---
+
+## 🚀 Updated Implementation Prompt
+
+Here's the prompt to send to your Replit agent:
+
+---
+
+# Updated Webhook Implementation - Trigger After Reference Code Generation
+
+## Key Changes Made
+1. **Webhook fires after Step 9** (reference code + video shown) instead of waiting for complete journey
+2. **Field name changed** from "demographic" to "who_its_for" to match app language  
+3. **NA values** for missing data (customer_name, urgency_level) - collect during outreach
+4. **Use existing pricing matrix** from app for locked_price field
+
+## Implementation Requirements
+
+### Webhook Trigger Point
+**Fire webhook immediately after reference code generation and video display (Step 9)**
+
+### Complete Webhook Implementation
+
+```javascript
+app.post("/api/test-make-webhook", async (req, res) => {
+  try {
+    const webhookUrl = "https://hook.us2.make.com/xmw2ahcia681bvopgp5esp37i2pu2hn4";
+    
+    // Simulate data from completed app flow through Step 9
+    const testZip = "33607";
+    const testReferenceCode = `MP-${Date.now().toString().slice(-4)}`;
+    
+    // Step 1: Location intelligence (existing implementation)
+    const geocodeResult = {
+      success: true,
+      coordinates: { lat: 27.9506, lng: -82.4572 },
+      address: `Tampa Bay Area near ${testZip}`
+    };
+    
+    const storesResult = {
+      success: true,
+      stores: getMockMattressFirmStores(geocodeResult.coordinates.lat, geocodeResult.coordinates.lng)
+    };
+    
+    const warehousesResult = {
+      success: true,
+      warehouses: getMockMattressFirmWarehouses(geocodeResult.coordinates.lat, geocodeResult.coordinates.lng)
+    };
+    
+    // Customer selections from app flow (Step 2-8)
+    const customerSelections = {
+      who_its_for: "Me", // Step 2 selection (Me, My Child, Guest Room, Dorm Room, Airbnb, Other)
+      size: "Queen", // Step 3 selection (Twin, Full, Queen, King)
+      model: "Medium", // Step 6 selection (Firm, Medium, Hybrid, Soft)
+      price: getPriceFromMatrix("Medium", "Queen"), // Use your existing pricing matrix
+      reference_code: testReferenceCode,
+      timestamp: new Date().toISOString()
+    };
+    
+    // Complete webhook payload - triggered after Step 9
+    const webhookPayload = {
+      // Test metadata
+      test_mode: true,
+      timestamp: new Date().toISOString(),
+      step: "reference_code_generated",
+      
+      // Customer data available after Step 9
+      customer_data: {
+        reference_code: customerSelections.reference_code,
+        who_its_for: customerSelections.who_its_for, // Changed from "demographic"
+        mattress_size: customerSelections.size,
+        mattress_model: customerSelections.model,
+        locked_price: customerSelections.price,
+        customer_name: "NA", // Will collect during outreach
+        urgency_level: "NA", // Will collect during outreach
+        generation_timestamp: customerSelections.timestamp
+      },
+      
+      // Step 1: Complete location intelligence
+      location_data: {
+        user_input: testZip,
+        search_timestamp: new Date().toISOString(),
+        
+        // Stores array - sorted nearest to furthest
+        mattress_firm_stores: storesResult.stores.map((store, index) => ({
+          rank: index + 1,
+          full_name: store.name,
+          store_location_name: store.storeName || store.name.replace('Mattress Firm ', ''),
+          address: store.address,
+          phone: store.phone,
+          hours: store.hours || "Mon-Sat 10-9, Sun 11-7",
+          distance_miles: store.distance,
+          place_id: store.placeId,
+          location: store.location
+        })),
+        
+        // Single warehouse object
+        mattress_firm_warehouse: warehousesResult.warehouses.length > 0 ? {
+          name: warehousesResult.warehouses[0].name,
+          warehouse_location_name: warehousesResult.warehouses[0].warehouseName,
+          address: warehousesResult.warehouses[0].address,
+          phone: warehousesResult.warehouses[0].phone,
+          distance_miles: warehousesResult.warehouses[0].distance,
+          service_area_indicator: warehousesResult.warehouses[0].distance < 20 ? "urban" : "regional"
+        } : null,
+        
+        // Search metadata
+        search_metadata: {
+          stores_found: storesResult.stores.length,
+          warehouse_found: warehousesResult.warehouses.length > 0,
+          user_input_preserved: testZip,
+          market_density: storesResult.stores.length > 3 ? "high" : "medium",
+          furthest_store_distance: Math.max(...storesResult.stores.map(s => s.distance)),
+          warehouse_distance_category: warehousesResult.warehouses[0]?.distance < 20 ? "close" : "regional"
+        }
+      },
+      
+      // Webhook routing metadata
+      webhook_metadata: {
+        source: "reference_code_generated",
+        make_scenario_trigger: "start_store_coordination",
+        automation_ready: true,
+        next_step: "podium_store_contact"
+      }
+    };
+    
+    console.log(`🎯 WEBHOOK TRIGGERED: Reference code generated`);
+    console.log(`Reference Code: ${customerSelections.reference_code}`);
+    console.log(`Customer: Wants ${customerSelections.size} ${customerSelections.model} for ${customerSelections.who_its_for}`);
+    console.log(`Price Locked: ${customerSelections.price}`);
+    console.log(`Stores Available: ${storesResult.stores.length}`);
+    console.log(`Ready for store coordination!`);
+    
+    // Send to Make webhook
+    const webhookResponse = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(webhookPayload)
+    });
+    
+    const webhookResult = webhookResponse.ok ? await webhookResponse.text() : null;
+    
+    return res.json({
+      success: true,
+      message: "Reference code webhook sent to Make",
+      reference_code: customerSelections.reference_code,
+      trigger_point: "after_step_9_reference_code_generated",
+      data_sent: webhookPayload,
+      webhook_response: {
+        status: webhookResponse.status,
+        ok: webhookResponse.ok,
+        response: webhookResult
+      }
+    });
+    
+  } catch (error) {
+    console.error('Reference code webhook error:', error);
+    res.status(500).json({
+      success: false,
+      message: "Reference code webhook test failed",
+      error: error.message
+    });
+  }
+});
+```
+
+## Expected Make Webhook Payload
+
+Your Make webhook will receive this structure:
+
+```json
+{
+  "test_mode": true,
+  "timestamp": "2025-07-28T15:30:00Z",
+  "step": "reference_code_generated",
+  
+  "customer_data": {
+    "reference_code": "MP-1234",
+    "who_its_for": "Me",
+    "mattress_size": "Queen",
+    "mattress_model": "Medium",
+    "locked_price": "$399.99",
+    "customer_name": "NA",
+    "urgency_level": "NA",
+    "generation_timestamp": "2025-07-28T15:30:00Z"
+  },
+  
+  "location_data": {
+    "mattress_firm_stores": [...],
+    "mattress_firm_warehouse": {...},
+    "search_metadata": {...}
+  }
+}
+```
+
+## Validation Checklist
+
+After implementation, verify:
+- ✅ Webhook fires after Step 9 (reference code + video)
+- ✅ Field shows "who_its_for" not "demographic"  
+- ✅ customer_name and urgency_level show "NA"
+- ✅ locked_price uses your pricing matrix
+- ✅ All location intelligence data included
+- ✅ Reference code follows MP-xxxx format
+
+This captures leads at peak engagement with all essential data for immediate store coordination!
+
+---
+
+**Ready to send this to your Replit agent and test the updated webhook?**
