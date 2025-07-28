@@ -1,0 +1,94 @@
+Subject: Comprehensive audit of Step 1 - Customer Location Entry & Store Discovery implementation
+
+Request Overview
+I need you to provide a detailed breakdown of how you have implemented Step 1 of our mattress pickup system - specifically the customer location entry and Google Places API integration for Mattress Firm store discovery.
+What I Need You To Document
+1. Current Implementation Status
+
+Is Step 1 fully implemented and functional?
+What components are built vs still in development?
+Any known issues or limitations?
+
+2. Customer Input Handling
+
+How does the app capture customer location input?
+What input formats are supported (ZIP code, GPS, manual entry)?
+How is the {user_input} variable captured and processed?
+
+3. Google Places API Integration Details
+
+Store Search: How is the "Mattress Firm near {user_input}" search implemented?
+Warehouse Search: How is the "Mattress Firm Warehouse near {user_input}" search implemented?
+What is the current search radius for each type of search?
+How many results are you retrieving maximum?
+
+4. Data Filtering & Validation
+
+How are you filtering results to ensure ONLY "Mattress Firm" locations are returned?
+What logic excludes competitors (Sleep Number, Tempur-Pedic, etc.)?
+How do you validate that results follow the "Mattress Firm [Store Name]" pattern?
+
+5. Data Structure & Organization
+
+What data fields are you capturing for each store location?
+How are you extracting the store location name (the part after "Mattress Firm")?
+Are stores being sorted by distance (nearest to furthest)?
+How is warehouse data being structured differently from store data?
+
+6. Complete Data Output
+Please show me the exact JSON structure your Step 1 currently outputs, including:
+
+Sample customer input processing
+Example store results array (with real field names and structure)
+Warehouse data structure
+Any metadata or additional fields being captured
+
+7. Error Handling
+
+What happens if no Mattress Firm stores are found?
+What happens if no warehouse is found?
+How do you handle API failures or rate limits?
+What fallback mechanisms are in place?
+
+8. API Configuration
+
+What are your current Google Places API settings?
+How is cost management being handled?
+Is the API currently connected or disconnected?
+
+Response Format Requested
+Please structure your response as follows:
+## STEP 1 IMPLEMENTATION AUDIT
+
+### Status Overview
+[Current implementation status]
+
+### Customer Input System
+[How location input is captured]
+
+### Google Places API Implementation
+[Detailed breakdown of both store and warehouse searches]
+
+### Data Processing & Filtering
+[How results are filtered and validated]
+
+### Current Data Output Structure
+[Show actual JSON structure with field names]
+
+### Error Handling & Fallbacks
+[Current error management approach]
+
+### Issues & Gaps Identified
+[Any problems or missing components]
+
+### Code Snippets (if helpful)
+[Relevant code sections that show implementation approach]
+Goal
+I want to understand exactly what you've built so I can:
+
+Verify it matches our Step 1 specification requirements
+Identify any gaps or issues that need addressing
+Confirm the data structure works for downstream processing
+Validate that the business logic is correctly implemented
+
+Please be thorough and specific - I need complete visibility into the current Step 1 implementation.
