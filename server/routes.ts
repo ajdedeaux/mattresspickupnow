@@ -41,39 +41,85 @@ function getCorrectPrice(size: string | undefined, firmness: string | undefined,
   return priceMatrix[firmness || '']?.[size || ''] || 'Contact for pricing';
 }
 
-// Mock data function for development (avoids Google API charges)
+// Mock data functions for development (avoids Google API charges)
 // SMS messages route to Twilio automation system for instant intelligent responses
+
 function getMockMattressFirmStores(lat: number, lng: number) {
   return [
     {
       name: 'Mattress Firm Westshore Plaza',
+      storeName: 'Westshore Plaza', // Extracted store name for inventory searches
       address: '1234 Main St, Tampa, FL 33607',
       phone: '(855) 515-9604',  // Twilio automation number for instant responses
       hours: 'Wednesday: 10:00 AM – 8:00 PM',
       distance: 2.1,
       rating: 4.2,
       placeId: 'mock_westshore_001',
-      location: { lat: lat + 0.01, lng: lng + 0.01 }
+      location: { lat: lat + 0.01, lng: lng + 0.01 },
+      marketDensity: 'high', // Market intelligence metadata
+      serviceAreaIndicator: 'urban_core',
+      warehouseDistanceCategory: 'nearby'
     },
     {
       name: 'Mattress Firm Town Center',
+      storeName: 'Town Center', // Extracted store name
       address: '5678 Oak Ave, Tampa, FL 33609',
       phone: '(855) 515-9604',  // Twilio automation number for instant responses
       hours: 'Wednesday: 10:00 AM – 9:00 PM',
       distance: 3.5,
       rating: 4.0,
       placeId: 'mock_towncenter_002',
-      location: { lat: lat + 0.02, lng: lng + 0.02 }
+      location: { lat: lat + 0.02, lng: lng + 0.02 },
+      marketDensity: 'medium',
+      serviceAreaIndicator: 'suburban',
+      warehouseDistanceCategory: 'nearby'
     },
     {
       name: 'Mattress Firm Crossroads',
+      storeName: 'Crossroads', // Extracted store name
       address: '9012 Pine Rd, Tampa, FL 33611',
       phone: '(855) 515-9604',  // Twilio automation number for instant responses
       hours: 'Wednesday: 10:00 AM – 8:00 PM',
       distance: 4.8,
       rating: 4.3,
       placeId: 'mock_crossroads_003',
-      location: { lat: lat + 0.03, lng: lng + 0.03 }
+      location: { lat: lat + 0.03, lng: lng + 0.03 },
+      marketDensity: 'medium',
+      serviceAreaIndicator: 'suburban',
+      warehouseDistanceCategory: 'regional'
+    }
+  ];
+}
+
+function getMockMattressFirmWarehouses(lat: number, lng: number) {
+  return [
+    {
+      name: 'Mattress Firm Tampa Distribution Center',
+      warehouseName: 'Tampa Distribution Center', // Extracted warehouse name
+      address: '15000 Commerce Pkwy, Tampa, FL 33637',
+      phone: '(855) 515-9604',  // Twilio automation number
+      hours: 'Monday-Friday: 6:00 AM – 6:00 PM',
+      distance: 12.3,
+      rating: 4.5,
+      placeId: 'mock_warehouse_001',
+      location: { lat: lat + 0.15, lng: lng + 0.12 },
+      warehouseType: 'regional_distribution',
+      inventoryCapacity: 'high',
+      serviceRadius: '50_miles'
+    },
+    {
+      name: 'Mattress Firm Central Florida Warehouse',
+      warehouseName: 'Central Florida Warehouse', // Extracted warehouse name
+      address: '2500 Industrial Blvd, Orlando, FL 32825',
+      phone: '(855) 515-9604',  // Twilio automation number
+      hours: 'Monday-Saturday: 7:00 AM – 7:00 PM',
+      distance: 45.7,
+      rating: 4.3,
+      placeId: 'mock_warehouse_002',
+      location: { lat: lat + 0.45, lng: lng + 0.35 },
+      warehouseType: 'regional_hub',
+      inventoryCapacity: 'very_high',
+      serviceRadius: '100_miles'
     }
   ];
 }
@@ -261,6 +307,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         stores: getMockMattressFirmStores(parseFloat(lat), parseFloat(lng))
       };
       
+      // DEDICATED WAREHOUSE SEARCH - separate API call as specified
+      // TO RECONNECT: Change this to use googleMaps.findNearbyMattressFirmWarehouses()
+      const warehousesResult = {
+        success: true,
+        warehouses: getMockMattressFirmWarehouses(parseFloat(lat), parseFloat(lng))
+      };
+      
       if (!storesResult.success) {
         return res.status(500).json({
           success: false,
@@ -277,11 +330,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         coordinates: { lat: parseFloat(lat), lng: parseFloat(lng) },
         nearbyStores: storesResult.stores.map(store => ({
           name: store.name,
+          storeName: store.storeName || store.name.replace('Mattress Firm ', ''),
           phone: store.phone || "",
           address: store.address,
           distance: store.distance || 0,
           placeId: store.placeId || "",
-          location: store.location || { lat: 0, lng: 0 }
+          location: store.location || { lat: 0, lng: 0 },
+          marketDensity: store.marketDensity,
+          serviceAreaIndicator: store.serviceAreaIndicator,
+          warehouseDistanceCategory: store.warehouseDistanceCategory
+        })),
+        nearbyWarehouses: warehousesResult.warehouses.map(warehouse => ({
+          name: warehouse.name,
+          warehouseName: warehouse.warehouseName || warehouse.name.replace('Mattress Firm ', ''),
+          phone: warehouse.phone || "",
+          address: warehouse.address,
+          distance: warehouse.distance || 0,
+          placeId: warehouse.placeId || "",
+          location: warehouse.location || { lat: 0, lng: 0 },
+          warehouseType: warehouse.warehouseType,
+          inventoryCapacity: warehouse.inventoryCapacity,
+          serviceRadius: warehouse.serviceRadius
         })),
         zipCodeTag: null,
         sourceTracking: `direct_coordinates_filtered_mattress_firm_only`,
@@ -305,8 +374,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         success: true,
         stores: storesResult.stores,
-        count: storesResult.stores.length,
-        coordinates: { lat: parseFloat(lat), lng: parseFloat(lng) }
+        storeCount: storesResult.stores.length,
+        mattress_firm_warehouse: warehousesResult.success ? warehousesResult.warehouses[0] : null, // Nearest warehouse
+        allWarehouses: warehousesResult.warehouses || [],
+        warehouseCount: warehousesResult.warehouses?.length || 0,
+        coordinates: { lat: parseFloat(lat), lng: parseFloat(lng) },
+        marketIntelligence: {
+          totalLocations: storesResult.stores.length + (warehousesResult.warehouses?.length || 0),
+          nearestWarehouseDistance: warehousesResult.warehouses?.[0]?.distance || null,
+          serviceAreaDensity: storesResult.stores.length > 2 ? 'high' : 'medium'
+        }
       });
       
     } catch (error) {
@@ -314,6 +391,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({
         success: false,
         message: "Failed to find nearby stores"
+      });
+    }
+  });
+
+  // Dedicated warehouse search endpoint - separate from store search
+  app.post("/api/nearby-warehouses", async (req, res) => {
+    try {
+      const { lat, lng } = req.body;
+      
+      if (!lat || !lng) {
+        return res.status(400).json({
+          success: false,
+          message: "Latitude and longitude are required"
+        });
+      }
+
+      console.log(`🏭 DEDICATED WAREHOUSE SEARCH for coordinates: ${lat}, ${lng}`);
+
+      // DEVELOPMENT MODE: Using mock warehouse data to avoid Google API charges
+      // TO RECONNECT: Change this to use googleMaps.findNearbyMattressFirmWarehouses()
+      const warehousesResult = {
+        success: true,
+        warehouses: getMockMattressFirmWarehouses(parseFloat(lat), parseFloat(lng))
+      };
+      
+      if (!warehousesResult.success) {
+        return res.status(500).json({
+          success: false,
+          message: "Could not find nearby warehouses"
+        });
+      }
+
+      console.log(`🏭 Found ${warehousesResult.warehouses.length} Mattress Firm warehouses near ${lat}, ${lng}`);
+      warehousesResult.warehouses.forEach(warehouse => {
+        console.log(`   ${warehouse.name}: ${warehouse.address}, ${warehouse.distance?.toFixed(1)} mi`);
+      });
+      
+      res.json({
+        success: true,
+        warehouses: warehousesResult.warehouses,
+        count: warehousesResult.warehouses.length,
+        coordinates: { lat: parseFloat(lat), lng: parseFloat(lng) },
+        nearestWarehouse: warehousesResult.warehouses[0] || null
+      });
+      
+    } catch (error) {
+      console.error("Warehouse search error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to find nearby warehouses"
       });
     }
   });

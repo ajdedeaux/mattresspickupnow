@@ -76,11 +76,27 @@ export const locationSearches = pgTable("location_searches", {
   coordinates: json("coordinates").$type<{ lat: number; lng: number }>(),
   nearbyStores: json("nearby_stores").$type<Array<{
     name: string;
+    storeName?: string; // Extracted store name (e.g., "Westshore Plaza" from "Mattress Firm Westshore Plaza")
     phone: string;
     address: string;
     distance: number;
     placeId: string;
     location: { lat: number; lng: number };
+    marketDensity?: string; // Market intelligence metadata
+    serviceAreaIndicator?: string;
+    warehouseDistanceCategory?: string;
+  }>>(),
+  nearbyWarehouses: json("nearby_warehouses").$type<Array<{
+    name: string;
+    warehouseName?: string; // Extracted warehouse name
+    phone: string;
+    address: string;
+    distance: number;
+    placeId: string;
+    location: { lat: number; lng: number };
+    warehouseType?: string; // regional_distribution, regional_hub, etc.
+    inventoryCapacity?: string;
+    serviceRadius?: string;
   }>>(),
   zipCodeTag: text("zip_code_tag"), // extracted/derived ZIP code
   sourceTracking: text("source_tracking"), // tracking metadata

@@ -83,6 +83,105 @@ export class GoogleMapsService {
     }
   }
 
+  async findNearbyMattressFirmWarehouses(lat: number, lng: number): Promise<{
+    success: boolean;
+    warehouses: MattressFirmLocation[];
+    message?: string;
+  }> {
+    if (!this.apiKey) {
+      return {
+        success: false,
+        warehouses: [],
+        message: 'Google API key not configured'
+      };
+    }
+
+    try {
+      console.log(`🏭 Searching for Mattress Firm WAREHOUSES near ${lat}, ${lng}`);
+      
+      let allWarehouses: any[] = [];
+      
+      // Strategy 1: Specific warehouse search with keywords
+      try {
+        const warehouseResponse = await this.client.placesNearby({
+          params: {
+            location: { lat, lng },
+            rankby: 'distance' as any,
+            keyword: 'Mattress Firm Warehouse',
+            key: this.apiKey,
+          },
+        });
+        allWarehouses.push(...warehouseResponse.data.results);
+        console.log(`🏭 Warehouse Strategy 1 found ${warehouseResponse.data.results.length} locations`);
+      } catch (error) {
+        console.log('⚠️ Warehouse Strategy 1 failed:', error);
+      }
+      
+      // Strategy 2: Large radius warehouse search
+      try {
+        const radiusResponse = await this.client.placesNearby({
+          params: {
+            location: { lat, lng },
+            radius: 80000, // 80km radius for warehouses (larger than stores)
+            keyword: 'Mattress Firm Distribution',
+            key: this.apiKey,
+          },
+        });
+        
+        const newWarehouses = radiusResponse.data.results.filter(
+          (place: any) => !allWarehouses.find((existing: any) => existing.place_id === place.place_id)
+        );
+        allWarehouses.push(...newWarehouses);
+        console.log(`🏭 Warehouse Strategy 2 found ${newWarehouses.length} additional locations`);
+      } catch (error) {
+        console.log('⚠️ Warehouse Strategy 2 failed:', error);
+      }
+
+      // Filter for valid Mattress Firm warehouses
+      const filteredWarehouses = allWarehouses.filter((place: any) => {
+        const name = place.name?.toLowerCase().trim() || '';
+        const isValidWarehouse = (
+          name.includes('mattress firm') && 
+          (name.includes('warehouse') || name.includes('distribution') || name.includes('fulfillment'))
+        );
+        return isValidWarehouse;
+      });
+
+      console.log(`🎯 WAREHOUSE FILTERING: ${allWarehouses.length} raw results → ${filteredWarehouses.length} valid warehouses`);
+
+      // Convert and sort by distance
+      const warehousesWithDetails = await Promise.all(
+        filteredWarehouses.slice(0, 5).map(async (place: any) => { // Limit to 5 warehouses
+          const distance = this.calculateDistance(lat, lng, place.geometry.location.lat, place.geometry.location.lng);
+          
+          return {
+            name: place.name || 'Mattress Firm Warehouse',
+            address: place.vicinity || 'Address unavailable',
+            phone: place.formatted_phone_number || '(855) 515-9604',
+            distance: Math.round(distance * 10) / 10,
+            rating: place.rating || 0,
+            placeId: place.place_id || '',
+            location: place.geometry.location,
+            hours: place.opening_hours?.weekday_text?.join(', ') || 'Hours unavailable'
+          };
+        })
+      );
+
+      return {
+        success: true,
+        warehouses: warehousesWithDetails.sort((a, b) => a.distance - b.distance)
+      };
+
+    } catch (error) {
+      console.error('Warehouse search error:', error);
+      return {
+        success: false,
+        warehouses: [],
+        message: 'Warehouse search failed'
+      };
+    }
+  }
+
   async findNearbyMattressFirmStores(lat: number, lng: number): Promise<{
     success: boolean;
     stores: MattressFirmLocation[];
