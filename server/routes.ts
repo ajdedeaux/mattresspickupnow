@@ -223,14 +223,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         warehouses: getMockMattressFirmWarehouses(geocodeResult.coordinates.lat, geocodeResult.coordinates.lng)
       };
       
-      // Customer selections from app flow (Step 2-8)
+      // Customer selections from app flow (Step 2-8) - COMPREHENSIVE TEST DATA
       const customerSelections = {
-        who_its_for: "Me", // Step 2 selection (Me, My Child, Guest Room, Dorm Room, Airbnb, Other)
-        size: "Queen", // Step 3 selection (Twin, Full, Queen, King)
+        who_its_for: "My Child", // Step 2 selection (Me, My Child, Guest Room, Dorm Room, Airbnb, Other)
+        size: "Twin", // Step 3 selection (Twin, Full, Queen, King)
         model: "Medium", // Step 6 selection (Firm, Medium, Hybrid, Soft)
-        price: getCorrectPrice("Queen", "M", undefined), // Use existing pricing matrix
+        price: getCorrectPrice("Twin", "M", undefined), // Use existing pricing matrix
         reference_code: testReferenceCode,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        // Additional comprehensive data
+        customer_journey: {
+          step_2_use_case: "child_bedroom_upgrade",
+          step_3_size_reasoning: "twin_for_growing_child",
+          step_4_budget_range: "under_400",
+          step_5_urgency: "this_weekend",
+          step_6_comfort_preference: "medium_support",
+          step_7_special_needs: "hypoallergenic",
+          step_8_delivery_preference: "pickup_today"
+        }
       };
       
       // Complete webhook payload - triggered after Step 9
@@ -240,16 +250,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         timestamp: new Date().toISOString(),
         step: "reference_code_generated",
         
-        // Customer data available after Step 9
+        // Customer data available after Step 9 - COMPLETE STRUCTURE
         customer_data: {
           reference_code: customerSelections.reference_code,
           who_its_for: customerSelections.who_its_for, // Changed from "demographic"
           mattress_size: customerSelections.size,
-          mattress_model: customerSelections.model,
+          mattress_model: getCorrectModelName("M", undefined), // "By Sealy Medium"
           locked_price: customerSelections.price,
           customer_name: "NA", // Will collect during outreach
           urgency_level: "NA", // Will collect during outreach
-          generation_timestamp: customerSelections.timestamp
+          generation_timestamp: customerSelections.timestamp,
+          
+          // Complete customer journey context
+          journey_context: {
+            use_case: customerSelections.customer_journey.step_2_use_case,
+            size_reasoning: customerSelections.customer_journey.step_3_size_reasoning,
+            budget_category: customerSelections.customer_journey.step_4_budget_range,
+            urgency_indicated: customerSelections.customer_journey.step_5_urgency,
+            comfort_preference: customerSelections.customer_journey.step_6_comfort_preference,
+            special_requirements: customerSelections.customer_journey.step_7_special_needs,
+            delivery_preference: customerSelections.customer_journey.step_8_delivery_preference
+          },
+          
+          // Pricing breakdown
+          pricing_details: {
+            base_price: customerSelections.price,
+            size_category: customerSelections.size,
+            firmness_code: "M",
+            price_locked_until: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
+            pricing_tier: "standard"
+          }
         },
         
         // Step 1: Complete location intelligence
