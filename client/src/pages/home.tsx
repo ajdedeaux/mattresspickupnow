@@ -1818,7 +1818,12 @@ export default function Home() {
     
     console.log('🔍 SEARCHING FOR MATTRESS OPTION WITH ID:', comfort);
     console.log('🔍 AVAILABLE OPTIONS:', mattressOptions.map(opt => opt.id));
-    const selectedOption = mattressOptions.find(opt => opt.id === comfort);
+    
+    // Fix case sensitivity issue - capitalize first letter for matching
+    const normalizedComfort = comfort.charAt(0).toUpperCase() + comfort.slice(1).toLowerCase();
+    console.log('🔍 NORMALIZED COMFORT FOR MATCHING:', normalizedComfort);
+    
+    const selectedOption = mattressOptions.find(opt => opt.id === normalizedComfort);
     console.log('🔍 SELECTED OPTION:', selectedOption);
     console.log('🔍 USER SELECTIONS SIZE:', userSelections.size);
     console.log('🔍 SELECTED OPTION SIZES:', selectedOption?.sizes);
@@ -1833,7 +1838,7 @@ export default function Home() {
       console.log('🎯 CUSTOMER SELECTED COMFORT:', comfort, 'SIZE:', userSelections.size, 'PRICE:', price);
       
       await updateProfile({
-        firmness: selectedOption?.code || comfort, // Use code for backend compatibility
+        firmness: selectedOption?.code || normalizedComfort.charAt(0), // Use code for backend compatibility, fallback to first letter
         model,
         finalPrice: price
       });
