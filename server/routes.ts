@@ -1090,7 +1090,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Customer selections from real profile data
         const customerSelections = {
-          who_its_for: updatedProfile.demographics || "Me",
+          who_its_for: updatedProfile.demographics ?? "Me",
           size: updatedProfile.mattressSize || "Queen",
           model: updatedProfile.firmness || "Medium",
           price: getCorrectPrice(updatedProfile.mattressSize || "Queen", updatedProfile.firmness || "M", updatedProfile.finalPrice),
@@ -1119,7 +1119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             reference_code: customerSelections.reference_code,
             who_its_for: customerSelections.who_its_for,
             mattress_size: customerSelections.size,
-            mattress_model: getCorrectModelName(updatedProfile.firmness || "M", updatedProfile.model),
+            mattress_model: getCorrectModelName(updatedProfile.firmness ?? "M", updatedProfile.model ?? undefined),
             locked_price: customerSelections.price,
             customer_name: "NA", // Will collect during outreach
             urgency_level: "NA", // Will collect during outreach
