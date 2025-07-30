@@ -642,10 +642,16 @@ const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption, 
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Ready to get your mattress?</h2>
         {referenceCode && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4 mx-auto max-w-xs">
-            <p className="text-xs text-blue-700 font-medium mb-1">Your Reference Code</p>
-            <p className="text-lg font-bold text-blue-900">{referenceCode}</p>
-            <p className="text-xs text-blue-600">24-hour price lock active</p>
+          <div className="bg-green-500 text-white rounded-xl p-4 mt-4 mx-auto max-w-xs shadow-lg">
+            <div className="flex items-center justify-center mb-2">
+              <Check className="w-5 h-5 mr-2" />
+              <span className="font-semibold">Perfect!</span>
+            </div>
+            <div className="text-center">
+              <p className="text-sm opacity-90 mb-1">Your Reference Code</p>
+              <p className="text-xl font-bold">{referenceCode}</p>
+              <p className="text-xs opacity-80 mt-1">24-hour price lock active</p>
+            </div>
           </div>
         )}
       </div>
@@ -2026,10 +2032,16 @@ export default function Home() {
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Perfect! We've got you covered.</h2>
               {referenceCode && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-blue-700 font-medium mb-1">Your Reference Code</p>
-                  <p className="text-xl font-bold text-blue-900">{referenceCode}</p>
-                  <p className="text-xs text-blue-600 mt-1">Save this for your records</p>
+                <div className="bg-green-500 text-white rounded-xl p-4 mb-4 shadow-lg">
+                  <div className="flex items-center justify-center mb-2">
+                    <Check className="w-5 h-5 mr-2" />
+                    <span className="font-semibold">Perfect!</span>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm opacity-90 mb-1">Your Reference Code</p>
+                    <p className="text-xl font-bold">{referenceCode}</p>
+                    <p className="text-xs opacity-80 mt-1">Save this for your records</p>
+                  </div>
                 </div>
               )}
               <p className="text-gray-600">
