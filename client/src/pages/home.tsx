@@ -491,7 +491,10 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
 
   const handleSelectClick = (comfortId: string, event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent card expansion
+    console.log('🎯 HANDLE SELECT CLICK - ID:', comfortId);
     const comfort = comforts.find(c => c.id === comfortId);
+    console.log('🎯 COMFORT FOUND:', comfort);
+    console.log('🎯 CALLING onSelect WITH LABEL:', comfort?.label);
     if (comfort) onSelect(comfort.label);
   };
 
@@ -514,7 +517,10 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
                   ? 'border-2 border-blue-400 shadow-md' 
                   : 'border border-gray-200 hover:border-gray-300 hover:shadow-md'
             }`}
-            onClick={() => handleCardClick(comfort.id)}
+            onClick={() => {
+              console.log('🚨 COMFORT CARD CLICKED:', comfort.id);
+              handleCardClick(comfort.id);
+            }}
           >
             {/* Most Popular Flag */}
             {comfort.popular && (
@@ -575,7 +581,10 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
 
                   {/* Premium call to action button */}
                   <button 
-                    onClick={(e) => handleSelectClick(comfort.id, e)}
+                    onClick={(e) => {
+                      console.log('🚨 COMFORT SELECT BUTTON CLICKED:', comfort.id);
+                      handleSelectClick(comfort.id, e);
+                    }}
                     className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white p-3 rounded-lg text-center transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
                   >
                     <div className="font-semibold">Tap to select this mattress</div>
