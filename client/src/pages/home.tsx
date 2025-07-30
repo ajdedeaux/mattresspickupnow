@@ -608,17 +608,37 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
   );
 };
 
-const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption, referenceCode }: {
+const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption, referenceCode, generateReferenceCode, setReferenceCode }: {
   userData: UserData;
   onSMSOption: () => void;
   onEmailOption: () => void;
   onFormOption: () => void;
   referenceCode?: string | null;
+  generateReferenceCode: () => Promise<string>;
+  setReferenceCode: (code: string) => void;
 }) => {
   const nearestStore = userData.nearestStores[0];
   const [isFlipped, setIsFlipped] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [hasPlayedOnce, setHasPlayedOnce] = useState(false);
+  
+  // Generate reference code and fire webhook when component loads (Step 9 equivalent)
+  useEffect(() => {
+    const generateReferenceCodeAndFireWebhook = async () => {
+      if (!referenceCode) {
+        try {
+          console.log('🎯 STEP 9 REACHED - GENERATING REFERENCE CODE AND FIRING WEBHOOK');
+          const newReferenceCode = await generateReferenceCode();
+          setReferenceCode(newReferenceCode);
+          console.log('✅ WEBHOOK FIRED AT STEP 9 - Reference code:', newReferenceCode);
+        } catch (error) {
+          console.error('❌ Failed to generate reference code at Step 9:', error);
+        }
+      }
+    };
+    
+    generateReferenceCodeAndFireWebhook();
+  }, []); // Only run once when component mounts
   
   // Auto-play video once on component mount
   useEffect(() => {
@@ -1851,15 +1871,8 @@ export default function Home() {
       });
       console.log('✅ Profile updated with comfort selection');
       
-      // Generate reference code now that the core selection is complete
-      console.log('🔥 ABOUT TO GENERATE REFERENCE CODE AND FIRE WEBHOOK');
-      console.log('🔍 CURRENT REFERENCE CODE STATE BEFORE API CALL:', referenceCode);
-      
-      const newReferenceCode = await generateReferenceCode();
-      console.log('🎉 REFERENCE CODE GENERATED FROM API:', newReferenceCode);
-      setReferenceCode(newReferenceCode);
-      console.log('✨ Reference code set in local state:', newReferenceCode);
-      console.log('🎯 WEBHOOK SHOULD HAVE FIRED ON SERVER SIDE!');
+      // Store selections for later reference code generation (but don't fire webhook yet)
+      console.log('✅ Core selections complete - will generate reference code at final step');
     } catch (error) {
       console.error('❌ ERROR in comfort selection process:', error);
     }
@@ -1875,14 +1888,12 @@ export default function Home() {
         contactMethod: 'form'
       });
       
-      // Generate reference code for N8N automation
-      const referenceCode = await generateReferenceCode();
-      
+      // Use existing reference code (webhook already fired at Step 5)
       const finalData = {
         ...userSelections,
         contactInfo,
         leadSource: 'web',
-        referenceCode, // Include reference code for tracking
+        referenceCode, // Use existing reference code from Step 5
         trackingId: profile?.trackingId // Include tracking ID
       };
       
@@ -2011,6 +2022,8 @@ export default function Home() {
             onEmailOption={handleEmailOption}
             onFormOption={handleFormOption}
             referenceCode={referenceCode}
+            generateReferenceCode={generateReferenceCode}
+            setReferenceCode={setReferenceCode}
           />
         )}
         
