@@ -1026,6 +1026,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`📋 Customer profile updated: ${trackingId}`);
       console.log(`   Updates: ${JSON.stringify(updates)}`);
+      console.log(`🔍 Updated profile details:`, {
+        firmness: updatedProfile.firmness,
+        model: updatedProfile.model,
+        finalPrice: updatedProfile.finalPrice,
+        mattressSize: updatedProfile.mattressSize
+      });
       
       res.json({
         success: true,

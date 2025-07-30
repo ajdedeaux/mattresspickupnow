@@ -495,7 +495,15 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
     const comfort = comforts.find(c => c.id === comfortId);
     console.log('🎯 COMFORT FOUND:', comfort);
     console.log('🎯 CALLING onSelect WITH LABEL:', comfort?.label);
-    if (comfort) onSelect(comfort.label);
+    console.log('🚨 CRITICAL DEBUG: About to call onSelect function with:', comfort?.label);
+    console.log('🚨 CRITICAL DEBUG: onSelect function is:', typeof onSelect, onSelect);
+    if (comfort) {
+      console.log('🔥 EXECUTING onSelect CALL NOW!');
+      onSelect(comfort.label);
+      console.log('✅ onSelect CALL COMPLETED');
+    } else {
+      console.error('❌ NO COMFORT FOUND FOR ID:', comfortId);
+    }
   };
 
   return (
@@ -1771,6 +1779,8 @@ export default function Home() {
   const handleComfortSelect = async (comfort: string) => {
     // 🚨 CRITICAL DEBUG: This should appear when user clicks comfort
     console.log('🚨🚨🚨 COMFORT SELECTED - STARTING WEBHOOK PROCESS 🚨🚨🚨', comfort);
+    console.log('🔍 CURRENT USER SELECTIONS STATE:', userSelections);
+    console.log('🔍 CURRENT PROFILE:', profile);
     
     setUserSelections(prev => ({ ...prev, comfort }));
     
@@ -1806,9 +1816,18 @@ export default function Home() {
       }
     ];
     
+    console.log('🔍 SEARCHING FOR MATTRESS OPTION WITH ID:', comfort);
+    console.log('🔍 AVAILABLE OPTIONS:', mattressOptions.map(opt => opt.id));
     const selectedOption = mattressOptions.find(opt => opt.id === comfort);
+    console.log('🔍 SELECTED OPTION:', selectedOption);
+    console.log('🔍 USER SELECTIONS SIZE:', userSelections.size);
+    console.log('🔍 SELECTED OPTION SIZES:', selectedOption?.sizes);
+    
     const price = selectedOption?.sizes[userSelections.size as keyof typeof selectedOption.sizes] || "Contact for pricing";
     const model = selectedOption?.model || `${userSelections.size} ${selectedOption?.name || comfort}`;
+    
+    console.log('🎯 CALCULATED PRICE:', price);
+    console.log('🎯 CALCULATED MODEL:', model);
     
     try {
       console.log('🎯 CUSTOMER SELECTED COMFORT:', comfort, 'SIZE:', userSelections.size, 'PRICE:', price);
