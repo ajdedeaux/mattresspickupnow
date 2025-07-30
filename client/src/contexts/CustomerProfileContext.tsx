@@ -147,20 +147,34 @@ export const CustomerProfileProvider: React.FC<CustomerProfileProviderProps> = (
   };
 
   const generateReferenceCode = async (): Promise<string> => {
-    if (!trackingId) throw new Error('No tracking ID available');
+    if (!trackingId) {
+      console.error('❌ GENERATE REFERENCE CODE: No tracking ID available');
+      throw new Error('No tracking ID available');
+    }
 
     try {
       setIsLoading(true);
+      console.log('🚀 FRONTEND: Starting reference code generation for tracking ID:', trackingId);
+      
       const response = await makeApiRequest(`/api/customer-profiles/${trackingId}/reference-code`, 'POST');
+      console.log('📡 FRONTEND: API response received:', response);
+      
       if (response.success) {
         // Update local profile with reference code
         setProfile(prev => prev ? { ...prev, referenceCode: response.referenceCode } : null);
-        console.log('🎯 Reference code generated:', response.referenceCode);
+        console.log('🎯 FRONTEND: Reference code generated successfully:', response.referenceCode);
+        console.log('✅ FRONTEND: Webhook should have fired on server side');
         return response.referenceCode;
       }
+      console.error('❌ FRONTEND: API response indicates failure:', response);
       throw new Error('Failed to generate reference code');
     } catch (error) {
-      console.error('Failed to generate reference code:', error);
+      console.error('❌ FRONTEND: Reference code generation failed:', error);
+      console.error('❌ FRONTEND: Error details:', {
+        trackingId,
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        errorStack: error instanceof Error ? error.stack : undefined
+      });
       throw error;
     } finally {
       setIsLoading(false);

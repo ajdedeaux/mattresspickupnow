@@ -1799,10 +1799,13 @@ export default function Home() {
       
       // Generate reference code now that the core selection is complete
       console.log('🔥 ABOUT TO GENERATE REFERENCE CODE AND FIRE WEBHOOK');
+      console.log('🔍 CURRENT REFERENCE CODE STATE BEFORE API CALL:', referenceCode);
+      
       const newReferenceCode = await generateReferenceCode();
-      console.log('🎉 REFERENCE CODE GENERATED:', newReferenceCode);
+      console.log('🎉 REFERENCE CODE GENERATED FROM API:', newReferenceCode);
       setReferenceCode(newReferenceCode);
-      console.log('✨ Reference code set in state - webhook should have fired!');
+      console.log('✨ Reference code set in local state:', newReferenceCode);
+      console.log('🎯 WEBHOOK SHOULD HAVE FIRED ON SERVER SIDE!');
     } catch (error) {
       console.error('❌ ERROR in comfort selection process:', error);
     }
