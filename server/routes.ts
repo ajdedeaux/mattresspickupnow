@@ -410,7 +410,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         update_type: name ? "name_entered" : "urgency_selected",
         timestamp: new Date().toISOString(),
-        hot_lead_priority: urgency === 'today' ? 'HIGH' : urgency === 'tomorrow' ? 'MEDIUM' : 'STANDARD'
+        hot_lead_priority: urgency === 'today' ? 'ASAP_HIGHEST_PRIORITY' : urgency === 'tomorrow' ? 'NEXT_DAY_PICKUP' : 'WITHIN_FEW_DAYS'
       };
 
       // Fire real-time update webhook to Make
