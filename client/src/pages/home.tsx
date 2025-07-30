@@ -798,6 +798,32 @@ const SMSStep = ({ userData, onBack, referenceCode }: { userData: UserData; onBa
   const nearestStore = userData.nearestStores[0];
   const { profile } = useCustomerProfile();
   
+  // Real-time CRM update when name is entered
+  useEffect(() => {
+    if (userName && userName.length >= 2 && referenceCode) {
+      // Send real-time update to CRM
+      const updateCRM = async () => {
+        try {
+          const response = await fetch(`/api/leads/${referenceCode}/update-contact`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: userName })
+          });
+          
+          if (response.ok) {
+            console.log('🔥 Name updated in CRM:', userName);
+          }
+        } catch (error) {
+          console.error('Failed to update CRM with name:', error);
+        }
+      };
+      
+      // Debounce the update to avoid spam
+      const timer = setTimeout(updateCRM, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [userName, referenceCode]);
+
   // Auto-advance to next step when name is entered (with longer delay)
   useEffect(() => {
     if (userName && userName.length >= 2 && currentStep === 'name') {
@@ -806,13 +832,35 @@ const SMSStep = ({ userData, onBack, referenceCode }: { userData: UserData; onBa
     }
   }, [userName, currentStep]);
   
-  // Auto-advance to send when urgency is selected
+  // Real-time CRM update when urgency is selected + Auto-advance to send
   useEffect(() => {
     if (urgency && currentStep === 'urgency') {
+      // Send real-time update to CRM immediately
+      const updateCRM = async () => {
+        if (referenceCode) {
+          try {
+            const response = await fetch(`/api/leads/${referenceCode}/update-contact`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ urgency })
+            });
+            
+            if (response.ok) {
+              console.log('🔥 Urgency updated in CRM:', urgency);
+            }
+          } catch (error) {
+            console.error('Failed to update CRM with urgency:', error);
+          }
+        }
+      };
+      
+      updateCRM();
+      
+      // Auto-advance to send step
       const timer = setTimeout(() => setCurrentStep('send'), 1000);
       return () => clearTimeout(timer);
     }
-  }, [urgency, currentStep]);
+  }, [urgency, currentStep, referenceCode]);
   
   // Generate final message for sending with SMART DATA
   const generateFinalMessage = () => {
@@ -1139,11 +1187,12 @@ const SMSStep = ({ userData, onBack, referenceCode }: { userData: UserData; onBa
   );
 };
 
-const FormStep = ({ userData, onSubmit, isLoading, onBack }: { 
+const FormStep = ({ userData, onSubmit, isLoading, onBack, referenceCode }: { 
   userData: UserData; 
   onSubmit: (contactInfo: any) => void;
   isLoading: boolean;
   onBack: () => void;
+  referenceCode?: string | null;
 }) => {
   const [urgencyLevel, setUrgencyLevel] = useState('');
   const form = useForm({
@@ -1157,9 +1206,56 @@ const FormStep = ({ userData, onSubmit, isLoading, onBack }: {
     }
   });
 
+  // Real-time CRM update when name is entered in form
+  const [nameValue, setNameValue] = useState('');
+  useEffect(() => {
+    if (nameValue && nameValue.length >= 2 && referenceCode) {
+      const updateCRM = async () => {
+        try {
+          const response = await fetch(`/api/leads/${referenceCode}/update-contact`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: nameValue })
+          });
+          
+          if (response.ok) {
+            console.log('🔥 Form name updated in CRM:', nameValue);
+          }
+        } catch (error) {
+          console.error('Failed to update CRM with form name:', error);
+        }
+      };
+      
+      // Debounce the update
+      const timer = setTimeout(updateCRM, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [nameValue, referenceCode]);
+
   const handleUrgencyChange = (value: string) => {
     setUrgencyLevel(value);
     form.setValue('urgency', value);
+    
+    // Real-time CRM update for urgency
+    if (referenceCode) {
+      const updateCRM = async () => {
+        try {
+          const response = await fetch(`/api/leads/${referenceCode}/update-contact`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ urgency: value })
+          });
+          
+          if (response.ok) {
+            console.log('🔥 Form urgency updated in CRM:', value);
+          }
+        } catch (error) {
+          console.error('Failed to update CRM with form urgency:', error);
+        }
+      };
+      
+      updateCRM();
+    }
   };
 
   const handleSubmit = (data: any) => {
@@ -1182,7 +1278,16 @@ const FormStep = ({ userData, onSubmit, isLoading, onBack }: {
               <FormItem>
                 <FormLabel className="text-gray-900 font-medium">Full Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Your name" disabled={isLoading} className="h-10" />
+                  <Input 
+                    {...field} 
+                    placeholder="Your name" 
+                    disabled={isLoading} 
+                    className="h-10"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      setNameValue(e.target.value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -2068,6 +2173,7 @@ export default function Home() {
             onSubmit={handleFormSubmit}
             isLoading={submitLead.isPending}
             onBack={() => setCurrentStep(5)}
+            referenceCode={referenceCode}
           />
         )}
       </main>

@@ -1,0 +1,49 @@
+Perfect. Here’s a clean, focused prompt request you can send to Replit that captures what you’re trying to do and how it should tie into your existing Make (Integromat) automation:
+
+⸻
+
+✅ Replit Prompt:
+
+I want to update my existing backend so that as soon as a user types their name or selects their urgency level on the front end, that information immediately updates the lead’s row in my connected Google Sheet via Make.com (Integromat) automation.
+
+Here’s what I have already set up:
+	•	I have a working Make scenario with:
+	•	A custom webhook that catches the data.
+	•	A router that sends it to:
+	1.	A CRM Google Sheet (Sheet 1)
+	2.	A Hot Leads Google Sheet (Sheet 2)
+	3.	A Twilio SMS module (optional)
+	•	A unique reference code (e.g. MP-1001) is generated per lead and passed along in the webhook payload.
+	•	New leads are successfully written to the sheet when a full form is submitted.
+
+⸻
+
+🧠 What I Want to Add:
+
+I want partial form data (like just the name or urgency level) to trigger an update to an existing row in the Google Sheet in real time—before the full form is completed.
+
+⸻
+
+⚙️ Possible Options:
+
+Suggest the best way to make this work using my current Make automation. For example:
+	•	Should I add another Make webhook that gets triggered on input blur/change?
+	•	Can Make update existing rows in Google Sheets based on the reference code (MP-####)?
+	•	Should I separate the “update” logic from the “create new row” logic inside Make?
+	•	How can I ensure the update targets the correct row without duplication?
+	•	Can I build a small frontend POST request that sends just the changed field (e.g., name or urgency) with the ref code to Make?
+
+⸻
+
+Please help structure the correct backend route or Make module logic to:
+	1.	Detect when the ref code already exists.
+	2.	Update the matching row with the new field values only (without creating a new row).
+	3.	Make this lightweight enough to run instantly as the user types.
+
+⸻
+
+Let me know if you need access to the current Make scenario or Replit file structure.
+
+⸻
+
+Let me know if you want a version of this focused only on urgency or only on name.
