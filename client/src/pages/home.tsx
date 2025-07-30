@@ -491,18 +491,9 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
 
   const handleSelectClick = (comfortId: string, event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent card expansion
-    console.log('🎯 HANDLE SELECT CLICK - ID:', comfortId);
     const comfort = comforts.find(c => c.id === comfortId);
-    console.log('🎯 COMFORT FOUND:', comfort);
-    console.log('🎯 CALLING onSelect WITH LABEL:', comfort?.label);
-    console.log('🚨 CRITICAL DEBUG: About to call onSelect function with:', comfort?.label);
-    console.log('🚨 CRITICAL DEBUG: onSelect function is:', typeof onSelect, onSelect);
     if (comfort) {
-      console.log('🔥 EXECUTING onSelect CALL NOW!');
       onSelect(comfort.label);
-      console.log('✅ onSelect CALL COMPLETED');
-    } else {
-      console.error('❌ NO COMFORT FOUND FOR ID:', comfortId);
     }
   };
 
@@ -525,10 +516,7 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
                   ? 'border-2 border-blue-400 shadow-md' 
                   : 'border border-gray-200 hover:border-gray-300 hover:shadow-md'
             }`}
-            onClick={() => {
-              console.log('🚨 COMFORT CARD CLICKED:', comfort.id);
-              handleCardClick(comfort.id);
-            }}
+            onClick={() => handleCardClick(comfort.id)}
           >
             {/* Most Popular Flag */}
             {comfort.popular && (
@@ -589,10 +577,7 @@ const ComfortStep = ({ onSelect, selectedSize }: { onSelect: (comfort: string) =
 
                   {/* Premium call to action button */}
                   <button 
-                    onClick={(e) => {
-                      console.log('🚨 COMFORT SELECT BUTTON CLICKED:', comfort.id);
-                      handleSelectClick(comfort.id, e);
-                    }}
+                    onClick={(e) => handleSelectClick(comfort.id, e)}
                     className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white p-3 rounded-lg text-center transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
                   >
                     <div className="font-semibold">Tap to select this mattress</div>
@@ -627,12 +612,10 @@ const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption, 
     const generateReferenceCodeAndFireWebhook = async () => {
       if (!referenceCode) {
         try {
-          console.log('🎯 STEP 9 REACHED - GENERATING REFERENCE CODE AND FIRING WEBHOOK');
           const newReferenceCode = await generateReferenceCode();
           setReferenceCode(newReferenceCode);
-          console.log('✅ WEBHOOK FIRED AT STEP 9 - Reference code:', newReferenceCode);
         } catch (error) {
-          console.error('❌ Failed to generate reference code at Step 9:', error);
+          console.error('Failed to generate reference code:', error);
         }
       }
     };
@@ -1714,9 +1697,7 @@ ${userName}`;
 
 // Main component
 export default function Home() {
-  // 🚨 CRITICAL DEBUG: This should ALWAYS appear in console
-  console.log('🔥🔥🔥 HOME COMPONENT LOADED - VERSION 2.0 - WEBHOOK DEBUGGING 🔥🔥🔥');
-  console.log('🔥 TIMESTAMP:', new Date().toISOString());
+  // Component initialized
   
   const [currentStep, setCurrentStep] = useState(1);
   const [userSelections, setUserSelections] = useState<UserData>({
@@ -1733,8 +1714,7 @@ export default function Home() {
   // Customer profile tracking for N8N automation
   const { profile, updateProfile, generateReferenceCode } = useCustomerProfile();
   
-  // 🚨 CRITICAL DEBUG: Check if we have customer profile context
-  console.log('🔍 CUSTOMER PROFILE CONTEXT:', { profile, hasGenerateFunction: !!generateReferenceCode });
+  // Customer profile context ready
 
   const submitLead = useMutation({
     mutationFn: async (data: any) => {
@@ -1797,10 +1777,7 @@ export default function Home() {
   };
 
   const handleComfortSelect = async (comfort: string) => {
-    // 🚨 CRITICAL DEBUG: This should appear when user clicks comfort
-    console.log('🚨🚨🚨 COMFORT SELECTED - STARTING WEBHOOK PROCESS 🚨🚨🚨', comfort);
-    console.log('🔍 CURRENT USER SELECTIONS STATE:', userSelections);
-    console.log('🔍 CURRENT PROFILE:', profile);
+    // Handle comfort selection
     
     // Track firmness preference and calculate pricing with proper model names BEFORE updating state
     const mattressOptions = [
@@ -1834,32 +1811,14 @@ export default function Home() {
       }
     ];
     
-    console.log('🔍 SEARCHING FOR MATTRESS OPTION WITH ID:', comfort);
-    console.log('🔍 AVAILABLE OPTIONS:', mattressOptions.map(opt => opt.id));
-    
     // Fix case sensitivity issue - capitalize first letter for matching
     const normalizedComfort = comfort.charAt(0).toUpperCase() + comfort.slice(1).toLowerCase();
-    console.log('🔍 NORMALIZED COMFORT FOR MATCHING:', normalizedComfort);
-    
     const selectedOption = mattressOptions.find(opt => opt.id === normalizedComfort);
-    console.log('🔍 SELECTED OPTION:', selectedOption);
-    console.log('🔍 USER SELECTIONS SIZE:', userSelections.size);
-    console.log('🔍 SELECTED OPTION SIZES:', selectedOption?.sizes);
-    
-    // Use current userSelections.size for pricing calculation
     const currentSize = userSelections.size;
-    console.log('🔍 CURRENT SIZE FOR PRICING:', currentSize);
-    
     const price = selectedOption?.sizes?.[currentSize as keyof typeof selectedOption.sizes] || "Contact for pricing";
-    console.log('🔍 PRICE LOOKUP RESULT:', price);
-    console.log('🔍 AVAILABLE SIZES IN OPTION:', Object.keys(selectedOption?.sizes || {}));
     const model = selectedOption?.model || `${userSelections.size} ${selectedOption?.name || comfort}`;
     
-    console.log('🎯 CALCULATED PRICE:', price);
-    console.log('🎯 CALCULATED MODEL:', model);
-    
     try {
-      console.log('🎯 CUSTOMER SELECTED COMFORT:', comfort, 'SIZE:', currentSize, 'PRICE:', price);
       
       // Update user selections state after calculation
       setUserSelections(prev => ({ ...prev, comfort }));
@@ -1869,10 +1828,8 @@ export default function Home() {
         model,
         finalPrice: price
       });
-      console.log('✅ Profile updated with comfort selection');
       
-      // Store selections for later reference code generation (but don't fire webhook yet)
-      console.log('✅ Core selections complete - will generate reference code at final step');
+      // Core selections complete - reference code will be generated at confirmation step
     } catch (error) {
       console.error('❌ ERROR in comfort selection process:', error);
     }
