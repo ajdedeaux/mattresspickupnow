@@ -393,24 +393,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Prepare real-time update payload for Make
+      // Prepare targeted update payload - only new contact info
       const updatePayload = {
-        action: "update_hot_lead",
+        action: "update_contact_info",
         reference_code: referenceCode,
-        customer_data: {
-          reference_code: referenceCode,
-          customer_name: name || "Collecting...",
-          urgency_level: urgency || "Collecting...",
-          // Include existing data for context
-          who_its_for: existingProfile.demographics || "N/A",
-          mattress_size: existingProfile.mattressSize || "N/A", 
-          mattress_model: existingProfile.model || "N/A",
-          locked_price: existingProfile.finalPrice || "N/A",
-          zip_code: existingProfile.zipCode || "N/A"
+        contact_updates: {
+          ...(name && { name: name }),
+          ...(urgency && { 
+            urgency: urgency,
+            priority_level: urgency === 'today' ? 'ASAP_HIGHEST_PRIORITY' : urgency === 'tomorrow' ? 'NEXT_DAY_PICKUP' : 'WITHIN_FEW_DAYS'
+          })
         },
-        update_type: name ? "name_entered" : "urgency_selected",
-        timestamp: new Date().toISOString(),
-        hot_lead_priority: urgency === 'today' ? 'ASAP_HIGHEST_PRIORITY' : urgency === 'tomorrow' ? 'NEXT_DAY_PICKUP' : 'WITHIN_FEW_DAYS'
+        update_type: name ? "name_captured" : "urgency_selected",
+        timestamp: new Date().toISOString()
       };
 
       // Fire real-time update webhook to Make
@@ -472,6 +467,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({
         success: false,
         message: "Failed to update lead in real-time"
+      });
+    }
+  });
+
+  // Contact info capture endpoint for email/phone/full contact data
+  app.post("/api/leads/:referenceCode/capture-contact", async (req, res) => {
+    try {
+      const { referenceCode } = req.params;
+      const { name, phone, email, urgency, notes } = req.body;
+      
+      if (!referenceCode) {
+        return res.status(400).json({
+          success: false,
+          message: "Reference code is required"
+        });
+      }
+
+      console.log(`📞 CONTACT CAPTURE: ${referenceCode} - Full contact info received`);
+      
+      // Prepare complete contact update payload
+      const contactPayload = {
+        action: "complete_contact_capture",
+        reference_code: referenceCode,
+        contact_data: {
+          ...(name && { name }),
+          ...(phone && { phone }),
+          ...(email && { email }),
+          ...(urgency && { 
+            urgency,
+            priority_level: urgency === 'today' ? 'ASAP_HIGHEST_PRIORITY' : urgency === 'tomorrow' ? 'NEXT_DAY_PICKUP' : 'WITHIN_FEW_DAYS'
+          }),
+          ...(notes && { notes })
+        },
+        capture_type: "full_contact_form",
+        timestamp: new Date().toISOString()
+      };
+
+      // Fire contact capture webhook to Make
+      const webhookUrl = 'https://hook.us2.make.com/xmw2ahcia681bvopgp5esp37i2pu2hn4';
+      
+      try {
+        const webhookResponse = await axios.post(webhookUrl, contactPayload, {
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 5000
+        });
+        
+        console.log(`✅ CONTACT CAPTURE SUCCESS - ${referenceCode}:`, webhookResponse.status);
+        
+        res.json({
+          success: true,
+          message: "Contact information captured and sent to CRM",
+          reference_code: referenceCode,
+          captured_fields: {
+            ...(name && { name }),
+            ...(phone && { phone }),
+            ...(email && { email }),
+            ...(urgency && { urgency }),
+            ...(notes && { notes })
+          },
+          webhook_status: webhookResponse.status
+        });
+        
+      } catch (webhookError) {
+        console.error(`🚨 CONTACT CAPTURE FAILED - ${referenceCode}:`, (webhookError as Error).message);
+        
+        res.json({
+          success: false,
+          message: "Failed to send contact info to CRM",
+          reference_code: referenceCode,
+          error: (webhookError as Error).message
+        });
+      }
+      
+    } catch (error) {
+      console.error("Contact capture error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to process contact capture"
       });
     }
   });

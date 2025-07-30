@@ -1258,7 +1258,30 @@ const FormStep = ({ userData, onSubmit, isLoading, onBack, referenceCode }: {
     }
   };
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = async (data: any) => {
+    // Send complete contact info to CRM via webhook before submitting
+    if (referenceCode) {
+      try {
+        const response = await fetch(`/api/leads/${referenceCode}/capture-contact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: data.name,
+            phone: data.phone,
+            email: data.email,
+            urgency: urgencyLevel,
+            notes: data.notes
+          })
+        });
+        
+        if (response.ok) {
+          console.log('📞 Complete contact info sent to CRM');
+        }
+      } catch (error) {
+        console.error('Failed to send contact info to CRM:', error);
+      }
+    }
+    
     onSubmit({ ...data, urgency: urgencyLevel });
   };
 
