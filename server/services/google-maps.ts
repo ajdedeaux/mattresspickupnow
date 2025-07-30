@@ -112,9 +112,54 @@ export class GoogleMapsService {
           },
         });
         allWarehouses.push(...warehouseResponse.data.results);
-        console.log(`🏭 Found ${warehouseResponse.data.results.length} potential warehouse locations`);
+        console.log(`🏭 Strategy 1: Found ${warehouseResponse.data.results.length} potential warehouse locations`);
       } catch (error) {
-        console.log('⚠️ Warehouse search failed:', error);
+        console.log('⚠️ Warehouse Strategy 1 failed:', error);
+      }
+      
+      // Strategy 2: Larger radius search to catch distant warehouses
+      try {
+        const largeRadiusResponse = await this.client.placesNearby({
+          params: {
+            location: { lat, lng },
+            radius: 161000, // Slightly larger radius (100+ miles)
+            keyword: 'Mattress Firm',
+            type: 'storage',
+            key: this.apiKey,
+          },
+        });
+        
+        const newWarehouses = largeRadiusResponse.data.results.filter(
+          (place: any) => !allWarehouses.find((existing: any) => existing.place_id === place.place_id)
+        );
+        allWarehouses.push(...newWarehouses);
+        console.log(`🏭 Strategy 2: Found ${newWarehouses.length} additional warehouse locations`);
+      } catch (error) {
+        console.log('⚠️ Warehouse Strategy 2 failed:', error);
+      }
+      
+      // Strategy 3: Search specifically for Orlando and Tampa area warehouses
+      try {
+        // Search near Orlando specifically
+        const orlandoResponse = await this.client.placesNearby({
+          params: {
+            location: { lat: 28.5383, lng: -81.3792 }, // Orlando coordinates
+            radius: 50000, // 50km around Orlando
+            keyword: 'Mattress Firm Warehouse',
+            key: this.apiKey,
+          },
+        });
+        
+        const orlandoWarehouses = orlandoResponse.data.results.filter((place: any) => {
+          // Check if this warehouse is within 100 miles of the original search point
+          const distance = this.calculateDistance(lat, lng, place.geometry.location.lat, place.geometry.location.lng);
+          return distance <= 100 && !allWarehouses.find((existing: any) => existing.place_id === place.place_id);
+        });
+        
+        allWarehouses.push(...orlandoWarehouses);
+        console.log(`🏭 Strategy 3: Found ${orlandoWarehouses.length} Orlando area warehouse locations`);
+      } catch (error) {
+        console.log('⚠️ Warehouse Strategy 3 failed:', error);
       }
 
       // STRICT FILTERING: Only return locations that are exactly "Mattress Firm Warehouse"
@@ -136,10 +181,16 @@ export class GoogleMapsService {
       });
 
       console.log(`🎯 STRICT WAREHOUSE FILTERING: ${allWarehouses.length} raw results → ${filteredWarehouses.length} authentic Mattress Firm warehouses`);
+      
+      // Log all found warehouses for debugging
+      filteredWarehouses.forEach((warehouse: any, index: number) => {
+        const distance = this.calculateDistance(lat, lng, warehouse.geometry.location.lat, warehouse.geometry.location.lng);
+        console.log(`   ${index + 1}. ✅ ${warehouse.name} - ${warehouse.vicinity}, ${distance.toFixed(1)} mi`);
+      });
 
       // Convert and sort by distance
       const warehousesWithDetails = await Promise.all(
-        filteredWarehouses.slice(0, 2).map(async (place: any) => { // Limit to 2 closest warehouses
+        filteredWarehouses.map(async (place: any) => { // Include ALL valid warehouses found
           const distance = this.calculateDistance(lat, lng, place.geometry.location.lat, place.geometry.location.lng);
           
           return {
