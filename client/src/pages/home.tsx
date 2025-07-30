@@ -1345,6 +1345,11 @@ const EmailStep = ({ userData, onBack, referenceCode }: { userData: UserData; on
         }
       }
       
+      // Fallback: Use ZIP code from customer profile
+      if (profile?.zipCode) {
+        return `in the ${profile.zipCode} area`;
+      }
+      
       return 'in your area';
     };
     
@@ -1760,7 +1765,7 @@ export default function Home() {
     // Track ZIP code and location in customer profile
     try {
       await updateProfile({
-        zipCode: zipCode || null,
+        zipCode: zipCode || undefined,
         coordinates,
         nearestStores: stores
       });
