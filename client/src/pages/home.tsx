@@ -1782,9 +1782,7 @@ export default function Home() {
     console.log('🔍 CURRENT USER SELECTIONS STATE:', userSelections);
     console.log('🔍 CURRENT PROFILE:', profile);
     
-    setUserSelections(prev => ({ ...prev, comfort }));
-    
-    // Track firmness preference and calculate pricing with proper model names
+    // Track firmness preference and calculate pricing with proper model names BEFORE updating state
     const mattressOptions = [
       { 
         id: "Firm", 
@@ -1828,14 +1826,23 @@ export default function Home() {
     console.log('🔍 USER SELECTIONS SIZE:', userSelections.size);
     console.log('🔍 SELECTED OPTION SIZES:', selectedOption?.sizes);
     
-    const price = selectedOption?.sizes[userSelections.size as keyof typeof selectedOption.sizes] || "Contact for pricing";
+    // Use current userSelections.size for pricing calculation
+    const currentSize = userSelections.size;
+    console.log('🔍 CURRENT SIZE FOR PRICING:', currentSize);
+    
+    const price = selectedOption?.sizes?.[currentSize as keyof typeof selectedOption.sizes] || "Contact for pricing";
+    console.log('🔍 PRICE LOOKUP RESULT:', price);
+    console.log('🔍 AVAILABLE SIZES IN OPTION:', Object.keys(selectedOption?.sizes || {}));
     const model = selectedOption?.model || `${userSelections.size} ${selectedOption?.name || comfort}`;
     
     console.log('🎯 CALCULATED PRICE:', price);
     console.log('🎯 CALCULATED MODEL:', model);
     
     try {
-      console.log('🎯 CUSTOMER SELECTED COMFORT:', comfort, 'SIZE:', userSelections.size, 'PRICE:', price);
+      console.log('🎯 CUSTOMER SELECTED COMFORT:', comfort, 'SIZE:', currentSize, 'PRICE:', price);
+      
+      // Update user selections state after calculation
+      setUserSelections(prev => ({ ...prev, comfort }));
       
       await updateProfile({
         firmness: selectedOption?.code || normalizedComfort.charAt(0), // Use code for backend compatibility, fallback to first letter
