@@ -1677,6 +1677,9 @@ ${userName}`;
 
 // Main component
 export default function Home() {
+  // 🚨 CRITICAL DEBUG: This should ALWAYS appear in console
+  console.log('🔥🔥🔥 HOME COMPONENT LOADED - IF YOU SEE THIS, REACT IS WORKING 🔥🔥🔥');
+  
   const [currentStep, setCurrentStep] = useState(1);
   const [userSelections, setUserSelections] = useState<UserData>({
     useCase: '',
@@ -1691,6 +1694,9 @@ export default function Home() {
   
   // Customer profile tracking for N8N automation
   const { profile, updateProfile, generateReferenceCode } = useCustomerProfile();
+  
+  // 🚨 CRITICAL DEBUG: Check if we have customer profile context
+  console.log('🔍 CUSTOMER PROFILE CONTEXT:', { profile, hasGenerateFunction: !!generateReferenceCode });
 
   const submitLead = useMutation({
     mutationFn: async (data: any) => {
@@ -1753,6 +1759,9 @@ export default function Home() {
   };
 
   const handleComfortSelect = async (comfort: string) => {
+    // 🚨 CRITICAL DEBUG: This should appear when user clicks comfort
+    console.log('🚨🚨🚨 COMFORT SELECTED - STARTING WEBHOOK PROCESS 🚨🚨🚨', comfort);
+    
     setUserSelections(prev => ({ ...prev, comfort }));
     
     // Track firmness preference and calculate pricing with proper model names
