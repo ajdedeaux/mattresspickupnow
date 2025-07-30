@@ -507,6 +507,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Fire contact capture webhook to Make
       const webhookUrl = 'https://hook.us2.make.com/xmw2ahcia681bvopgp5esp37i2pu2hn4';
       
+      console.log(`🎯 SENDING WEBHOOK TO: ${webhookUrl}`);
+      console.log(`📦 PAYLOAD:`, JSON.stringify(contactPayload, null, 2));
+      
       try {
         const webhookResponse = await axios.post(webhookUrl, contactPayload, {
           headers: { 'Content-Type': 'application/json' },
@@ -514,6 +517,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
         
         console.log(`✅ CONTACT CAPTURE SUCCESS - ${referenceCode}:`, webhookResponse.status);
+        console.log(`📋 Response Data:`, webhookResponse.data);
         
         res.json({
           success: true,
