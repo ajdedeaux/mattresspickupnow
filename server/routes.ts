@@ -412,12 +412,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // DEVELOPMENT MODE: Using mock data to avoid Google API charges  
-      // TO RECONNECT: Change this to use googleMapsService.findNearbyMattressFirmStores()
-      const storesResult = {
-        success: true,
-        stores: getMockMattressFirmStores(geocodeResult.coordinates.lat, geocodeResult.coordinates.lng)
-      };
+      // PRODUCTION MODE: Using real Google Places API
+      const googleMaps = new GoogleMapsService();
+      const storesResult = await googleMaps.findNearbyMattressFirmStores(
+        geocodeResult.coordinates.lat, 
+        geocodeResult.coordinates.lng
+      );
       
       if (storesResult.success && storesResult.stores.length > 0) {
         // Create location search tracking record
@@ -580,12 +580,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`🏭 DEDICATED WAREHOUSE SEARCH for coordinates: ${lat}, ${lng}`);
 
-      // DEVELOPMENT MODE: Using mock warehouse data to avoid Google API charges
-      // TO RECONNECT: Change this to use googleMaps.findNearbyMattressFirmWarehouses()
-      const warehousesResult = {
-        success: true,
-        warehouses: getMockMattressFirmWarehouses(parseFloat(lat), parseFloat(lng))
-      };
+      // PRODUCTION MODE: Using real Google Places API for warehouses
+      const googleMaps = new GoogleMapsService();
+      const warehousesResult = await googleMaps.findNearbyMattressFirmWarehouses(
+        parseFloat(lat), 
+        parseFloat(lng)
+      );
       
       if (!warehousesResult.success) {
         return res.status(500).json({
@@ -1112,7 +1112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           who_its_for: profileForWebhook.demographics ?? "Me",
           size: profileForWebhook.mattressSize || "Queen",
           model: profileForWebhook.firmness || "Medium",
-          price: getCorrectPrice(profileForWebhook.mattressSize || "Queen", profileForWebhook.firmness || "M", profileForWebhook.finalPrice),
+          price: getCorrectPrice(profileForWebhook.mattressSize || "Queen", profileForWebhook.firmness || "M", profileForWebhook.finalPrice || undefined),
           reference_code: profileForWebhook.referenceCode || referenceCode,
           timestamp: new Date().toISOString(),
           customer_journey: {
@@ -1495,9 +1495,24 @@ function getStateFromZip(zipCode: string): string {
 
 // Store finder using Google Places API (or fallback mock data for development)
 async function findStoresNear(zipCode: string): Promise<Store[]> {
-  // In production, this would use Google Places API
-  // For now, we'll simulate realistic store data
+  // Use Google Places API for real store data
+  const googleMaps = new GoogleMapsService();
+  const searchResult = await googleMaps.searchMattressFirmStores(zipCode);
   
+  if (searchResult.mattressFirmStores.length > 0) {
+    return searchResult.mattressFirmStores.map(store => ({
+      id: store.placeId,
+      name: store.name,
+      address: store.address,
+      distance: store.distance || 0,
+      rating: store.rating || 4.0,
+      phone: store.phone || '(855) 515-9604',
+      hours: store.hours || 'Contact for hours',
+      isOpen: true // Default to open - could be enhanced with real-time hours checking
+    }));
+  }
+  
+  // Fallback to realistic store data if API fails
   const mockStores: Store[] = [
     {
       id: "store_1",
