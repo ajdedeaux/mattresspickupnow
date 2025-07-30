@@ -136,13 +136,64 @@ export class GoogleMapsService {
       } catch (error) {
         console.log('⚠️ Warehouse Strategy 2 failed:', error);
       }
+      
+      // Strategy 3: Even larger radius for border cases
+      try {
+        const extraLargeRadiusResponse = await this.client.placesNearby({
+          params: {
+            location: { lat, lng },
+            radius: 160000, // 160km radius for extreme border cases
+            keyword: 'Mattress Firm',
+            type: 'storage',
+            key: this.apiKey,
+          },
+        });
+        
+        const newWarehouses = extraLargeRadiusResponse.data.results.filter(
+          (place: any) => !allWarehouses.find((existing: any) => existing.place_id === place.place_id)
+        );
+        allWarehouses.push(...newWarehouses);
+        console.log(`🏭 Warehouse Strategy 3 found ${newWarehouses.length} additional locations`);
+      } catch (error) {
+        console.log('⚠️ Warehouse Strategy 3 failed:', error);
+      }
+      
+      // Strategy 4: Generic fulfillment centers that might serve Mattress Firm
+      try {
+        const fulfillmentResponse = await this.client.placesNearby({
+          params: {
+            location: { lat, lng },
+            radius: 140000, // 140km radius
+            keyword: 'mattress distribution center',
+            key: this.apiKey,
+          },
+        });
+        
+        const newWarehouses = fulfillmentResponse.data.results.filter(
+          (place: any) => !allWarehouses.find((existing: any) => existing.place_id === place.place_id)
+        );
+        allWarehouses.push(...newWarehouses);
+        console.log(`🏭 Warehouse Strategy 4 found ${newWarehouses.length} additional locations`);
+      } catch (error) {
+        console.log('⚠️ Warehouse Strategy 4 failed:', error);
+      }
 
-      // Filter for valid Mattress Firm warehouses
+      // Filter for valid Mattress Firm warehouses (relaxed for broader coverage)
       const filteredWarehouses = allWarehouses.filter((place: any) => {
         const name = place.name?.toLowerCase().trim() || '';
+        const address = place.vicinity?.toLowerCase() || '';
+        
         const isValidWarehouse = (
-          name.includes('mattress firm') && 
-          (name.includes('warehouse') || name.includes('distribution') || name.includes('fulfillment'))
+          // Primary: Mattress Firm branded warehouses
+          (name.includes('mattress firm') && 
+           (name.includes('warehouse') || name.includes('distribution') || name.includes('fulfillment'))) ||
+          
+          // Secondary: Generic mattress distribution that could serve Mattress Firm
+          (name.includes('mattress') && 
+           (name.includes('warehouse') || name.includes('distribution') || name.includes('center'))) ||
+           
+          // Tertiary: Address-based detection for unlabeled warehouses
+          (address.includes('warehouse') || address.includes('distribution'))
         );
         return isValidWarehouse;
       });
