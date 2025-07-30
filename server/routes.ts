@@ -1090,22 +1090,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`🚨 FORCING WEBHOOK TO FIRE - Using profile:`, profileForWebhook ? 'SUCCESS' : 'FAILED');
       
-      // Send comprehensive customer data to Make webhook (fire and forget) - UPDATED TO MATCH TEST
+      // Send comprehensive customer data to Make webhook (fire and forget) - FIXED LOCATION BUG
       if (profileForWebhook) {
-        // Use real customer location data with fallback to test data
-        const customerLocation = profileForWebhook.coordinates || { lat: 27.9506, lng: -82.4572 };
-        const zipCode = profileForWebhook.zipCode || "33607";
+        // CRITICAL FIX: Use customer's actual ZIP code, never fallback to Tampa
+        const customerZipCode = profileForWebhook.zipCode;
         
-        // Generate comprehensive location intelligence
-        const storesResult = {
-          success: true,
-          stores: getMockMattressFirmStores(customerLocation.lat, customerLocation.lng)
-        };
+        if (!customerZipCode) {
+          console.error('🚨 WEBHOOK ERROR: No ZIP code found for customer', profileForWebhook.trackingId);
+          return res.status(400).json({ 
+            success: false, 
+            error: 'Customer ZIP code required for store lookup' 
+          });
+        }
         
-        const warehousesResult = {
-          success: true,
-          warehouses: getMockMattressFirmWarehouses(customerLocation.lat, customerLocation.lng)
-        };
+        // Get real stores for customer's actual location using Google API
+        let storesResult;
+        let warehousesResult;
+        
+        try {
+          const googleMaps = new GoogleMapsService();
+          
+          // Get real stores for customer's ZIP code
+          const realStoreSearch = await googleMaps.searchMattressFirmStores(customerZipCode);
+          storesResult = {
+            success: true,
+            stores: realStoreSearch.mattressFirmStores.slice(0, 5) // Top 5 closest stores
+          };
+          
+          // Get real warehouses for customer's ZIP code
+          if (realStoreSearch.userCoordinates) {
+            const realWarehouseSearch = await googleMaps.findNearbyMattressFirmWarehouses(
+              realStoreSearch.userCoordinates.lat, 
+              realStoreSearch.userCoordinates.lng
+            );
+            warehousesResult = {
+              success: true,
+              warehouses: realWarehouseSearch.warehouses.slice(0, 2)
+            };
+          } else {
+            // Fallback warehouse search
+            warehousesResult = {
+              success: false,
+              warehouses: []
+            };
+          }
+          
+          console.log(`🗺️  WEBHOOK: Found ${storesResult.stores.length} real stores for ZIP ${customerZipCode}`);
+          
+        } catch (error) {
+          console.error('🚨 Google API error in webhook, cannot proceed:', error);
+          return res.status(500).json({ 
+            success: false, 
+            error: 'Unable to find stores for customer location' 
+          });
+        }
         
         // Customer selections from real profile data
         const customerSelections = {
@@ -1167,18 +1205,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Step 1: Complete location intelligence
           location_data: {
-            user_input: zipCode,
+            user_input: customerZipCode,
             search_timestamp: new Date().toISOString(),
             
             // Stores array - sorted nearest to furthest
             mattress_firm_stores: storesResult.stores.map((store, index) => ({
               rank: index + 1,
               full_name: store.name,
-              store_location_name: store.storeName || store.name.replace('Mattress Firm ', ''),
+              store_location_name: store.name.replace('Mattress Firm ', ''),
               address: store.address,
-              phone: store.phone,
+              phone: store.phone || '(855) 515-9604',
               hours: store.hours || "Wednesday: 10:00 AM – 8:00 PM",
-              distance_miles: store.distance,
+              distance_miles: store.distance || 0,
               place_id: store.placeId,
               location: store.location
             })),
@@ -1186,21 +1224,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // Single warehouse object
             mattress_firm_warehouse: warehousesResult.warehouses.length > 0 ? {
               name: warehousesResult.warehouses[0].name,
-              warehouse_location_name: warehousesResult.warehouses[0].warehouseName,
+              warehouse_location_name: warehousesResult.warehouses[0].name.replace('Mattress Firm ', ''),
               address: warehousesResult.warehouses[0].address,
-              phone: warehousesResult.warehouses[0].phone,
-              distance_miles: warehousesResult.warehouses[0].distance,
-              service_area_indicator: warehousesResult.warehouses[0].distance < 20 ? "urban" : "regional"
+              phone: warehousesResult.warehouses[0].phone || '(855) 515-9604',
+              distance_miles: warehousesResult.warehouses[0].distance || 0,
+              service_area_indicator: (warehousesResult.warehouses[0].distance || 0) < 20 ? "urban" : "regional"
             } : null,
             
             // Search metadata
             search_metadata: {
               stores_found: storesResult.stores.length,
               warehouse_found: warehousesResult.warehouses.length > 0,
-              user_input_preserved: zipCode,
+              user_input_preserved: customerZipCode,
               market_density: storesResult.stores.length > 3 ? "high" : "medium",
-              furthest_store_distance: Math.max(...storesResult.stores.map(s => s.distance)),
-              warehouse_distance_category: warehousesResult.warehouses[0]?.distance < 20 ? "close" : "regional"
+              furthest_store_distance: storesResult.stores.length > 0 ? Math.max(...storesResult.stores.map(s => s.distance || 0)) : 0,
+              warehouse_distance_category: (warehousesResult.warehouses[0]?.distance || 0) < 20 ? "close" : "regional"
             }
           },
           
