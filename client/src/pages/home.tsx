@@ -1687,7 +1687,8 @@ ${userName}`;
 // Main component
 export default function Home() {
   // 🚨 CRITICAL DEBUG: This should ALWAYS appear in console
-  console.log('🔥🔥🔥 HOME COMPONENT LOADED - IF YOU SEE THIS, REACT IS WORKING 🔥🔥🔥');
+  console.log('🔥🔥🔥 HOME COMPONENT LOADED - VERSION 2.0 - WEBHOOK DEBUGGING 🔥🔥🔥');
+  console.log('🔥 TIMESTAMP:', new Date().toISOString());
   
   const [currentStep, setCurrentStep] = useState(1);
   const [userSelections, setUserSelections] = useState<UserData>({
