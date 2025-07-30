@@ -122,7 +122,7 @@ export class GoogleMapsService {
         const radiusResponse = await this.client.placesNearby({
           params: {
             location: { lat, lng },
-            radius: 80000, // 80km radius for warehouses (larger than stores)
+            radius: 120000, // Increased to 120km radius for warehouses to catch border cases
             keyword: 'Mattress Firm Distribution',
             key: this.apiKey,
           },

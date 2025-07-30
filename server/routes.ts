@@ -300,24 +300,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
             location: store.location
           })),
           
-          // Single warehouse object
-          mattress_firm_warehouse: warehousesResult.warehouses.length > 0 ? {
-            name: warehousesResult.warehouses[0].name,
-            warehouse_location_name: warehousesResult.warehouses[0].warehouseName,
-            address: warehousesResult.warehouses[0].address,
-            phone: warehousesResult.warehouses[0].phone,
-            distance_miles: warehousesResult.warehouses[0].distance,
-            service_area_indicator: warehousesResult.warehouses[0].distance < 20 ? "urban" : "regional"
-          } : null,
+          // Top 2 closest warehouses for border ZIP codes
+          mattress_firm_warehouses: warehousesResult.warehouses.slice(0, 2).map((warehouse, index) => ({
+            rank: index + 1,
+            name: warehouse.name,
+            warehouse_location_name: warehouse.warehouseName,
+            address: warehouse.address,
+            phone: warehouse.phone,
+            distance_miles: warehouse.distance,
+            service_area_indicator: warehouse.distance < 20 ? "urban" : "regional",
+            is_primary: index === 0
+          })),
           
           // Search metadata
           search_metadata: {
             stores_found: storesResult.stores.length,
-            warehouse_found: warehousesResult.warehouses.length > 0,
+            warehouses_found: warehousesResult.warehouses.length,
             user_input_preserved: testZip,
             market_density: storesResult.stores.length > 3 ? "high" : "medium",
             furthest_store_distance: Math.max(...storesResult.stores.map(s => s.distance)),
-            warehouse_distance_category: warehousesResult.warehouses[0]?.distance < 20 ? "close" : "regional"
+            primary_warehouse_distance_category: warehousesResult.warehouses[0]?.distance < 20 ? "close" : "regional",
+            secondary_warehouse_available: warehousesResult.warehouses.length > 1
           }
         },
         
@@ -1236,24 +1239,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
               location: store.location
             })),
             
-            // Single warehouse object
-            mattress_firm_warehouse: warehousesResult.warehouses.length > 0 ? {
-              name: warehousesResult.warehouses[0].name,
-              warehouse_location_name: warehousesResult.warehouses[0].name.replace('Mattress Firm ', ''),
-              address: warehousesResult.warehouses[0].address,
-              phone: warehousesResult.warehouses[0].phone || '(855) 515-9604',
-              distance_miles: warehousesResult.warehouses[0].distance || 0,
-              service_area_indicator: (warehousesResult.warehouses[0].distance || 0) < 20 ? "urban" : "regional"
-            } : null,
+            // Top 2 closest warehouses for border ZIP codes  
+            mattress_firm_warehouses: warehousesResult.warehouses.slice(0, 2).map((warehouse, index) => ({
+              rank: index + 1,
+              name: warehouse.name,
+              warehouse_location_name: warehouse.name.replace('Mattress Firm ', ''),
+              address: warehouse.address,
+              phone: warehouse.phone || '(855) 515-9604',
+              distance_miles: warehouse.distance || 0,
+              service_area_indicator: (warehouse.distance || 0) < 20 ? "urban" : "regional",
+              is_primary: index === 0
+            })),
             
             // Search metadata
             search_metadata: {
               stores_found: storesResult.stores.length,
-              warehouse_found: warehousesResult.warehouses.length > 0,
+              warehouses_found: warehousesResult.warehouses.length,
               user_input_preserved: customerZipCode,
               market_density: storesResult.stores.length > 3 ? "high" : "medium",
               furthest_store_distance: storesResult.stores.length > 0 ? Math.max(...storesResult.stores.map(s => s.distance || 0)) : 0,
-              warehouse_distance_category: (warehousesResult.warehouses[0]?.distance || 0) < 20 ? "close" : "regional"
+              primary_warehouse_distance_category: (warehousesResult.warehouses[0]?.distance || 0) < 20 ? "close" : "regional",
+              secondary_warehouse_available: warehousesResult.warehouses.length > 1
             }
           },
           
