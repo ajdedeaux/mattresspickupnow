@@ -169,20 +169,31 @@ export class MemStorage implements IStorage {
   }
 
   async generateReferenceCode(trackingId: string): Promise<string> {
+    // Check if profile already has a reference code
+    const profile = await this.getCustomerProfileByTrackingId(trackingId);
+    if (!profile) {
+      throw new Error('Profile not found');
+    }
+    
+    // If reference code already exists, return it (prevents duplicates)
+    if (profile.referenceCode) {
+      console.log(`🔄 REFERENCE CODE EXISTS: ${profile.referenceCode} for tracking ${trackingId}`);
+      return profile.referenceCode;
+    }
+    
+    // Generate new reference code only if none exists
     const referenceCode = `MP-${this.referenceCodeCounter++}`;
+    console.log(`🎯 GENERATING NEW REFERENCE CODE: ${referenceCode} for tracking ${trackingId}`);
     
     // Update the profile with the reference code and mark as complete
-    const profile = await this.getCustomerProfileByTrackingId(trackingId);
-    if (profile) {
-      const priceLockExpiry = new Date();
-      priceLockExpiry.setHours(priceLockExpiry.getHours() + 24); // 24-hour price lock
-      
-      await this.updateCustomerProfile(trackingId, {
-        referenceCode,
-        profileComplete: true,
-        priceLockExpiry,
-      });
-    }
+    const priceLockExpiry = new Date();
+    priceLockExpiry.setHours(priceLockExpiry.getHours() + 24); // 24-hour price lock
+    
+    await this.updateCustomerProfile(trackingId, {
+      referenceCode,
+      profileComplete: true,
+      priceLockExpiry,
+    });
     
     return referenceCode;
   }

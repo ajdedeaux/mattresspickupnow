@@ -1064,15 +1064,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`📋 PROFILE FOUND:`, {
         trackingId: profile.trackingId,
+        referenceCode: profile.referenceCode,
         zipCode: profile.zipCode,
         mattressSize: profile.mattressSize,
         firmness: profile.firmness,
         finalPrice: profile.finalPrice
       });
       
+      // Check if reference code already exists (prevent duplicates)
+      if (profile.referenceCode) {
+        console.log(`🔄 REFERENCE CODE ALREADY EXISTS: ${profile.referenceCode} for tracking ID: ${trackingId}`);
+        console.log(`🚫 PREVENTING DUPLICATE - Returning existing code without generating new one`);
+        return res.json({
+          success: true,
+          referenceCode: profile.referenceCode,
+          existingCode: true,
+          message: "Reference code already exists for this customer"
+        });
+      }
+      
+      console.log(`✅ NO EXISTING REFERENCE CODE - Proceeding to generate new one`);
+      
       const referenceCode = await storage.generateReferenceCode(trackingId);
       
-      console.log(`🎯 Reference code generated: ${referenceCode} for tracking ID: ${trackingId}`);
+      console.log(`🎯 NEW REFERENCE CODE GENERATED: ${referenceCode} for tracking ID: ${trackingId}`);
       
       // Get the updated profile with reference code and price lock expiry
       const updatedProfile = await storage.getCustomerProfileByTrackingId(trackingId);

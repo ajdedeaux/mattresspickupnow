@@ -194,6 +194,17 @@ export const CustomerProfileProvider: React.FC<CustomerProfileProviderProps> = (
       throw new Error('No tracking ID available');
     }
 
+    // Check if we already have a reference code to prevent duplicates
+    if (profile?.referenceCode) {
+      console.log('🔄 REFERENCE CODE ALREADY EXISTS');
+      console.log('━'.repeat(50));
+      console.log(`🎫 Existing Reference Code: ${profile.referenceCode}`);
+      console.log(`📋 Tracking ID: ${trackingId}`);
+      console.log('⚠️ Preventing duplicate code generation');
+      console.log('━'.repeat(50));
+      return profile.referenceCode;
+    }
+
     try {
       setIsLoading(true);
       
@@ -208,10 +219,16 @@ export const CustomerProfileProvider: React.FC<CustomerProfileProviderProps> = (
         // Update local profile with reference code
         setProfile(prev => prev ? { ...prev, referenceCode: response.referenceCode } : null);
         
-        console.log('✅ REFERENCE CODE GENERATED!');
-        console.log(`🎫 Reference Code: ${response.referenceCode}`);
-        console.log('📡 Webhook fired to Make automation');
-        console.log('📋 Customer profile complete and sent for processing');
+        if (response.existingCode) {
+          console.log('🔄 REFERENCE CODE WAS ALREADY ASSIGNED');
+          console.log(`🎫 Existing Reference Code: ${response.referenceCode}`);
+          console.log('⚠️ No duplicate webhook fired - code already exists');
+        } else {
+          console.log('✅ NEW REFERENCE CODE GENERATED!');
+          console.log(`🎫 Reference Code: ${response.referenceCode}`);
+          console.log('📡 Webhook fired to Make automation');
+          console.log('📋 Customer profile complete and sent for processing');
+        }
         console.log('━'.repeat(50));
         
         return response.referenceCode;
