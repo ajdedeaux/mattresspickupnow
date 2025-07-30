@@ -368,8 +368,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-
-
   // Resolve location to coordinates
   app.post("/api/resolve-location", async (req, res) => {
     try {
