@@ -97,112 +97,49 @@ export class GoogleMapsService {
     }
 
     try {
-      console.log(`🏭 Searching for Mattress Firm WAREHOUSES near ${lat}, ${lng}`);
+      console.log(`🏭 Searching for AUTHENTIC Mattress Firm Warehouses near ${lat}, ${lng}`);
       
       let allWarehouses: any[] = [];
       
-      // Strategy 1: Specific warehouse search with keywords
+      // Strategy 1: Direct search for "Mattress Firm Warehouse" within 100 miles
       try {
         const warehouseResponse = await this.client.placesNearby({
           params: {
             location: { lat, lng },
-            rankby: 'distance' as any,
+            radius: 160000, // 100 miles = ~160km radius
             keyword: 'Mattress Firm Warehouse',
             key: this.apiKey,
           },
         });
         allWarehouses.push(...warehouseResponse.data.results);
-        console.log(`🏭 Warehouse Strategy 1 found ${warehouseResponse.data.results.length} locations`);
+        console.log(`🏭 Found ${warehouseResponse.data.results.length} potential warehouse locations`);
       } catch (error) {
-        console.log('⚠️ Warehouse Strategy 1 failed:', error);
-      }
-      
-      // Strategy 2: Large radius warehouse search
-      try {
-        const radiusResponse = await this.client.placesNearby({
-          params: {
-            location: { lat, lng },
-            radius: 120000, // Increased to 120km radius for warehouses to catch border cases
-            keyword: 'Mattress Firm Distribution',
-            key: this.apiKey,
-          },
-        });
-        
-        const newWarehouses = radiusResponse.data.results.filter(
-          (place: any) => !allWarehouses.find((existing: any) => existing.place_id === place.place_id)
-        );
-        allWarehouses.push(...newWarehouses);
-        console.log(`🏭 Warehouse Strategy 2 found ${newWarehouses.length} additional locations`);
-      } catch (error) {
-        console.log('⚠️ Warehouse Strategy 2 failed:', error);
-      }
-      
-      // Strategy 3: Even larger radius for border cases
-      try {
-        const extraLargeRadiusResponse = await this.client.placesNearby({
-          params: {
-            location: { lat, lng },
-            radius: 160000, // 160km radius for extreme border cases
-            keyword: 'Mattress Firm',
-            type: 'storage',
-            key: this.apiKey,
-          },
-        });
-        
-        const newWarehouses = extraLargeRadiusResponse.data.results.filter(
-          (place: any) => !allWarehouses.find((existing: any) => existing.place_id === place.place_id)
-        );
-        allWarehouses.push(...newWarehouses);
-        console.log(`🏭 Warehouse Strategy 3 found ${newWarehouses.length} additional locations`);
-      } catch (error) {
-        console.log('⚠️ Warehouse Strategy 3 failed:', error);
-      }
-      
-      // Strategy 4: Generic fulfillment centers that might serve Mattress Firm
-      try {
-        const fulfillmentResponse = await this.client.placesNearby({
-          params: {
-            location: { lat, lng },
-            radius: 140000, // 140km radius
-            keyword: 'mattress distribution center',
-            key: this.apiKey,
-          },
-        });
-        
-        const newWarehouses = fulfillmentResponse.data.results.filter(
-          (place: any) => !allWarehouses.find((existing: any) => existing.place_id === place.place_id)
-        );
-        allWarehouses.push(...newWarehouses);
-        console.log(`🏭 Warehouse Strategy 4 found ${newWarehouses.length} additional locations`);
-      } catch (error) {
-        console.log('⚠️ Warehouse Strategy 4 failed:', error);
+        console.log('⚠️ Warehouse search failed:', error);
       }
 
-      // Filter for valid Mattress Firm warehouses (relaxed for broader coverage)
+      // STRICT FILTERING: Only return locations that are exactly "Mattress Firm Warehouse"
       const filteredWarehouses = allWarehouses.filter((place: any) => {
         const name = place.name?.toLowerCase().trim() || '';
-        const address = place.vicinity?.toLowerCase() || '';
         
+        // ULTRA STRICT: Must contain both "mattress firm" AND "warehouse" and nothing else that would make it a store
         const isValidWarehouse = (
-          // Primary: Mattress Firm branded warehouses
-          (name.includes('mattress firm') && 
-           (name.includes('warehouse') || name.includes('distribution') || name.includes('fulfillment'))) ||
-          
-          // Secondary: Generic mattress distribution that could serve Mattress Firm
-          (name.includes('mattress') && 
-           (name.includes('warehouse') || name.includes('distribution') || name.includes('center'))) ||
-           
-          // Tertiary: Address-based detection for unlabeled warehouses
-          (address.includes('warehouse') || address.includes('distribution'))
+          name.includes('mattress firm') && 
+          name.includes('warehouse') &&
+          !name.includes('clearance') &&
+          !name.includes('center') &&
+          !name.includes('outlet') &&
+          !name.includes('store')
         );
+        
+        console.log(`🔍 Warehouse filtering "${place.name}": ${isValidWarehouse ? '✅ KEEP (WAREHOUSE)' : '❌ REJECT (NOT WAREHOUSE)'}`);
         return isValidWarehouse;
       });
 
-      console.log(`🎯 WAREHOUSE FILTERING: ${allWarehouses.length} raw results → ${filteredWarehouses.length} valid warehouses`);
+      console.log(`🎯 STRICT WAREHOUSE FILTERING: ${allWarehouses.length} raw results → ${filteredWarehouses.length} authentic Mattress Firm warehouses`);
 
       // Convert and sort by distance
       const warehousesWithDetails = await Promise.all(
-        filteredWarehouses.slice(0, 5).map(async (place: any) => { // Limit to 5 warehouses
+        filteredWarehouses.slice(0, 2).map(async (place: any) => { // Limit to 2 closest warehouses
           const distance = this.calculateDistance(lat, lng, place.geometry.location.lat, place.geometry.location.lng);
           
           return {
