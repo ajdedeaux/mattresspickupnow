@@ -1128,29 +1128,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           const googleMaps = new GoogleMapsService();
           
-          // Get real stores for customer's ZIP code
-          const realStoreSearch = await googleMaps.searchMattressFirmStores(customerZipCode);
-          storesResult = {
-            success: true,
-            stores: realStoreSearch.mattressFirmStores.slice(0, 5) // Top 5 closest stores
-          };
+          // CRITICAL FIX: Use customer's stored coordinates directly instead of re-geocoding
+          const customerCoordinates = profileForWebhook.coordinates;
           
-          // Get real warehouses for customer's ZIP code
-          if (realStoreSearch.userCoordinates) {
+          if (customerCoordinates && customerCoordinates.lat && customerCoordinates.lng) {
+            console.log(`🎯 Using customer's stored coordinates: ${customerCoordinates.lat}, ${customerCoordinates.lng}`);
+            
+            // Get real stores using customer's exact coordinates
+            const realStoreSearch = await googleMaps.findNearbyMattressFirmStores(
+              customerCoordinates.lat, 
+              customerCoordinates.lng
+            );
+            storesResult = {
+              success: true,
+              stores: realStoreSearch.stores.slice(0, 5) // Top 5 closest stores
+            };
+            
+            // Get real warehouses using customer's exact coordinates
             const realWarehouseSearch = await googleMaps.findNearbyMattressFirmWarehouses(
-              realStoreSearch.userCoordinates.lat, 
-              realStoreSearch.userCoordinates.lng
+              customerCoordinates.lat, 
+              customerCoordinates.lng
             );
             warehousesResult = {
               success: true,
               warehouses: realWarehouseSearch.warehouses.slice(0, 2)
             };
           } else {
-            // Fallback warehouse search
-            warehousesResult = {
-              success: false,
-              warehouses: []
+            console.log(`⚠️ No stored coordinates found, attempting geocoding for ZIP: ${customerZipCode}`);
+            // Fallback to geocoding if no stored coordinates
+            const realStoreSearch = await googleMaps.searchMattressFirmStores(customerZipCode);
+            storesResult = {
+              success: true,
+              stores: realStoreSearch.mattressFirmStores.slice(0, 5)
             };
+            
+            if (realStoreSearch.userCoordinates) {
+              const realWarehouseSearch = await googleMaps.findNearbyMattressFirmWarehouses(
+                realStoreSearch.userCoordinates.lat, 
+                realStoreSearch.userCoordinates.lng
+              );
+              warehousesResult = {
+                success: true,
+                warehouses: realWarehouseSearch.warehouses.slice(0, 2)
+              };
+            } else {
+              warehousesResult = { success: false, warehouses: [] };
+            }
           }
           
           console.log(`🗺️  WEBHOOK: Found ${storesResult.stores.length} real stores for ZIP ${customerZipCode}`);
