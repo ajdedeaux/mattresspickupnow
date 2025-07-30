@@ -788,6 +788,7 @@ const SMSStep = ({ userData, onBack, referenceCode }: { userData: UserData; onBa
   const [currentStep, setCurrentStep] = useState<'name' | 'urgency' | 'send'>('name');
   const [hasStartedInput, setHasStartedInput] = useState(false);
   const nearestStore = userData.nearestStores[0];
+  const { profile } = useCustomerProfile();
   
   // Auto-advance to next step when name is entered (with longer delay)
   useEffect(() => {
@@ -810,15 +811,22 @@ const SMSStep = ({ userData, onBack, referenceCode }: { userData: UserData; onBa
     const comfortType = userData.comfort || 'Medium';
     const mattressSize = userData.size || 'Queen';
     
-    // Smart location logic - using nearest store for location context
+    // Smart location logic - using customer's actual location from Google API
     const getLocationText = () => {
+      // Use real location data from nearest store (Google API results)
       if (nearestStore?.address) {
-        // Extract city from store address (assumes format: "123 Main St, Tampa, FL 33607")
+        // Extract city from store address (format: "123 Main St, Lutz, FL 33607")
         const addressParts = nearestStore.address.split(', ');
         if (addressParts.length >= 2) {
           return `in the ${addressParts[1]} area`;
         }
       }
+      
+      // Fallback: Use ZIP code from customer profile
+      if (profile?.zipCode) {
+        return `in the ${profile.zipCode} area`;
+      }
+      
       return 'in your area';
     };
     
@@ -867,15 +875,22 @@ const SMSStep = ({ userData, onBack, referenceCode }: { userData: UserData; onBa
     const comfortType = userData.comfort || 'Medium';
     const mattressSize = userData.size || 'Queen';
     
-    // Smart location logic - using nearest store for location context
+    // Smart location logic - using customer's actual location from Google API
     const getLocationText = () => {
+      // Use real location data from nearest store (Google API results)
       if (nearestStore?.address) {
-        // Extract city from store address (assumes format: "123 Main St, Tampa, FL 33607")
+        // Extract city from store address (format: "123 Main St, Lutz, FL 33607")
         const addressParts = nearestStore.address.split(', ');
         if (addressParts.length >= 2) {
           return `in the ${addressParts[1]} area`;
         }
       }
+      
+      // Fallback: Use ZIP code from customer profile
+      if (profile?.zipCode) {
+        return `in the ${profile.zipCode} area`;
+      }
+      
       return 'in your area';
     };
     
@@ -1296,6 +1311,7 @@ const EmailStep = ({ userData, onBack, referenceCode }: { userData: UserData; on
   const [currentStep, setCurrentStep] = useState<'name' | 'urgency' | 'send'>('name');
   const [hasStartedInput, setHasStartedInput] = useState(false);
   const nearestStore = userData.nearestStores[0];
+  const { profile } = useCustomerProfile();
   
   // Auto-advance to next step when name is entered
   useEffect(() => {
@@ -1318,15 +1334,17 @@ const EmailStep = ({ userData, onBack, referenceCode }: { userData: UserData; on
     const comfortType = userData.comfort || 'Medium';
     const mattressSize = userData.size || 'Queen';
     
-    // Smart location logic - using nearest store for location context
+    // Smart location logic - using customer's actual location from Google API
     const getLocationText = () => {
+      // Use real location data from nearest store (Google API results)
       if (nearestStore?.address) {
-        // Extract city from store address (assumes format: "123 Main St, Tampa, FL 33607")
+        // Extract city from store address (format: "123 Main St, Lutz, FL 33607")
         const addressParts = nearestStore.address.split(', ');
         if (addressParts.length >= 2) {
           return `in the ${addressParts[1]} area`;
         }
       }
+      
       return 'in your area';
     };
     
@@ -1389,15 +1407,22 @@ ${userName}`;
     const comfortType = userData.comfort || 'Medium';
     const mattressSize = userData.size || 'Queen';
     
-    // Smart location logic - using nearest store for location context
+    // Smart location logic - using customer's actual location from Google API
     const getLocationText = () => {
+      // Use real location data from nearest store (Google API results)
       if (nearestStore?.address) {
-        // Extract city from store address (assumes format: "123 Main St, Tampa, FL 33607")
+        // Extract city from store address (format: "123 Main St, Lutz, FL 33607")
         const addressParts = nearestStore.address.split(', ');
         if (addressParts.length >= 2) {
           return `in the ${addressParts[1]} area`;
         }
       }
+      
+      // Fallback: Use ZIP code from customer profile
+      if (profile?.zipCode) {
+        return `in the ${profile.zipCode} area`;
+      }
+      
       return 'in your area';
     };
     
