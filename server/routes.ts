@@ -1071,6 +1071,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get the updated profile with reference code and price lock expiry
       const updatedProfile = await storage.getCustomerProfileByTrackingId(trackingId);
       
+      console.log(`🔍 PROFILE AFTER REFERENCE CODE GENERATION:`, updatedProfile ? 'FOUND' : 'NOT FOUND');
+      
       // Send comprehensive customer data to Make webhook (fire and forget) - UPDATED TO MATCH TEST
       if (updatedProfile) {
         // Use real customer location data with fallback to test data
