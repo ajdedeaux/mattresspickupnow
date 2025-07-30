@@ -642,15 +642,17 @@ const ConfirmationStep = ({ userData, onSMSOption, onEmailOption, onFormOption, 
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Ready to get your mattress?</h2>
         {referenceCode && (
-          <div className="bg-green-500 text-white rounded-xl p-4 mt-4 mx-auto max-w-xs shadow-lg">
-            <div className="flex items-center justify-center mb-2">
-              <Check className="w-5 h-5 mr-2" />
-              <span className="font-semibold">Perfect!</span>
+          <div className="bg-gradient-to-br from-green-500 via-green-600 to-green-700 text-white rounded-2xl p-5 mt-4 mx-auto max-w-sm shadow-2xl border border-green-400/20">
+            <div className="flex items-center justify-center mb-3">
+              <Check className="w-6 h-6 mr-2" />
+              <span className="font-bold text-lg">You're All Set!</span>
             </div>
-            <div className="text-center">
-              <p className="text-sm opacity-90 mb-1">Your Reference Code</p>
-              <p className="text-xl font-bold">{referenceCode}</p>
-              <p className="text-xs opacity-80 mt-1">24-hour price lock active</p>
+            <div className="text-center space-y-2">
+              <p className="text-sm opacity-90">Your VIP Reference Code</p>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+                <p className="text-2xl font-black tracking-wider">{referenceCode}</p>
+              </div>
+              <p className="text-xs opacity-85 font-medium">Price locked for 24 hours • Screenshot this!</p>
             </div>
           </div>
         )}
@@ -2032,15 +2034,17 @@ export default function Home() {
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Perfect! We've got you covered.</h2>
               {referenceCode && (
-                <div className="bg-green-500 text-white rounded-xl p-4 mb-4 shadow-lg">
-                  <div className="flex items-center justify-center mb-2">
-                    <Check className="w-5 h-5 mr-2" />
-                    <span className="font-semibold">Perfect!</span>
+                <div className="bg-gradient-to-br from-green-500 via-green-600 to-green-700 text-white rounded-2xl p-6 mb-6 shadow-2xl border border-green-400/20">
+                  <div className="flex items-center justify-center mb-4">
+                    <Check className="w-7 h-7 mr-3" />
+                    <span className="font-bold text-xl">You're All Set!</span>
                   </div>
-                  <div className="text-center">
-                    <p className="text-sm opacity-90 mb-1">Your Reference Code</p>
-                    <p className="text-xl font-bold">{referenceCode}</p>
-                    <p className="text-xs opacity-80 mt-1">Save this for your records</p>
+                  <div className="text-center space-y-3">
+                    <p className="text-sm opacity-90 font-medium">Your VIP Reference Code</p>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                      <p className="text-3xl font-black tracking-wider">{referenceCode}</p>
+                    </div>
+                    <p className="text-sm opacity-85 font-medium">Price locked for 24 hours • Screenshot this!</p>
                   </div>
                 </div>
               )}
