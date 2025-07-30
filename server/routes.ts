@@ -1072,12 +1072,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedProfile = await storage.getCustomerProfileByTrackingId(trackingId);
       
       console.log(`🔍 PROFILE AFTER REFERENCE CODE GENERATION:`, updatedProfile ? 'FOUND' : 'NOT FOUND');
+      console.log(`🔍 PROFILE DETAILS:`, updatedProfile ? JSON.stringify(updatedProfile, null, 2) : 'NULL');
+      
+      // CRITICAL FIX: Always fire webhook using original profile + reference code
+      // Don't depend on updated profile fetch which might fail
+      const profileForWebhook = updatedProfile || {
+        ...profile,
+        referenceCode: referenceCode,
+        priceLockExpiry: new Date(Date.now() + 24 * 60 * 60 * 1000)
+      };
+      
+      console.log(`🚨 FORCING WEBHOOK TO FIRE - Using profile:`, profileForWebhook ? 'SUCCESS' : 'FAILED');
       
       // Send comprehensive customer data to Make webhook (fire and forget) - UPDATED TO MATCH TEST
-      if (updatedProfile) {
+      if (profileForWebhook) {
         // Use real customer location data with fallback to test data
-        const customerLocation = updatedProfile.coordinates || { lat: 27.9506, lng: -82.4572 };
-        const zipCode = updatedProfile.zipCode || "33607";
+        const customerLocation = profileForWebhook.coordinates || { lat: 27.9506, lng: -82.4572 };
+        const zipCode = profileForWebhook.zipCode || "33607";
         
         // Generate comprehensive location intelligence
         const storesResult = {
@@ -1092,18 +1103,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Customer selections from real profile data
         const customerSelections = {
-          who_its_for: updatedProfile.demographics ?? "Me",
-          size: updatedProfile.mattressSize || "Queen",
-          model: updatedProfile.firmness || "Medium",
-          price: getCorrectPrice(updatedProfile.mattressSize || "Queen", updatedProfile.firmness || "M", updatedProfile.finalPrice),
-          reference_code: updatedProfile.referenceCode || "MP-0000",
+          who_its_for: profileForWebhook.demographics ?? "Me",
+          size: profileForWebhook.mattressSize || "Queen",
+          model: profileForWebhook.firmness || "Medium",
+          price: getCorrectPrice(profileForWebhook.mattressSize || "Queen", profileForWebhook.firmness || "M", profileForWebhook.finalPrice),
+          reference_code: profileForWebhook.referenceCode || referenceCode,
           timestamp: new Date().toISOString(),
           customer_journey: {
-            step_2_use_case: updatedProfile.demographics === "My Child" ? "child_bedroom_upgrade" : "personal_upgrade",
-            step_3_size_reasoning: `${updatedProfile.mattressSize || "queen"}_optimal_size`,
+            step_2_use_case: profileForWebhook.demographics === "My Child" ? "child_bedroom_upgrade" : "personal_upgrade",
+            step_3_size_reasoning: `${profileForWebhook.mattressSize || "queen"}_optimal_size`,
             step_4_budget_range: "under_400",
             step_5_urgency: "this_weekend",
-            step_6_comfort_preference: `${(updatedProfile.firmness || "medium").toLowerCase()}_support`,
+            step_6_comfort_preference: `${(profileForWebhook.firmness || "medium").toLowerCase()}_support`,
             step_7_special_needs: "standard",
             step_8_delivery_preference: "pickup_today"
           }
@@ -1121,7 +1132,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             reference_code: customerSelections.reference_code,
             who_its_for: customerSelections.who_its_for,
             mattress_size: customerSelections.size,
-            mattress_model: getCorrectModelName(updatedProfile.firmness ?? "M", updatedProfile.model ?? undefined),
+            mattress_model: getCorrectModelName(profileForWebhook.firmness ?? "M", profileForWebhook.model ?? undefined),
             locked_price: customerSelections.price,
             customer_name: "NA", // Will collect during outreach
             urgency_level: "NA", // Will collect during outreach
@@ -1142,7 +1153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             pricing_details: {
               base_price: customerSelections.price,
               size_category: customerSelections.size,
-              firmness_code: updatedProfile.firmness || "M",
+              firmness_code: profileForWebhook.firmness || "M",
               price_locked_until: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
               pricing_tier: "standard"
             }
